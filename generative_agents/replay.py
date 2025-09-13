@@ -14,7 +14,7 @@ app = Flask(
 )
 
 
-@app.route("/", methods=['GET'])
+@app.route("replay", methods=['GET'])
 def index():
     name = request.args.get("name", "")          # 记录名称
     step = int(request.args.get("step", 0))      # 回放起始步数
