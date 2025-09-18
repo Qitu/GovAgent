@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Create Agent</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.agents_management') }}">Agents</a></li>
+            <li class="breadcrumb-item active">Create Agent</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Agent Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <form id="createAgentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="agentName" class="form-label">Agent Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="agentName" name="name" required>
+                                <div class="form-text">Unique identifier name for the agent</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentAge" class="form-label">Age <span class="text-danger">*</span></label>
+                                <input type="number" class="form-control" id="agentAge" name="age" min="1" max="120" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentInnate" class="form-label">Personality Traits <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="agentInnate" name="innate" rows="3" required 
+                                          placeholder="Describe the agent's personality traits, e.g.: friendly, introverted, optimistic, etc."></textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="agentLifestyle" class="form-label">Lifestyle <span class="text-danger">*</span></label>
+                                <textarea class="form-control" id="agentLifestyle" name="lifestyle" rows="3" required
+                                          placeholder="Describe the agent's lifestyle and habits"></textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentCurrently" class="form-label">Current Status <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="agentCurrently" name="currently" required
+                                       placeholder="What is the agent currently doing">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentLivingArea" class="form-label">Living Address</label>
+                                <input type="text" class="form-control" id="agentLivingArea" name="living_area"
+                                       placeholder="Agent's residential address">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="agentSchedule" class="form-label">Daily Activity Schedule</label>
+                        <textarea class="form-control" id="agentSchedule" name="daily_schedule" rows="4"
+                                  placeholder="Describe the agent's daily activity schedule"></textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('main.agents_management') }}" class="btn btn-secondary">
+                            <i class="mdi mdi-arrow-left me-1"></i>Back
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="mdi mdi-check me-1"></i>Create Agent
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('createAgentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    
+    // 显示加载状态
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Creating...';
+    submitBtn.disabled = true;
+    
+    fetch('/api/agents', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            // 显示成功消息
+            showAlert('success', result.message);
+            // 延迟跳转到代理列表
+            setTimeout(() => {
+                window.location.href = "{{ url_for('main.agents_management') }}";
+            }, 1500);
+        } else {
+            showAlert('error', result.message);
+            // 恢复按钮状态
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'Error occurred while creating agent');
+        // 恢复按钮状态
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // 在表单前插入提示
+    const form = document.getElementById('createAgentForm');
+    form.insertAdjacentHTML('beforebegin', alertHtml);
+}
+</script>
+{% endblock %}

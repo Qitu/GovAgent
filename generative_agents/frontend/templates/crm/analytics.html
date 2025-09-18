@@ -1,0 +1,232 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">数据分析</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">首页</a></li>
+            <li class="breadcrumb-item active">数据分析</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">模拟统计</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="simulationChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">代理活动分布</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="agentChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="mdi mdi-chart-line widget-icon bg-primary-lighten text-primary"></i>
+                <h3 class="text-dark mt-1">{{ analytics.total_simulations or 0 }}</h3>
+                <p class="text-muted mb-1">总模拟次数</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="mdi mdi-account-group widget-icon bg-success-lighten text-success"></i>
+                <h3 class="text-dark mt-1">{{ analytics.total_agents or 25 }}</h3>
+                <p class="text-muted mb-1">智能代理数量</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="mdi mdi-clock-outline widget-icon bg-warning-lighten text-warning"></i>
+                <h3 class="text-dark mt-1">{{ analytics.avg_duration or '2.5h' }}</h3>
+                <p class="text-muted mb-1">平均运行时长</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">月度趋势</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="trendChart" width="600" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">热门代理</h5>
+            </div>
+            <div class="card-body">
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        阿伊莎·沃克
+                        <span class="badge bg-primary rounded-pill">95%</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        克劳斯·穆勒
+                        <span class="badge bg-primary rounded-pill">87%</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        玛丽亚·洛佩兹
+                        <span class="badge bg-primary rounded-pill">82%</span>
+                    </div>
+                    <div class="list-group-item d-flex justify-content-between align-items-center">
+                        约翰·林
+                        <span class="badge bg-primary rounded-pill">78%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">详细报告</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>模拟名称</th>
+                                <th>开始时间</th>
+                                <th>持续时间</th>
+                                <th>参与代理</th>
+                                <th>交互次数</th>
+                                <th>状态</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>sim-test-001</td>
+                                <td>2025-02-13 09:30</td>
+                                <td>2小时15分</td>
+                                <td>25</td>
+                                <td>1,247</td>
+                                <td><span class="badge bg-success">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>sim-test-002</td>
+                                <td>2025-02-14 10:00</td>
+                                <td>1小时45分</td>
+                                <td>25</td>
+                                <td>892</td>
+                                <td><span class="badge bg-success">已完成</span></td>
+                            </tr>
+                            <tr>
+                                <td>sim-test-003</td>
+                                <td>2025-02-15 14:30</td>
+                                <td>3小时20分</td>
+                                <td>25</td>
+                                <td>2,156</td>
+                                <td><span class="badge bg-warning">进行中</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+$(document).ready(function() {
+    // 模拟统计图表
+    const simulationCtx = document.getElementById('simulationChart').getContext('2d');
+    new Chart(simulationCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['已完成', '进行中', '已停止'],
+            datasets: [{
+                data: [12, 2, 3],
+                backgroundColor: ['#28a745', '#ffc107', '#dc3545']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    // 代理活动分布图表
+    const agentCtx = document.getElementById('agentChart').getContext('2d');
+    new Chart(agentCtx, {
+        type: 'bar',
+        data: {
+            labels: ['社交', '工作', '休息', '学习', '娱乐'],
+            datasets: [{
+                label: '活动时间 (小时)',
+                data: [8, 6, 4, 3, 3],
+                backgroundColor: '#007bff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // 月度趋势图表
+    const trendCtx = document.getElementById('trendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: ['1月', '2月', '3月', '4月', '5月', '6月'],
+            datasets: [{
+                label: '模拟次数',
+                data: [5, 8, 12, 15, 18, 22],
+                borderColor: '#007bff',
+                backgroundColor: 'rgba(0, 123, 255, 0.1)',
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

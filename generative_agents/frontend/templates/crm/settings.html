@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">System Settings</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">System Settings</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Basic Configuration</h5>
+            </div>
+            <div class="card-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="systemName" class="form-label">System Name</label>
+                        <input type="text" class="form-control" id="systemName" 
+                               value="Urban Governance Sandbox">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="maxSimulations" class="form-label">Max Concurrent Simulations</label>
+                        <input type="number" class="form-control" id="maxSimulations" 
+                               value="1" min="1" max="5">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="defaultStride" class="form-label">Default Time Step (minutes)</label>
+                        <input type="number" class="form-control" id="defaultStride" 
+                               value="10" min="1" max="60">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="autoSave" checked>
+                            <label class="form-check-label" for="autoSave">
+                                Auto-save simulation data
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="debugMode">
+                            <label class="form-check-label" for="debugMode">
+                                Enable debug mode
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Save Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Data Management</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-info" onclick="exportData()">
+                        <i class="mdi mdi-export me-1"></i>Export All Data
+                    </button>
+                    
+                    <button class="btn btn-outline-warning" onclick="cleanupOldData()">
+                        <i class="mdi mdi-delete-sweep me-1"></i>Clean Old Data
+                    </button>
+                    
+                    <button class="btn btn-outline-success" onclick="compressData()">
+                        <i class="mdi mdi-archive me-1"></i>Compress Data Files
+                    </button>
+                    
+                    <hr>
+                    
+                    <button class="btn btn-outline-danger" onclick="resetSystem()">
+                        <i class="mdi mdi-refresh me-1"></i>Reset System
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Version:</strong> v1.0.0</p>
+                        <p><strong>Python:</strong> 3.11</p>
+                        <p><strong>Flask:</strong> 2.3.3</p>
+                    </div>
+                    <div class="col-6">
+                        <p><strong>Uptime:</strong> <span id="uptime">Calculating...</span></p>
+                        <p><strong>Memory Usage:</strong> <span id="memory">Calculating...</span></p>
+                        <p><strong>Disk Space:</strong> <span id="disk">Calculating...</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">User Guide</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Quick Start</h6>
+                        <ol>
+                            <li>Click "Create Simulation" to create a new virtual town simulation</li>
+                            <li>Configure simulation parameters (name, time, steps, etc.)</li>
+                            <li>Start simulation and monitor progress in console</li>
+                            <li>After completion, you can replay and analyze the simulation</li>
+                        </ol>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Feature Description</h6>
+                        <ul>
+                            <li><strong>Agent Management:</strong> View and manage intelligent agents in the virtual town</li>
+                            <li><strong>Simulation Management:</strong> Create, monitor and replay simulations</li>
+                            <li><strong>Data Analysis:</strong> Analyze simulation data and agent behavior</li>
+                            <li><strong>System Settings:</strong> Configure system parameters and manage data</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function exportData() {
+    alert('Export feature under development...');
+}
+
+function cleanupOldData() {
+    if (confirm('Are you sure you want to clean old data? This operation cannot be undone.')) {
+        alert('Clean feature under development...');
+    }
+}
+
+function compressData() {
+    alert('Compression feature under development...');
+}
+
+function resetSystem() {
+    if (confirm('Are you sure you want to reset the system? This will delete all data!')) {
+        alert('Reset feature under development...');
+    }
+}
+
+// Simulate system information update
+$(document).ready(function() {
+    $('#uptime').text('2 hours 30 minutes');
+    $('#memory').text('256 MB');
+    $('#disk').text('1.2 GB available');
+});
+</script>
+{% endblock %}

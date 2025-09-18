@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Simulation Replay - {{ simulation_name }}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.simulations_management') }}">Simulations</a></li>
+            <li class="breadcrumb-item active">Replay</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="mdi mdi-play-circle me-1"></i>
+                    Simulation Replay
+                </h5>
+                <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-primary" id="pauseBtn">
+                        <i class="mdi mdi-pause"></i> Pause
+                    </button>
+                    <button class="btn btn-sm btn-outline-success" id="resumeBtn" style="display: none;">
+                        <i class="mdi mdi-play"></i> Resume
+                    </button>
+                    <button class="btn btn-sm btn-outline-secondary" id="resetBtn">
+                        <i class="mdi mdi-refresh"></i> Reset
+                    </button>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                <!-- Game Container -->
+                <div id="game-container" style="width: 100%; height: 600px; background-color: #f8f9fa; position: relative;">
+                    <!-- Game will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="mdi mdi-account-group me-1"></i>
+                    Agents
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row" style="display: flex; flex-wrap: wrap;">
+                    {% for p in persona_names %}
+                    <div class="col-auto mb-2">
+                        <div class="text-center">
+                            <a href="javascript:void(0);" id="on_screen_det_trigger-{{ p }}" class="text-decoration-none">
+                                <div class="agent-card p-2 border rounded" style="min-width: 80px;">
+                                    <img src="{{ url_for('static', filename='assets/village/agents/' ~ p ~ '/portrait.png') }}" 
+                                         style="width: 32px; height: 32px; border-radius: 50%;" 
+                                         class="mb-1"
+                                         onerror="this.src='{{ url_for('static', filename='assets/village/agents/default_portrait.svg') }}'">
+                                    <br>
+                                    <small>{{ p }}</small>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="mdi mdi-information me-1"></i>
+                    Agent Details
+                </h5>
+            </div>
+            <div class="card-body">
+                <div id="on_screen_det_content-init" class="text-muted">
+                    <em>Click on an agent to view more details.</em>
+                </div>
+
+                {% for p in persona_names %}
+                <div id="on_screen_det_content-{{ p }}" style="display: none;">
+                    <div class="d-flex align-items-center mb-3">
+                        <img src="{{ url_for('static', filename='assets/village/agents/' ~ p ~ '/portrait.png') }}" 
+                             style="width: 48px; height: 48px; border-radius: 50%;" 
+                             class="me-3"
+                             onerror="this.src='{{ url_for('static', filename='assets/village/agents/default_portrait.svg') }}'">
+                        <div>
+                            <h6 class="mb-0">{{ p }}</h6>
+                            <small class="text-muted">Agent</small>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="mb-2"><strong>Description:</strong> <span id="agent_desc__{{ p }}">Loading...</span></p>
+                        <p class="mb-2"><strong>Current Activity:</strong> <span id="current_action__{{ p }}">Loading...</span></p>
+                        <p class="mb-0"><strong>Location:</strong> <span id="target_address__{{ p }}">Loading...</span></p>
+                    </div>
+                    <div style="display: none;" id="temp_focus"></div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <a href="{{ url_for('main.simulations_management') }}" class="btn btn-secondary">
+            <i class="mdi mdi-arrow-left me-1"></i>Back to Simulation List
+        </a>
+    </div>
+</div>
+
+<style>
+.agent-card {
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.agent-card:hover {
+    background-color: #e3f2fd !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.agent-card.active {
+    background-color: #ABFF84 !important;
+    font-weight: bold;
+}
+
+#game-container {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+}
+</style>
+
+{% endblock content %}
+
+{% block js_content %}
+<script src='https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js'></script>
+
+<!-- Include the main game script -->
+<script type="text/javascript">
+	// Initialize variables BEFORE including main_script.html
+	var step = {{ step|default(1)|tojson }};
+	var sec_per_step = {{ sec_per_step|default(10)|tojson }} * 1000;
+	var zoom = {{ zoom|default(0.8)|tojson }};
+	var play_speed = {{ play_speed|default(4)|tojson }};
+	var start_datetime = new Date(Date.parse({{ start_datetime|default("2025-02-13T09:30:00")|tojson }}));
+	var persona_init_pos = {{ persona_init_pos|default({})|tojson }};
+	var all_movement = {{ all_movement|default({})|tojson }};
+	
+	console.log('=== CRM Replay Page ===');
+	console.log('Simulation:', '{{ sim_name }}');
+	console.log('Step:', step);
+	console.log('Personas:', Object.keys(persona_init_pos));
+	console.log('Movement data keys:', Object.keys(all_movement).length);
+</script>
+
+{% include 'main_script.html' %}
+
+<script type="text/javascript">
+	// Additional replay-specific functionality for CRM interface
+	console.log('Main script loaded, setting up CRM overrides...');
+	
+	// Override Phaser config for CRM interface
+	if (typeof config !== 'undefined') {
+		config.width = 1000;  // Fixed width for CRM interface
+		config.height = 600;  // Fixed height for CRM interface
+		config.scale = { mode: Phaser.Scale.FIT };
+		console.log('CRM config applied:', config);
+	}
+
+	// Control functions for CRM interface
+	function pauseGameCRM() {
+		if (typeof paused !== 'undefined') {
+			paused = true;
+		}
+		$('#pauseBtn').hide();
+		$('#resumeBtn').show();
+	}
+
+	function resumeGameCRM() {
+		if (typeof paused !== 'undefined') {
+			paused = false;
+		}
+		$('#resumeBtn').hide();
+		$('#pauseBtn').show();
+	}
+
+	function resetGameCRM() {
+		if (typeof step !== 'undefined') {
+			step = {{ step|default(1)|tojson }};
+		}
+		if (typeof execute_count !== 'undefined' && typeof execute_count_max !== 'undefined') {
+			execute_count = execute_count_max;
+		}
+		if (typeof finished !== 'undefined') {
+			finished = false;
+		}
+		if (typeof paused !== 'undefined') {
+			paused = false;
+		}
+		if (typeof start_datetime !== 'undefined') {
+			start_datetime = new Date(Date.parse({{ start_datetime|default("2025-02-13T09:30:00")|tojson }}));
+		}
+		$('#resumeBtn').hide();
+		$('#pauseBtn').show();
+	}
+
+	// Agent selection handlers
+	$(document).ready(function() {
+		// Control buttons
+		$('#pauseBtn').click(function() {
+			pauseGameCRM();
+		});
+		
+		$('#resumeBtn').click(function() {
+			resumeGameCRM();
+		});
+		
+		$('#resetBtn').click(function() {
+			resetGameCRM();
+		});
+		
+		// Agent selection handlers
+		{% for p in persona_names %}
+		$('#on_screen_det_trigger-{{ p }}').click(function() {
+			selectAgentCRM('{{ p }}');
+		});
+		{% endfor %}
+	});
+
+	function selectAgentCRM(agentName) {
+		// Hide all agent details
+		$('#on_screen_det_content-init').hide();
+		{% for p in persona_names %}
+		$('#on_screen_det_content-{{ p }}').hide();
+		{% endfor %}
+		$('.agent-card').removeClass('active');
+		
+		// Show selected agent details
+		$('#on_screen_det_content-' + agentName).show();
+		$('#on_screen_det_trigger-' + agentName + ' .agent-card').addClass('active');
+		
+		// Update temp focus for compatibility with main script
+		if (document.getElementById("temp_focus")) {
+			document.getElementById("temp_focus").innerHTML = agentName;
+		}
+		
+		console.log('Selected agent:', agentName);
+	}
+</script>
+{% endblock js_content %}

@@ -205,4 +205,4 @@ class Maze:
         addr = ":".join(address)
         if addr in self.address_tiles:
             return self.address_tiles[addr]
-        return random.choice(self.address_tiles.values())
+        return random.choice(list(self.address_tiles.values()))

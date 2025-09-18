@@ -1,0 +1,252 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Simulation Management</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item active">Simulations</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <a href="{{ url_for('main.create_simulation') }}" class="btn btn-primary">
+            <i class="mdi mdi-plus-circle me-1"></i>Create New Simulation
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Simulation List</h5>
+            </div>
+            <div class="card-body">
+                {% if simulations %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Simulation Name</th>
+                                    <th>Created Time</th>
+                                    <th>File Count</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sim in simulations %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ sim.name }}</strong>
+                                    </td>
+                                    <td>{{ sim.created_time }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ sim.files_count }} files</span>
+                                    </td>
+                                    <td>
+                                        {% if sim.status == 'completed_compressed' %}
+                                            <span class="badge bg-success">
+                                                <i class="mdi mdi-check-circle"></i> Completed & Compressed
+                                            </span>
+                                        {% elif sim.status == 'completed_uncompressed' %}
+                                            <span class="badge bg-info">
+                                                <i class="mdi mdi-check"></i> Completed & Uncompressed
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="mdi mdi-clock"></i> Running
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('main.simulation_detail', sim_name=sim.name) }}" 
+                                               class="btn btn-outline-primary">
+                                                <i class="mdi mdi-eye"></i> Details
+                                            </a>
+                                            
+                                            {% if sim.status == 'completed_compressed' %}
+                                                <a href="{{ url_for('main.replay') }}?name={{ sim.name }}" 
+                                                   class="btn btn-outline-success">
+                                                    <i class="mdi mdi-play"></i> Replay
+                                                </a>
+                                            {% elif sim.status == 'completed_uncompressed' %}
+                                                <button class="btn btn-outline-warning compress-btn" 
+                                                        data-sim-name="{{ sim.name }}">
+                                                    <i class="mdi mdi-archive"></i> Compress
+                                                </button>
+                                            {% else %}
+                                                <span class="text-muted small">Waiting for completion</span>
+                                            {% endif %}
+                                            
+                                            <!-- Delete Button -->
+                                            <button class="btn btn-outline-danger btn-sm delete-sim-btn" 
+                                                    data-sim-name="{{ sim.name }}"
+                                                    title="Delete Simulation">
+                                                <i class="mdi mdi-delete"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="mdi mdi-folder-open text-muted" style="font-size: 48px;"></i>
+                        <h5 class="mt-3 text-muted">No Simulations Found</h5>
+                        <p class="text-muted">Click the button above to create your first simulation</p>
+                        <a href="{{ url_for('main.create_simulation') }}" class="btn btn-primary">
+                            <i class="mdi mdi-plus-circle me-1"></i>Create Simulation
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    // 处理压缩按钮点击事件
+    $('.compress-btn').click(function() {
+        const simName = $(this).data('sim-name');
+        const $btn = $(this);
+        
+        // Confirmation dialog
+        if (!confirm(`Are you sure you want to compress simulation "${simName}"?\n\nThis will generate replay files and report documents.`)) {
+            return;
+        }
+        
+        // Disable button and show loading state
+        $btn.prop('disabled', true);
+        $btn.html('<i class="mdi mdi-loading mdi-spin"></i> Compressing...');
+        
+        // 发送压缩请求
+        $.ajax({
+            url: '/api/compress_data',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                name: simName
+            }),
+            success: function(response) {
+                if (response.status === 'success') {
+                    // Compression successful
+                    showAlert('success', `Simulation "${simName}" compressed successfully!`);
+                    
+                    // Refresh page to update status
+                    setTimeout(function() {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    // Compression failed
+                    showAlert('error', `Compression failed: ${response.output || 'Unknown error'}`);
+                    
+                    // Restore button state
+                    $btn.prop('disabled', false);
+                    $btn.html('<i class="mdi mdi-archive"></i> Compress');
+                }
+            },
+            error: function(xhr, status, error) {
+                showAlert('error', `Compression request failed: ${error}`);
+                
+                // Restore button state
+                $btn.prop('disabled', false);
+                $btn.html('<i class="mdi mdi-archive"></i> Compress');
+            }
+        });
+    });
+    
+    // 处理删除模拟按钮点击事件
+    $('.delete-sim-btn').click(function() {
+        const simName = $(this).data('sim-name');
+        const $btn = $(this);
+        
+        // Confirmation dialog
+        if (!confirm(`Are you sure you want to delete simulation "${simName}"?\n\n⚠️ This operation will permanently delete all related data, including:\n- Simulation record files\n- Compressed data files\n- Cannot be recovered!`)) {
+            return;
+        }
+        
+        // Second confirmation
+        const confirmText = prompt(`Please enter the simulation name "${simName}" to confirm deletion:`);
+        if (confirmText !== simName) {
+            showAlert('error', 'Simulation name does not match, deletion cancelled');
+            return;
+        }
+        
+        // 禁用按钮并显示加载状态
+        $btn.prop('disabled', true);
+        $btn.html('<i class="mdi mdi-loading mdi-spin"></i>');
+        
+        // 发送删除请求
+        $.ajax({
+            url: '/api/delete_simulation',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                name: simName
+            }),
+            success: function(response) {
+                if (response.status === 'success') {
+                    showAlert('success', `Simulation "${simName}" has been successfully deleted!`);
+                    
+                    // Remove table row
+                    $btn.closest('tr').fadeOut(500, function() {
+                        $(this).remove();
+                        
+                        // Check if there are still simulations, if not show empty state
+                        if ($('tbody tr').length === 0) {
+                            location.reload();
+                        }
+                    });
+                } else {
+                    showAlert('error', `Deletion failed: ${response.message || 'Unknown error'}`);
+                    
+                    // Restore button state
+                    $btn.prop('disabled', false);
+                    $btn.html('<i class="mdi mdi-delete"></i>');
+                }
+            },
+            error: function(xhr, status, error) {
+                showAlert('error', `Delete request failed: ${error}`);
+                
+                // Restore button state
+                $btn.prop('disabled', false);
+                $btn.html('<i class="mdi mdi-delete"></i>');
+            }
+        });
+    });
+    
+    // 显示提示消息的函数
+    function showAlert(type, message) {
+        const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+        const iconClass = type === 'success' ? 'mdi-check-circle' : 'mdi-alert-circle';
+        
+        const alertHtml = `
+            <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+                <i class="mdi ${iconClass} me-2"></i>
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+        
+        // 在页面顶部插入提示
+        $('.page-title-box').after(alertHtml);
+        
+        // 3秒后自动消失
+        setTimeout(function() {
+            $('.alert').fadeOut();
+        }, 3000);
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Agent Management</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Home</a></li>
+            <li class="breadcrumb-item active">Agent Management</li>
+        </ol>
+    </div>
+</div>
+
+<!-- 操作按钮 -->
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="mb-0">Agent List ({{ agents|length }})</h5>
+            </div>
+            <div>
+                <a href="{{ url_for('main.create_agent_page') }}" class="btn btn-primary">
+                    <i class="mdi mdi-plus me-1"></i>Create Agent
+                </a>
+                <button type="button" class="btn btn-secondary" onclick="refreshAgents()">
+                    <i class="mdi mdi-refresh me-1"></i>Refresh
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 代理列表 -->
+<div class="row">
+    {% for agent in agents %}
+    <div class="col-md-4 col-sm-6">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="{{ agent.portrait }}" alt="{{ agent.name }}" 
+                     class="rounded-circle mb-3" style="width: 80px; height: 80px; object-fit: cover;">
+                <h5 class="card-title">{{ agent.name }}</h5>
+                <p class="card-text">
+                    <strong>Traits:</strong> {{ agent.innate }}<br>
+                    <strong>Lifestyle:</strong> {{ agent.lifestyle }}<br>
+                    <strong>Current Status:</strong> {{ agent.currently }}
+                </p>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('main.agent_detail', agent_name=agent.name) }}" 
+                       class="btn btn-primary btn-sm">
+                        <i class="mdi mdi-eye me-1"></i>View Details
+                    </a>
+                    <a href="{{ url_for('main.edit_agent_page', agent_name=agent.name) }}" 
+                       class="btn btn-outline-primary btn-sm">
+                        <i class="mdi mdi-pencil me-1"></i>Edit
+                    </a>
+                    <button onclick="deleteAgent('{{ agent.name }}')" 
+                            class="btn btn-outline-danger btn-sm">
+                        <i class="mdi mdi-delete me-1"></i>Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not agents %}
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body text-center py-5">
+                <i class="mdi mdi-account-off text-muted" style="font-size: 48px;"></i>
+                <h5 class="mt-3 text-muted">No Agent Data</h5>
+                <p class="text-muted">Click the "Create Agent" button above to add new agents</p>
+                <a href="{{ url_for('main.create_agent_page') }}" class="btn btn-primary mt-2">
+                    <i class="mdi mdi-plus me-1"></i>Create First Agent
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function refreshAgents() {
+    location.reload();
+}
+
+// 删除代理函数
+function deleteAgent(agentName) {
+    if (confirm(`Are you sure you want to delete agent "${agentName}"? This action cannot be undone!`)) {
+        fetch(`/api/agents/${agentName}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                showAlert('success', result.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showAlert('error', result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Error occurred during deletion');
+        });
+    }
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    // 在页面顶部插入提示
+    const container = document.querySelector('.page-title-box');
+    container.insertAdjacentHTML('afterend', alertHtml);
+}
+</script>
+{% endblock %}

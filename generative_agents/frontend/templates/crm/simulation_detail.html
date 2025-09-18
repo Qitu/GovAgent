@@ -1,0 +1,158 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Simulation Details - {{ simulation.name }}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.simulations_management') }}">Simulations</a></li>
+            <li class="breadcrumb-item active">{{ simulation.name }}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p><strong>Simulation Name:</strong> {{ simulation.name }}</p>
+                        <p><strong>Created Time:</strong> {{ simulation.created_time }}</p>
+                        <p><strong>File Count:</strong> {{ simulation.files_count }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                        {% if simulation.current_step %}
+                        <p><strong>Current Step:</strong> {{ simulation.current_step }}</p>
+                        <p><strong>Current Time:</strong> {{ simulation.current_time }}</p>
+                        <p><strong>Time Stride:</strong> {{ simulation.stride }} minutes</p>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <div class="btn-group">
+                        <a href="{{ url_for('main.replay') }}?name={{ simulation.name }}" 
+                           class="btn btn-success">
+                            <i class="mdi mdi-play me-1"></i>Start Replay
+                        </a>
+                        {% if simulation.has_conversation %}
+                        <button class="btn btn-info" onclick="downloadConversation()">
+                            <i class="mdi mdi-download me-1"></i>Download Conversation Log
+                        </button>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Status Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="mb-2">
+                            <h4 class="text-primary">{{ simulation.files_count }}</h4>
+                        </div>
+                        <p class="text-muted mb-0">Data Files</p>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-2">
+                            {% if simulation.current_step %}
+                            <h4 class="text-success">{{ simulation.current_step }}</h4>
+                            {% else %}
+                            <h4 class="text-muted">-</h4>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted mb-0">Execution Steps</p>
+                    </div>
+                    <div class="col-4">
+                        <div class="mb-2">
+                            {% if simulation.has_conversation %}
+                            <h4 class="text-info">✓</h4>
+                            {% else %}
+                            <h4 class="text-warning">○</h4>
+                            {% endif %}
+                        </div>
+                        <p class="text-muted mb-0">Conversation Log</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Data File List</h5>
+            </div>
+            <div class="card-body">
+                {% if files %}
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Type</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for file in files %}
+                                <tr>
+                                    <td>{{ file }}</td>
+                                    <td>
+                                        {% if file.endswith('.json') %}
+                                        <span class="badge bg-primary">JSON</span>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Other</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-primary" 
+                                                onclick="viewFile('{{ file }}')">
+                                            <i class="mdi mdi-eye"></i> View
+                                        </button>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted">No data files available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <a href="{{ url_for('main.simulations_management') }}" class="btn btn-secondary">
+            <i class="mdi mdi-arrow-left me-1"></i>Back to Simulation List
+        </a>
+    </div>
+</div>
+
+<script>
+function downloadConversation() {
+    window.location.href = '/static/results/checkpoints/{{ simulation.name }}/conversation.json';
+}
+
+function viewFile(filename) {
+    // File viewing functionality can be implemented here
+    alert('View file: ' + filename);
+}
+</script>
+{% endblock %}

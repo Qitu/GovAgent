@@ -1,0 +1,570 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Simulation Replay - {{ sim_name }}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.simulations_management') }}">Simulations</a></li>
+            <li class="breadcrumb-item active">Replay</li>
+        </ol>
+    </div>
+</div>
+
+<div id="game-container" style="text-align: center"></div>
+<div>
+    <div class="row">
+        <div class="col-md-12" style="border: solid; padding: 1em; padding-left:2em; padding-right:2em; border-radius: 5px;">
+            <div class="row" style="display: flex; flex-wrap: wrap; margin: -0.5em;">
+                {% for p in persona_names %}
+                <div style="text-align: center; margin: 0.5em;" id="on_screen_det_trigger_container-{{ p }}">
+                    <a href="javascript:void(0);" id="on_screen_det_trigger-{{ p }}">
+                        <div style="padding: 0;">
+                            {% set image_static = 'assets/village/agents/' ~ p ~ '/portrait.png' %}
+                            <img src="{{ url_for('static', filename=image_static) }}" style="width: 32px; padding: 0;" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                            <div style="display: none; width: 32px; height: 32px; background: hsl({{ (loop.index0 * 360 / persona_names|length)|int }}, 70%, 60%); border-radius: 50%; line-height: 32px; color: white; font-weight: bold;">{{ p[0] }}</div>
+                            <br>
+                            {{ p }}
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="media" id="on_screen_det_content-init" style="background-color:#EEEEEE; padding:1em; padding-left:2em; padding-right:2em; border-radius:5px; ">
+        <em>Click on an agent to view more details.</em>
+    </div>
+
+    {% for p in persona_names %}
+        <div class="media" id="on_screen_det_content-{{ p }}" style="background-color:#EEEEEE; padding:0em; padding-left:2em; padding-right:2em; border-radius:5px; display: none;">
+            <div class="media-left media-middle">
+                {% set image_static = 'assets/village/agents/' ~ p ~ '/portrait.png' %}
+                <img src="{{ url_for('static', filename=image_static) }}" style="width:3em" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline-block';">
+                <div style="display: none; width: 3em; height: 3em; background: hsl({{ (loop.index0 * 360 / persona_names|length)|int }}, 70%, 60%); border-radius: 50%; line-height: 3em; color: white; font-weight: bold; text-align: center;">{{ p[0] }}</div>
+                <div style="display: none;" id="temp_focus"></div>
+            </div>
+            <div class="media-body" style='padding-left:3em; padding-top:1em; padding-bottom:0em'>
+                <div style="">
+                    <p style="font-size:1.0em"><span id="agent_desc__{{ p }}">Agent description will appear here during simulation.</span></p>
+                    <p style="font-size:1.0em">Current Activity: <span id="current_action__{{ p }}">Loading...</span> @ <span id="target_address__{{ p }}">Loading...</span></p>
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}
+
+{% block js_content %}
+<script src='https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js'></script>
+
+<script type="text/javascript">
+	// Initialize variables from Flask context
+	var step = {{ step|tojson }};
+	var step_size = {{ sec_per_step|tojson }} * 1000; // Convert to milliseconds
+	var zoom = {{ zoom|tojson }};
+	if (zoom <= 0) zoom = document.documentElement.clientWidth / 4400;
+
+	var tile_width = 32;
+	var movement_speed = {{ play_speed|tojson }};
+	var execute_count_max = tile_width / movement_speed;
+	var execute_count = execute_count_max;
+	
+	// 使用传递的移动数据，如果没有则创建模拟数据
+	var all_movement = {};
+	
+	// 创建模拟的移动数据
+	var persona_init_pos_data = {{ persona_init_pos|tojson }};
+	var persona_names_list = {{ persona_names|tojson }};
+	
+	// 生成模拟的移动数据
+	for (var i = 1; i <= 100; i++) {
+		all_movement[i] = {};
+		for (var j = 0; j < persona_names_list.length; j++) {
+			var persona = persona_names_list[j];
+			var base_pos = persona_init_pos_data[persona] || [50 + (j % 10) * 5, 50 + Math.floor(j / 10) * 5];
+			all_movement[i][persona] = {
+				"movement": [
+					base_pos[0] + Math.floor(Math.random() * 20) - 10,
+					base_pos[1] + Math.floor(Math.random() * 20) - 10
+				],
+				"action": "Walking around the village",
+				"location": "Village Square"
+			};
+		}
+	}
+	
+	// 添加对话数据
+	all_movement["conversation"] = {};
+	
+	// 添加描述数据
+	all_movement["description"] = {};
+	for (var k = 0; k < persona_names_list.length; k++) {
+		var persona = persona_names_list[k];
+		all_movement["description"][persona] = {
+			"currently": persona + " is exploring the village and interacting with other residents."
+		};
+	}
+
+	var datetime_options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+	var start_datetime = new Date(Date.parse({{ start_datetime|tojson }}));
+
+	// Persona related variables
+	var persona_names = {};
+	for (var i = 0; i < persona_names_list.length; i++) {
+		var persona = persona_names_list[i];
+		persona_names[persona] = persona_init_pos_data[persona] || [50 + (i % 10) * 5, 50 + Math.floor(i / 10) * 5];
+	}
+	
+	var spawn_tile_loc = {};
+	for (var key in persona_names) {
+		spawn_tile_loc[key] = persona_names[key];
+	}
+
+	var personas = {};
+	var pronunciatios = {};
+	var anims_direction;
+	var pre_anims_direction;
+	var pre_anims_direction_dict = {};
+
+	var movement_target = {};
+
+	var finished = false;
+	var paused = false;
+
+	// Phaser configuration
+	const config = {
+		type: Phaser.AUTO,
+        width: document.documentElement.clientWidth / zoom,
+        height: document.documentElement.clientHeight / zoom,
+		parent: "game-container",
+        mode: Phaser.Scale.FIT,
+		pixelArt: true,
+		physics: {
+			default: "arcade",
+			arcade: {
+				gravity: { y: 0 }
+			}
+		},
+		scene: {
+			preload: preload,
+			create: create,
+			update: update
+		},
+		scale: {
+			zoom: zoom
+		}
+	};
+
+	// Create Phaser game instance
+	var game = new Phaser.Game(config);
+	var cursors;
+	var player;
+
+	// Preload function
+	function preload() {
+		this.load.crossOrigin = "";
+
+		// Load images
+		this.load.image("blocks_1", "static/assets/village/tilemap/blocks_1.png");
+		this.load.image("walls", "static/assets/village/tilemap/Room_Builder_32x32.png");
+		this.load.image("interiors_pt1", "static/assets/village/tilemap/interiors_pt1.png");
+		this.load.image("interiors_pt2", "static/assets/village/tilemap/interiors_pt2.png");
+		this.load.image("interiors_pt3", "static/assets/village/tilemap/interiors_pt3.png");
+		this.load.image("interiors_pt4", "static/assets/village/tilemap/interiors_pt4.png");
+		this.load.image("interiors_pt5", "static/assets/village/tilemap/interiors_pt5.png");
+		this.load.image("CuteRPG_Field_B", "static/assets/village/tilemap/CuteRPG_Field_B.png");
+		this.load.image("CuteRPG_Field_C", "static/assets/village/tilemap/CuteRPG_Field_C.png");
+		this.load.image("CuteRPG_Harbor_C", "static/assets/village/tilemap/CuteRPG_Harbor_C.png");
+		this.load.image("CuteRPG_Village_B", "static/assets/village/tilemap/CuteRPG_Village_B.png");
+		this.load.image("CuteRPG_Forest_B", "static/assets/village/tilemap/CuteRPG_Forest_B.png");
+		this.load.image("CuteRPG_Desert_C", "static/assets/village/tilemap/CuteRPG_Desert_C.png");
+		this.load.image("CuteRPG_Mountains_B", "static/assets/village/tilemap/CuteRPG_Mountains_B.png");
+		this.load.image("CuteRPG_Desert_B", "static/assets/village/tilemap/CuteRPG_Desert_B.png");
+		this.load.image("CuteRPG_Forest_C", "static/assets/village/tilemap/CuteRPG_Forest_C.png");
+
+		// Load tilemap JSON
+		this.load.tilemapTiledJSON("map", "static/assets/village/tilemap/tilemap.json");
+
+		// 为每个代理创建简单的纹理，避免图片加载问题
+		for (var i = 0; i < persona_names_list.length; i++) {
+			var persona = persona_names_list[i];
+			
+			// 创建简单的彩色方块作为代理纹理
+			var canvas = document.createElement('canvas');
+			canvas.width = 32;
+			canvas.height = 32;
+			var ctx = canvas.getContext('2d');
+			
+			// 绘制彩色圆圈
+			var hue = (i * 360 / persona_names_list.length);
+			ctx.fillStyle = 'hsl(' + hue + ', 70%, 60%)';
+			ctx.beginPath();
+			ctx.arc(16, 16, 12, 0, 2 * Math.PI);
+			ctx.fill();
+			
+			// 添加边框
+			ctx.strokeStyle = 'white';
+			ctx.lineWidth = 2;
+			ctx.stroke();
+			
+			// 添加首字母
+			ctx.fillStyle = 'white';
+			ctx.font = 'bold 12px Arial';
+			ctx.textAlign = 'center';
+			ctx.fillText(persona[0], 16, 20);
+			
+			// 将 canvas 转换为纹理
+			this.load.image(persona, canvas.toDataURL());
+		}
+
+		// 尝试加载原始的 atlas，如果失败则使用备用纹理
+		this.load.atlas("atlas", "static/assets/village/agents/伊莎贝拉/texture.png", "static/assets/village/agents/sprite.json");
+
+		// Load persona atlases with fallback
+		for (var p in persona_names) {
+			image_static = "static/assets/village/agents/" + p + "/texture.png";
+			this.load.atlas(p, image_static, "static/assets/village/agents/sprite.json");
+		}
+	}
+
+	// Create function
+	function create() {
+		// 尝试加载地图，如果失败则创建简单背景
+		try {
+			const map = this.make.tilemap({ key: "map" });
+
+			// Add tilesets and layers
+			const collisions = map.addTilesetImage("blocks", "blocks_1");
+			const walls = map.addTilesetImage("Room_Builder_32x32", "walls");
+			const interiors_pt1 = map.addTilesetImage("interiors_pt1", "interiors_pt1");
+			const interiors_pt2 = map.addTilesetImage("interiors_pt2", "interiors_pt2");
+			const interiors_pt3 = map.addTilesetImage("interiors_pt3", "interiors_pt3");
+			const interiors_pt4 = map.addTilesetImage("interiors_pt4", "interiors_pt4");
+			const interiors_pt5 = map.addTilesetImage("interiors_pt5", "interiors_pt5");
+			const CuteRPG_Field_B = map.addTilesetImage("CuteRPG_Field_B", "CuteRPG_Field_B");
+			const CuteRPG_Field_C = map.addTilesetImage("CuteRPG_Field_C", "CuteRPG_Field_C");
+			const CuteRPG_Harbor_C = map.addTilesetImage("CuteRPG_Harbor_C", "CuteRPG_Harbor_C");
+			const CuteRPG_Village_B = map.addTilesetImage("CuteRPG_Village_B", "CuteRPG_Village_B");
+			const CuteRPG_Forest_B = map.addTilesetImage("CuteRPG_Forest_B", "CuteRPG_Forest_B");
+			const CuteRPG_Desert_C = map.addTilesetImage("CuteRPG_Desert_C", "CuteRPG_Desert_C");
+			const CuteRPG_Mountains_B = map.addTilesetImage("CuteRPG_Mountains_B", "CuteRPG_Mountains_B");
+			const CuteRPG_Desert_B = map.addTilesetImage("CuteRPG_Desert_B", "CuteRPG_Desert_B");
+			const CuteRPG_Forest_C = map.addTilesetImage("CuteRPG_Forest_C", "CuteRPG_Forest_C");
+
+			let tileset_group_1 = [CuteRPG_Field_B, CuteRPG_Field_C, CuteRPG_Harbor_C, CuteRPG_Village_B,
+				CuteRPG_Forest_B, CuteRPG_Desert_C, CuteRPG_Mountains_B, CuteRPG_Desert_B, CuteRPG_Forest_C,
+				interiors_pt1, interiors_pt2, interiors_pt3, interiors_pt4, interiors_pt5, walls];
+			const bottomGroundLayer = map.createLayer("Bottom Ground", tileset_group_1, 0, 0);
+			const exteriorGroundLayer = map.createLayer("Exterior Ground", tileset_group_1, 0, 0);
+			const exteriorDecorationL1Layer = map.createLayer("Exterior Decoration L1", tileset_group_1, 0, 0);
+			const exteriorDecorationL2Layer = map.createLayer("Exterior Decoration L2", tileset_group_1, 0, 0);
+			const interiorGroundLayer = map.createLayer("Interior Ground", tileset_group_1, 0, 0);
+			const wallLayer = map.createLayer("Wall", [CuteRPG_Field_C, walls], 0, 0);
+			const interiorFurnitureL1Layer = map.createLayer("Interior Furniture L1", tileset_group_1, 0, 0);
+			const interiorFurnitureL2Layer = map.createLayer("Interior Furniture L2 ", tileset_group_1, 0, 0);
+			const foregroundL1Layer = map.createLayer("Foreground L1", tileset_group_1, 0, 0);
+			const foregroundL2Layer = map.createLayer("Foreground L2", tileset_group_1, 0, 0);
+
+			const collisionsLayer = map.createLayer("Collisions", collisions, 0, 0);
+
+			collisionsLayer.setCollisionByProperty({ collide: true });
+
+			collisionsLayer.setDepth(-1);
+			foregroundL1Layer.setDepth(2);
+			foregroundL2Layer.setDepth(2);
+		} catch (error) {
+			console.log("Failed to load tilemap, using simple background");
+			// 创建简单的背景
+			this.add.rectangle(2240, 1600, 4480, 3200, 0x4a7c59);
+			
+			// 绘制网格
+			var graphics = this.add.graphics();
+			graphics.lineStyle(1, 0x5a8c69, 0.3);
+			
+			for (var x = 0; x <= 4480; x += 100) {
+				graphics.moveTo(x, 0);
+				graphics.lineTo(x, 3200);
+			}
+			for (var y = 0; y <= 3200; y += 100) {
+				graphics.moveTo(0, y);
+				graphics.lineTo(4480, y);
+			}
+			graphics.strokePath();
+		}
+
+		const canvas = game.canvas;
+		canvas.addEventListener("wheel", (event) => {
+			event.stopPropagation();
+		}, { passive: false, capture: true });
+
+		function add_text(game, x, y, text, background) {
+			res = game.add.text(
+				x,
+				y,
+				text,
+				{
+					font: "24px 黑体",
+					fontWeight: "normal",
+					fill: "#000000",
+					backgroundColor: background,
+					padding: { x: 20, y: 4},
+					align: "left",
+					wordWrap: { width: 1200/zoom, useAdvancedWrap: true },
+				}
+			);
+
+			res.setDepth(10);
+			res.alpha = 0.8;
+			res.setScrollFactor(0);
+
+			return res;
+		}
+
+		posX = 20;
+		posY = 20;
+
+		// Add button: play, pause ...
+		buttonPlay = add_text(this, posX, posY, "[Run]", "#ffffcc");
+		buttonPlay.setInteractive();
+		posX += buttonPlay.width + 10;
+
+		buttonPause = add_text(this, posX, posY, " Pause ", "#ffffcc");
+		buttonPause.setInteractive();
+		posX += buttonPause.width + 10;
+
+		buttonShowConversation = add_text(this, posX, posY, "[Show Conversation]", "#ffffcc");
+		buttonShowConversation.setInteractive();
+		posX += buttonShowConversation.width + 10;
+
+		buttonHideConversation = add_text(this, posX, posY, " Hide Conversation ", "#ffffcc");
+		buttonHideConversation.setInteractive();
+		posX += buttonHideConversation.width + 10;
+
+		// Show current time
+		currentTime = add_text(this, posX, posY, "", "#ccffcc");
+
+		// Show conversation content
+		textConversation = add_text(this, 20, posY + currentTime.height + 10, " —— ", "#ccffcc");
+
+		// Setup camera
+		player = this.physics.add.sprite(2440, 500, "atlas", "down").setSize(30, 40).setOffset(0, 0);
+		player.setDepth(-1);
+		const camera = this.cameras.main;
+		camera.startFollow(player);
+		camera.setBounds(0, 0, 4480, 3200); // 使用固定尺寸
+		cursors = this.input.keyboard.createCursorKeys();
+
+		// Setup personas
+		// We start by creating the game sprite objects.
+		for (var i=0; i<Object.keys(spawn_tile_loc).length; i++) {
+			var persona_name = Object.keys(spawn_tile_loc)[i];
+			var start_pos = [spawn_tile_loc[persona_name][0] * tile_width + tile_width / 2, spawn_tile_loc[persona_name][1] * tile_width + tile_width];
+			
+			// 使用备用纹理创建精灵
+			var new_sprite;
+			try {
+				new_sprite = this.physics.add.sprite(start_pos[0], start_pos[1], persona_name, "down").setSize(30, 40).setOffset(0, 0);
+			} catch (error) {
+				// 如果原始纹理失败，使用简单的彩色圆圈
+				new_sprite = this.physics.add.sprite(start_pos[0], start_pos[1], persona_name).setSize(30, 40).setOffset(0, 0);
+			}
+			
+			// Scale up the sprite
+			new_sprite.displayWidth = 40;
+			new_sprite.scaleY = new_sprite.scaleX;
+
+			// Here, we are creating the persona and its pronunciatio sprites.
+			personas[persona_name] = new_sprite;
+			pronunciatios[persona_name] = this.add.text(
+				new_sprite.body.x - 15,
+				new_sprite.body.y - 15 - 25,
+				"",
+				{
+					font: "18px monospace",
+					fill: "#000000",
+					backgroundColor: "#ffffcc",
+					padding: { x: 4, y: 4},
+					border:"solid",
+					borderRadius:"10px"
+				}
+			).setDepth(3);
+			pronunciatios[persona_name].alpha = 0.7;
+		}
+
+		// Create animations (简化版本，避免复杂的动画)
+		// 这里我们跳过复杂的动画创建，因为我们使用的是简单纹理
+		console.log("Game created successfully with", Object.keys(personas).length, "personas");
+	}
+
+	// Update function
+	function update(time, delta) {
+		// Setup play and pause button
+		buttonPlay.on("pointerdown", function() {
+			if (finished) return;
+			buttonPlay.text = "[Run]";
+			buttonPause.text = " Pause ";
+			paused = false;
+		});
+
+		buttonPause.on("pointerdown", function() {
+			if (finished) return;
+			buttonPlay.text = " Run ";
+			buttonPause.text = "[Pause]";
+			paused = true;
+		});
+
+		buttonShowConversation.on("pointerdown", function() {
+			buttonShowConversation.text = "[Show Conversation]";
+			buttonHideConversation.text = " Hide Conversation ";
+			textConversation.setVisible(true);
+		});
+
+		buttonHideConversation.on("pointerdown", function() {
+			buttonShowConversation.text = " Show Conversation ";
+			buttonHideConversation.text = "[Hide Conversation]";
+			textConversation.setVisible(false);
+		});
+
+		// Move camera
+		const camera_speed = 400;
+		player.body.setVelocity(0);
+		if (cursors.left.isDown) {
+			player.body.setVelocityX(-camera_speed);
+		}
+		if (cursors.right.isDown) {
+			player.body.setVelocityX(camera_speed);
+		}
+		if (cursors.up.isDown) {
+			player.body.setVelocityY(-camera_speed);
+		}
+		if (cursors.down.isDown) {
+			player.body.setVelocityY(camera_speed);
+		}
+
+		var curr_focused_persona = document.getElementById("temp_focus").textContent;
+		if (curr_focused_persona != "") {
+			player.body.x = personas[curr_focused_persona].body.x;
+			player.body.y = personas[curr_focused_persona].body.y;
+			document.getElementById("temp_focus").innerHTML = "";
+		}
+
+		if (finished || paused) {
+			return;
+		}
+
+		curr_datetime = new Date(start_datetime.getTime());
+		curr_year = curr_datetime.getFullYear().toString().padStart(4, "0");
+		curr_month = (curr_datetime.getMonth() + 1).toString().padStart(2, "0");
+		curr_day = curr_datetime.getDate().toString().padStart(2, "0");
+		curr_hour = curr_datetime.getHours().toString().padStart(2, "0");
+		curr_minute = curr_datetime.getMinutes().toString().padStart(2, "0");
+		conversation_key = `${curr_year}${curr_month}${curr_day}-${curr_hour}:${curr_minute}`;
+		conversation_key_text = all_movement["conversation"][conversation_key];
+		if (conversation_key_text && conversation_key_text != "") {
+			textConversation.setText(`\n${conversation_key} Conversation Record:\n` + conversation_key_text);
+		}
+
+		// Moving personas
+		for (var i = 0; i < Object.keys(personas).length; i++) {
+			var curr_persona_name = Object.keys(personas)[i];
+			var curr_persona = personas[curr_persona_name];
+			var curr_pronunciatio = pronunciatios[Object.keys(personas)[i]];
+
+			if (step in all_movement) {
+				if (curr_persona_name.replace("_", " ") in all_movement[step]) {
+					if (execute_count == execute_count_max) {
+						var curr_x = all_movement[step][curr_persona_name.replace("_", " ")]["movement"][0];
+						var curr_y = all_movement[step][curr_persona_name.replace("_", " ")]["movement"][1];
+						movement_target[curr_persona_name] = [curr_x * tile_width, curr_y * tile_width];
+
+						var action = all_movement[step][curr_persona_name.replace("_", " ")]["action"];
+
+						var act = action;
+						act = act.length > 25 ? act.substring(0, 20)+"..." : act;
+						pronunciatios[curr_persona_name].setText(curr_persona_name + ": " + act);
+
+						// Updating the status of each personas
+						document.getElementById("agent_desc__"+curr_persona_name).innerHTML = all_movement["description"][curr_persona_name]["currently"];
+						document.getElementById("current_action__"+curr_persona_name).innerHTML = action;
+						document.getElementById("target_address__"+curr_persona_name).innerHTML = all_movement[step][curr_persona_name.replace("_", " ")]["location"];
+					}
+
+					if (execute_count > 0) {
+						if (curr_persona.body.x < movement_target[curr_persona_name][0]) {
+							curr_persona.body.x += movement_speed;
+						} else if (curr_persona.body.x > movement_target[curr_persona_name][0]) {
+							curr_persona.body.x -= movement_speed;
+						} else if (curr_persona.body.y < movement_target[curr_persona_name][1]) {
+							curr_persona.body.y += movement_speed;
+						} else if (curr_persona.body.y > movement_target[curr_persona_name][1]) {
+							curr_persona.body.y -= movement_speed;
+						}
+
+						curr_pronunciatio.x = curr_persona.body.x - 15;
+						curr_pronunciatio.y = curr_persona.body.y - 15 - 25;
+					}
+				}
+			} else {
+				finished = true;
+				buttonPlay.text = "[Replay Ended]";
+				buttonPause.setVisible(false);
+			}
+		}
+
+		if (execute_count == 0) {
+			for (var i = 0; i < Object.keys(personas).length; i++) {
+				var curr_persona_name = Object.keys(personas)[i];
+				var curr_persona = personas[curr_persona_name];
+				curr_persona.body.x = movement_target[curr_persona_name][0];
+				curr_persona.body.y = movement_target[curr_persona_name][1];
+			}
+			execute_count = execute_count_max + 1;
+			step = step + 1;
+
+			start_datetime = new Date(start_datetime.getTime() + step_size);
+			currentTime.setText(start_datetime.toLocaleTimeString("zh-CN", datetime_options));
+		}
+
+		execute_count -= 1;
+	}
+</script>
+
+<script>
+{% for p in persona_names %}
+    $('#on_screen_det_trigger-{{ p }}').click(function() {
+        $('#on_screen_det_content-init').css({
+          'display': 'none',
+        });
+        {% for p_i in persona_names %}
+            $('#on_screen_det_content-{{p_i}}').css({
+                'display': 'none',
+            });
+            $('#on_screen_det_trigger-{{p_i}}').css({
+                'font-weight': '500',
+            });
+            $('#on_screen_det_trigger_container-{{p_i}}').css({
+                'background-color': 'white',
+                'border-radius': '10px'
+            });
+        {% endfor %}
+
+        $('#on_screen_det_trigger-{{ p }}').css({
+            'font-weight': '900',
+        });
+        $('#on_screen_det_trigger_container-{{ p }}').css({
+            'background-color': '#ABFF84',
+            'border-radius': '10px'
+        });
+        $('#on_screen_det_content-{{ p }}').css({
+            'display': 'block',
+        });
+
+        document.getElementById("temp_focus").innerHTML = "{{ p }}";
+    });
+{% endfor %}
+</script>
+{% endblock js_content %}

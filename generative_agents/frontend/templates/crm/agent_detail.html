@@ -1,0 +1,163 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Agent Details - {{ agent_name }}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.agents_management') }}">Agents</a></li>
+            <li class="breadcrumb-item active">{{ agent_name }}</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body text-center">
+                <img src="/static/assets/village/agents/{{ agent_name }}/portrait.png" 
+                     alt="{{ agent_name }}" class="rounded-circle mb-3" 
+                     style="width: 120px; height: 120px; object-fit: cover;">
+                <h4>{{ agent_name }}</h4>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Basic Information</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-sm-6">
+                        <p><strong>Personality Traits:</strong> {{ agent_data.scratch.innate }}</p>
+                        <p><strong>Lifestyle:</strong> {{ agent_data.scratch.lifestyle }}</p>
+                        <p><strong>Living Address:</strong> {{ agent_data.scratch.living_area }}</p>
+                    </div>
+                    <div class="col-sm-6">
+                        <p><strong>Current Status:</strong> {{ agent_data.currently }}</p>
+                        <p><strong>Daily Activities:</strong> {{ agent_data.scratch.daily_schedule_hourly_org }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Memory & Experience</h5>
+            </div>
+            <div class="card-body">
+                {% if agent_data.scratch.memory_stream %}
+                    <div class="timeline">
+                        {% for memory in agent_data.scratch.memory_stream[-10:] %}
+                        <div class="timeline-item">
+                            <div class="timeline-marker"></div>
+                            <div class="timeline-content">
+                                <p class="mb-1">{{ memory.description }}</p>
+                                <small class="text-muted">{{ memory.created }}</small>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted">No memory data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="d-flex justify-content-between">
+            <a href="{{ url_for('main.agents_management') }}" class="btn btn-secondary">
+                <i class="mdi mdi-arrow-left me-1"></i>Back to Agent List
+            </a>
+            <div>
+                <a href="{{ url_for('main.edit_agent_page', agent_name=agent_name) }}" class="btn btn-primary">
+                    <i class="mdi mdi-pencil me-1"></i>Edit Agent
+                </a>
+                <button type="button" class="btn btn-danger ms-2" onclick="deleteAgent('{{ agent_name }}')">
+                    <i class="mdi mdi-delete me-1"></i>Delete Agent
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteAgent(agentName) {
+    if (confirm(`Are you sure you want to delete agent "${agentName}"? This operation cannot be undone!`)) {
+        fetch(`/api/agents/${agentName}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                showAlert('success', result.message);
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('main.agents_management') }}";
+                }, 1500);
+            } else {
+                showAlert('error', result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Error occurred while deleting');
+        });
+    }
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const container = document.querySelector('.page-title-box');
+    container.insertAdjacentHTML('afterend', alertHtml);
+}
+</script>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -35px;
+    top: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: #007bff;
+}
+
+.timeline-marker::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 10px;
+    width: 2px;
+    height: 20px;
+    background-color: #dee2e6;
+}
+
+.timeline-item:last-child .timeline-marker::before {
+    display: none;
+}
+</style>
+{% endblock %}

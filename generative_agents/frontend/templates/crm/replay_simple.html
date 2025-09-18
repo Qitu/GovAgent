@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation Replay - {{ sim_name }}</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.9.96/css/materialdesignicons.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Phaser 3 -->
+    <script src='https://cdn.jsdelivr.net/npm/phaser@3.55.2/dist/phaser.js'></script>
+    
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 0;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 250px;
+            z-index: 1000;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255,255,255,0.8);
+            padding: 15px 20px;
+            border-radius: 0;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background-color: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+        
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+        }
+        
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+        }
+        
+        #game-container {
+            width: 100%;
+            height: 600px;
+            background-color: #2c3e50;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .agent-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .agent-item {
+            text-align: center;
+            padding: 10px;
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 80px;
+        }
+        
+        .agent-item:hover {
+            background: #e9ecef;
+            border-color: #007bff;
+            transform: translateY(-2px);
+        }
+        
+        .agent-item.active {
+            background: #e3f2fd;
+            border-color: #007bff;
+            box-shadow: 0 2px 8px rgba(0,123,255,0.3);
+        }
+        
+        .agent-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .agent-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="d-flex flex-column">
+            <div class="p-3 text-white">
+                <h5><i class="mdi mdi-city"></i> Governance Sandbox</h5>
+            </div>
+            <nav class="nav flex-column">
+                <a class="nav-link" href="/dashboard">
+                    <i class="mdi mdi-view-dashboard"></i> Dashboard
+                </a>
+                <a class="nav-link" href="/create_simulation">
+                    <i class="mdi mdi-plus-circle"></i> Create Simulation
+                </a>
+                <a class="nav-link" href="/agent_management">
+                    <i class="mdi mdi-account-group"></i> Agent Management
+                </a>
+                <a class="nav-link active" href="/simulations">
+                    <i class="mdi mdi-play-circle"></i> Simulation Management
+                </a>
+                <a class="nav-link" href="/analytics">
+                    <i class="mdi mdi-chart-line"></i> Analytics
+                </a>
+                <a class="nav-link" href="/settings">
+                    <i class="mdi mdi-cog"></i> Settings
+                </a>
+                <a class="nav-link" href="/logout">
+                    <i class="mdi mdi-logout"></i> Logout
+                </a>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <!-- Header -->
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4">
+                        <i class="mdi mdi-play-circle me-2"></i>
+                        Simulation Replay - {{ sim_name }}
+                    </h2>
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="/dashboard">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="/simulations">Simulations</a></li>
+                            <li class="breadcrumb-item active">Replay</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+
+            <!-- Game Container -->
+            <div class="row">
+                <div class="col-12">
+                    <div id="game-container"></div>
+                </div>
+            </div>
+
+            <!-- Agent Grid -->
+            <div class="row">
+                <div class="col-12">
+                    <h5><i class="mdi mdi-account-group"></i> Agents ({{ persona_names|length }})</h5>
+                    <div class="agent-grid">
+                        {% for p in persona_names %}
+                        <div class="agent-item" data-agent="{{ p }}" onclick="selectAgent('{{ p }}')">
+                            <div class="agent-avatar" style="background-color: hsl({{ (loop.index0 * 360 / persona_names|length)|int }}, 70%, 60%);">
+                                {{ p[0] }}
+                            </div>
+                            <div style="font-size: 12px;">{{ p }}</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Details -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="agent-details">
+                        <h5><i class="mdi mdi-information"></i> Agent Details</h5>
+                        <div id="agent-details">
+                            <p class="text-muted">Click on an agent to view details.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden element for focus tracking -->
+    <div style="display: none;" id="temp_focus"></div>
+
+    <script type="text/javascript">
+        console.log('Starting Phaser simulation...');
+        
+        // 游戏变量
+        var game;
+        var gameScene;
+        var personas = {};
+        var nameLabels = {};
+        var movement_targets = {};
+        var paused = false;
+        var finished = false;
+        
+        // 数据变量
+        var persona_names_list = {{ persona_names|tojson }};
+        var persona_init_pos_data = {{ persona_init_pos|tojson }};
+        var sim_name = {{ sim_name|tojson }};
+        var step = {{ step|tojson }};
+        var step_size = {{ sec_per_step|tojson }} * 1000;
+        var zoom = {{ zoom|tojson }};
+        if (zoom <= 0) zoom = 1;
+        
+        var tile_width = 32;
+        var movement_speed = {{ play_speed|tojson }};
+        var execute_count_max = tile_width / movement_speed;
+        var execute_count = execute_count_max;
+        
+        var datetime_options = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
+        var start_datetime = new Date(Date.parse({{ start_datetime|tojson }}));
+        
+        // 创建模拟的移动数据
+        var all_movement = {};
+        for (var i = 1; i <= 100; i++) {
+            all_movement[i] = {};
+            for (var j = 0; j < persona_names_list.length; j++) {
+                var persona = persona_names_list[j];
+                var base_pos = persona_init_pos_data[persona] || [50 + (j % 10) * 5, 50 + Math.floor(j / 10) * 5];
+                all_movement[i][persona] = {
+                    "movement": [
+                        base_pos[0] + Math.floor(Math.random() * 20) - 10,
+                        base_pos[1] + Math.floor(Math.random() * 20) - 10
+                    ],
+                    "action": "Walking around the village",
+                    "location": "Village Square"
+                };
+            }
+        }
+        
+        // 添加对话和描述数据
+        all_movement["conversation"] = {};
+        all_movement["description"] = {};
+        for (var k = 0; k < persona_names_list.length; k++) {
+            var persona = persona_names_list[k];
+            all_movement["description"][persona] = {
+                "currently": persona + " is exploring the village and interacting with other residents."
+            };
+        }
+        
+        // Persona related variables
+        var persona_names = {};
+        var spawn_tile_loc = {};
+        for (var i = 0; i < persona_names_list.length; i++) {
+            var persona = persona_names_list[i];
+            var pos = persona_init_pos_data[persona] || [50 + (i % 10) * 5, 50 + Math.floor(i / 10) * 5];
+            persona_names[persona] = pos;
+            spawn_tile_loc[persona] = pos;
+        }
+        
+        var pronunciatios = {};
+        var movement_target = {};
+        
+        console.log('Loaded data:', {
+            persona_names_list: persona_names_list,
+            persona_init_pos_data: persona_init_pos_data,
+            sim_name: sim_name
+        });
+        
+        // Phaser 配置
+        var config = {
+            type: Phaser.AUTO,
+            width: 1200,
+            height: 600,
+            parent: 'game-container',
+            backgroundColor: '#4a7c59',
+            pixelArt: true,
+            physics: {
+                default: 'arcade',
+                arcade: {
+                    gravity: { y: 0 }
+                }
+            },
+            scene: {
+                preload: preload,
+                create: create,
+                update: update
+            },
+            scale: {
+                zoom: zoom
+            }
+        };
+        
+        // Phaser 函数
+        function preload() {
+            console.log('Phaser preload started');
+            
+            // 为每个代理创建简单的纹理
+            for (var i = 0; i < persona_names_list.length; i++) {
+                var persona = persona_names_list[i];
+                var hue = (i * 360 / persona_names_list.length);
+                
+                // 创建彩色圆形纹理
+                var canvas = document.createElement('canvas');
+                canvas.width = 32;
+                canvas.height = 32;
+                var ctx = canvas.getContext('2d');
+                
+                // 绘制彩色圆圈
+                ctx.fillStyle = 'hsl(' + hue + ', 70%, 60%)';
+                ctx.beginPath();
+                ctx.arc(16, 16, 12, 0, 2 * Math.PI);
+                ctx.fill();
+                
+                // 添加边框
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // 添加首字母
+                ctx.fillStyle = 'white';
+                ctx.font = 'bold 12px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(persona[0], 16, 20);
+                
+                // 将 canvas 转换为纹理
+                this.load.image(persona, canvas.toDataURL());
+            }
+            
+            console.log('Generated textures for', persona_names_list.length, 'agents');
+        }
+        
+        function create() {
+            console.log('Phaser create started');
+            
+            gameScene = this;
+            
+            // 创建背景
+            this.add.rectangle(600, 300, 1200, 600, 0x4a7c59);
+            
+            // 绘制网格
+            var graphics = this.add.graphics();
+            graphics.lineStyle(1, 0x5a8c69, 0.3);
+            
+            for (var x = 0; x <= 1200; x += 50) {
+                graphics.moveTo(x, 0);
+                graphics.lineTo(x, 600);
+            }
+            for (var y = 0; y <= 600; y += 50) {
+                graphics.moveTo(0, y);
+                graphics.lineTo(1200, y);
+            }
+            graphics.strokePath();
+            
+            // 添加控制按钮
+            var buttonPlay = this.add.text(20, 20, '[Run]', {
+                fontSize: '16px',
+                fill: '#000000',
+                backgroundColor: '#ffffcc',
+                padding: { x: 10, y: 5 }
+            }).setInteractive().setDepth(10);
+            
+            var buttonPause = this.add.text(80, 20, 'Pause', {
+                fontSize: '16px',
+                fill: '#000000',
+                backgroundColor: '#ffffcc',
+                padding: { x: 10, y: 5 }
+            }).setInteractive().setDepth(10);
+            
+            // 添加标题
+            this.add.text(20, 60, 'Simulation: ' + sim_name, {
+                fontSize: '14px',
+                fill: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 8, y: 4 }
+            }).setDepth(10);
+            
+            // 添加代理计数
+            this.add.text(20, 90, persona_names_list.length + ' agents active', {
+                fontSize: '12px',
+                fill: '#ffffff',
+                backgroundColor: '#000000',
+                padding: { x: 6, y: 3 }
+            }).setDepth(10);
+            
+            // 创建代理精灵
+            for (var i = 0; i < persona_names_list.length; i++) {
+                var persona = persona_names_list[i];
+                var initPos = spawn_tile_loc[persona] || [100 + (i % 10) * 80, 200 + Math.floor(i / 10) * 80];
+                
+                // 创建代理精灵
+                var sprite = this.physics.add.sprite(initPos[0] * 2, initPos[1] * 2, persona);
+                sprite.setScale(1.2);
+                sprite.setDepth(2);
+                sprite.setInteractive();
+                
+                // 添加点击事件
+                sprite.on('pointerdown', (function(agentName) {
+                    return function() {
+                        selectAgent(agentName);
+                    };
+                })(persona));
+                
+                // 存储精灵
+                personas[persona] = sprite;
+                
+                // 创建名称标签
+                var nameText = this.add.text(sprite.x, sprite.y - 25, persona, {
+                    fontSize: '10px',
+                    fill: '#ffffff',
+                    backgroundColor: '#000000',
+                    padding: { x: 4, y: 2 }
+                });
+                nameText.setOrigin(0.5);
+                nameText.setDepth(3);
+                nameLabels[persona] = nameText;
+                pronunciatios[persona] = nameText;
+                
+                // 设置随机移动目标
+                movement_target[persona] = [
+                    Math.random() * 1000 + 100,
+                    Math.random() * 400 + 100
+                ];
+            }
+            
+            // 按钮事件
+            buttonPlay.on('pointerdown', function() {
+                if (finished) return;
+                buttonPlay.setText('[Run]');
+                buttonPause.setText('Pause');
+                paused = false;
+                console.log('Simulation started');
+            });
+            
+            buttonPause.on('pointerdown', function() {
+                if (finished) return;
+                buttonPlay.setText('Run');
+                buttonPause.setText('[Pause]');
+                paused = true;
+                console.log('Simulation paused');
+            });
+            
+            console.log('Created', persona_names_list.length, 'agent sprites');
+        }
+        
+        function update() {
+            if (paused || finished) return;
+            
+            // 检查聚焦的代理
+            var curr_focused_persona = document.getElementById("temp_focus").textContent;
+            if (curr_focused_persona != "" && personas[curr_focused_persona]) {
+                // 可以添加摄像机跟随逻辑
+                document.getElementById("temp_focus").innerHTML = "";
+            }
+            
+            // 移动代理
+            for (var i = 0; i < persona_names_list.length; i++) {
+                var persona = persona_names_list[i];
+                var sprite = personas[persona];
+                var target = movement_target[persona];
+                var nameText = nameLabels[persona];
+                
+                if (sprite && target) {
+                    var dx = target[0] - sprite.x;
+                    var dy = target[1] - sprite.y;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (distance > 3) {
+                        // 移动代理
+                        var speed = 1.5;
+                        sprite.x += (dx / distance) * speed;
+                        sprite.y += (dy / distance) * speed;
+                        
+                        // 更新名称标签位置
+                        nameText.x = sprite.x;
+                        nameText.y = sprite.y - 25;
+                    } else {
+                        // 到达目标，设置新目标
+                        movement_target[persona] = [
+                            Math.random() * 1000 + 100,
+                            Math.random() * 400 + 100
+                        ];
+                    }
+                }
+            }
+            
+            // 模拟步骤更新
+            if (execute_count <= 0) {
+                execute_count = execute_count_max;
+                step = step + 1;
+                
+                if (step > 100) {
+                    finished = true;
+                    console.log('Simulation finished');
+                }
+            }
+            execute_count -= 1;
+        }
+        
+        // 控制函数
+        function selectAgent(agentName) {
+            console.log('Selected agent:', agentName);
+            
+            // 更新代理列表样式
+            document.querySelectorAll('.agent-item').forEach(function(item) {
+                item.classList.remove('active');
+            });
+            
+            var selectedItem = document.querySelector('[data-agent="' + agentName + '"]');
+            if (selectedItem) {
+                selectedItem.classList.add('active');
+            }
+            
+            // 更新代理详情
+            var agentDetails = document.getElementById('agent-details');
+            var sprite = personas[agentName];
+            var position = sprite ? '(' + Math.round(sprite.x) + ', ' + Math.round(sprite.y) + ')' : 'Unknown';
+            
+            agentDetails.innerHTML = 
+                '<h6><strong>' + agentName + '</strong></h6>' +
+                '<p><strong>Status:</strong> <span class="badge bg-success">Active</span></p>' +
+                '<p><strong>Position:</strong> ' + position + '</p>' +
+                '<p><strong>Type:</strong> Simulation Agent</p>' +
+                '<p><strong>Simulation:</strong> ' + sim_name + '</p>' +
+                '<p><strong>Description:</strong> ' + agentName + ' is exploring the village and interacting with other residents.</p>';
+            
+            // 设置聚焦
+            document.getElementById("temp_focus").innerHTML = agentName;
+        }
+        
+        // 初始化游戏
+        function initializeGame() {
+            console.log('Initializing Phaser game...');
+            game = new Phaser.Game(config);
+            console.log('Phaser game created successfully');
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, starting game initialization...');
+            setTimeout(initializeGame, 1000);
+        });
+        
+        console.log('Script loaded successfully');
+    </script>
+</body>
+</html>

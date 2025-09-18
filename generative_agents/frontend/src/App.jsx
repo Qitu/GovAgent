@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import BasicLayout from './layouts/BasicLayout';
 import SimulationPage from './pages/Simulation';
@@ -13,7 +12,7 @@ function App() {
         </Routes>
       </BasicLayout>
     </Router>
-  );
+  )
 }
 
 export default App;

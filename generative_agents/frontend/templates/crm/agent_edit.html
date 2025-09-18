@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-title-box">
+    <h4 class="page-title">Edit Agent - {{ agent_name }}</h4>
+    <div class="page-title-right">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a href="{{ url_for('main.dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('main.agents_management') }}">Agents</a></li>
+            <li class="breadcrumb-item active">Edit Agent</li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Agent Information Editor</h5>
+            </div>
+            <div class="card-body">
+                <form id="editAgentForm">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="agentName" class="form-label">Agent Name</label>
+                                <input type="text" class="form-control" id="agentName" value="{{ agent_name }}" disabled>
+                                <div class="form-text">Agent name cannot be modified</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentInnate" class="form-label">Personality Traits</label>
+                                <textarea class="form-control" id="agentInnate" name="innate" rows="3">{{ agent_data.scratch.innate }}</textarea>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="agentLifestyle" class="form-label">Lifestyle</label>
+                                <textarea class="form-control" id="agentLifestyle" name="lifestyle" rows="3">{{ agent_data.scratch.lifestyle }}</textarea>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentCurrently" class="form-label">Current Status</label>
+                                <input type="text" class="form-control" id="agentCurrently" name="currently" 
+                                       value="{{ agent_data.currently }}">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="agentLivingArea" class="form-label">Living Address</label>
+                                <input type="text" class="form-control" id="agentLivingArea" name="living_area"
+                                       value="{{ agent_data.scratch.living_area }}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="agentSchedule" class="form-label">Daily Activity Schedule</label>
+                        <textarea class="form-control" id="agentSchedule" name="daily_schedule" rows="4">{{ agent_data.scratch.daily_schedule_hourly_org }}</textarea>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <a href="{{ url_for('main.agents_management') }}" class="btn btn-secondary">
+                                <i class="mdi mdi-arrow-left me-1"></i>Back
+                            </a>
+                            <a href="{{ url_for('main.agent_detail', agent_name=agent_name) }}" class="btn btn-info">
+                                <i class="mdi mdi-eye me-1"></i>View Details
+                            </a>
+                        </div>
+                        <div>
+                            <button type="button" class="btn btn-danger me-2" onclick="deleteAgent()">
+                                <i class="mdi mdi-delete me-1"></i>Delete Agent
+                            </button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="mdi mdi-check me-1"></i>Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Memory Management -->
+<div class="row mt-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Memory Management</h5>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addMemoryModal">
+                    <i class="mdi mdi-plus me-1"></i>Add Memory
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="memoryList">
+                    {% if agent_data.scratch.memory_stream %}
+                        {% for memory in agent_data.scratch.memory_stream[-10:] %}
+                        <div class="memory-item border-bottom pb-2 mb-2">
+                            <p class="mb-1">{{ memory.description }}</p>
+                            <small class="text-muted">{{ memory.created }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">No memory data available</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Memory Modal -->
+<div class="modal fade" id="addMemoryModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add Memory</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addMemoryForm">
+                    <div class="mb-3">
+                        <label for="memoryDescription" class="form-label">Memory Description</label>
+                        <textarea class="form-control" id="memoryDescription" name="description" rows="4" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="memoryType" class="form-label">Memory Type</label>
+                        <select class="form-select" id="memoryType" name="type">
+                            <option value="manual">Manual Entry</option>
+                            <option value="event">Event Memory</option>
+                            <option value="chat">Conversation Memory</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addMemory()">Add</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 编辑代理表单提交
+document.getElementById('editAgentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    
+    const submitBtn = this.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerHTML;
+    submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Saving...';
+    submitBtn.disabled = true;
+    
+    fetch(`/api/agents/{{ agent_name }}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            showAlert('success', result.message);
+        } else {
+            showAlert('error', result.message);
+        }
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'Error occurred while saving');
+        submitBtn.innerHTML = originalText;
+        submitBtn.disabled = false;
+    });
+});
+
+// 删除代理
+function deleteAgent() {
+    if (confirm('Are you sure you want to delete agent "{{ agent_name }}"? This operation cannot be undone!')) {
+        fetch(`/api/agents/{{ agent_name }}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.status === 'success') {
+                showAlert('success', result.message);
+                setTimeout(() => {
+                    window.location.href = "{{ url_for('main.agents_management') }}";
+                }, 1500);
+            } else {
+                showAlert('error', result.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('error', 'Error occurred while deleting');
+        });
+    }
+}
+
+// 添加记忆
+function addMemory() {
+    const form = document.getElementById('addMemoryForm');
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    
+    if (!data.description.trim()) {
+        alert('Please enter memory description');
+        return;
+    }
+    
+    fetch(`/api/agents/{{ agent_name }}/memory`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(result => {
+        if (result.status === 'success') {
+            showAlert('success', result.message);
+            // 关闭模态框
+            const modal = bootstrap.Modal.getInstance(document.getElementById('addMemoryModal'));
+            modal.hide();
+            // 清空表单
+            form.reset();
+            // 刷新页面以显示新记忆
+            setTimeout(() => {
+                location.reload();
+            }, 1000);
+        } else {
+            showAlert('error', result.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showAlert('error', 'Error occurred while adding memory');
+    });
+}
+
+function showAlert(type, message) {
+    const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+    const alertHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    `;
+    
+    const form = document.getElementById('editAgentForm');
+    form.insertAdjacentHTML('beforebegin', alertHtml);
+}
+</script>
+{% endblock %}
