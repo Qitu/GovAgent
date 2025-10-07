@@ -1,0 +1,57 @@
+
+name: CI
+
+# Set the event to pull request event and push event of the [main] branch
+on:
+  push:
+    branches: [main]
+  # pull_request:
+  #   branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js version
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: npm install
+
+      # - name: Lint check
+      #   run: npm run lint
+
+      - name: Test
+        run: npm run test
+
+      - name: Project Build
+        run: npm run build
+
+  CD:
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Deploy to dev server (digitalocean)
+        uses: appleboy/ssh-action@master
+        env:
+            GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.DEV }}
+          port: 22
+          envs: GITHUB_USERNAME, GITHUB_TOKEN
+          script: |
+            lsof -ti:5001 | xargs -r kill -9
+            cd gov-agents/generative_agents
+            nohup python app.py > app.log 2>&1 &python app.py
+            

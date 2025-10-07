@@ -3,7 +3,7 @@
 	let step = {{ step|tojson }};
 	let step_size = {{ sec_per_step|tojson }} * 1000; // Convert to milliseconds
 	let zoom = {{ zoom|tojson }};
-	if (zoom <= 0) zoom = document.documentElement.clientWidth / 4400;
+	if (zoom <= 0) zoom = document.documentElement.clientWidth / 2688; // 修改为新地图宽度 (84*32)
 
 	let tile_width = 32;
 	let movement_speed = {{ play_speed|tojson }};
@@ -35,12 +35,10 @@
 	// Phaser configuration
 	const config = {
 		type: Phaser.AUTO,
-		// width: 4480,
-		// height: 3200,
-        width: document.documentElement.clientWidth / zoom,
-        height: document.documentElement.clientHeight / zoom,
+		width: document.documentElement.clientWidth / zoom,
+		height: document.documentElement.clientHeight / zoom,
 		parent: "game-container",
-        mode: Phaser.Scale.FIT,
+		mode: Phaser.Scale.FIT,
 		pixelArt: true,
 		physics: {
 			default: "arcade",
@@ -67,25 +65,10 @@
 	function preload() {
 		this.load.crossOrigin = "";
 
-		// Load images
-		this.load.image("blocks_1", "static/assets/village/tilemap/blocks_1.png");
-		this.load.image("walls", "static/assets/village/tilemap/Room_Builder_32x32.png");
-		this.load.image("interiors_pt1", "static/assets/village/tilemap/interiors_pt1.png");
-		this.load.image("interiors_pt2", "static/assets/village/tilemap/interiors_pt2.png");
-		this.load.image("interiors_pt3", "static/assets/village/tilemap/interiors_pt3.png");
-		this.load.image("interiors_pt4", "static/assets/village/tilemap/interiors_pt4.png");
-		this.load.image("interiors_pt5", "static/assets/village/tilemap/interiors_pt5.png");
-		this.load.image("CuteRPG_Field_B", "static/assets/village/tilemap/CuteRPG_Field_B.png");
-		this.load.image("CuteRPG_Field_C", "static/assets/village/tilemap/CuteRPG_Field_C.png");
-		this.load.image("CuteRPG_Harbor_C", "static/assets/village/tilemap/CuteRPG_Harbor_C.png");
-		this.load.image("CuteRPG_Village_B", "static/assets/village/tilemap/CuteRPG_Village_B.png");
-		this.load.image("CuteRPG_Forest_B", "static/assets/village/tilemap/CuteRPG_Forest_B.png");
-		this.load.image("CuteRPG_Desert_C", "static/assets/village/tilemap/CuteRPG_Desert_C.png");
-		this.load.image("CuteRPG_Mountains_B", "static/assets/village/tilemap/CuteRPG_Mountains_B.png");
-		this.load.image("CuteRPG_Desert_B", "static/assets/village/tilemap/CuteRPG_Desert_B.png");
-		this.load.image("CuteRPG_Forest_C", "static/assets/village/tilemap/CuteRPG_Forest_C.png");
+		// Load the main tileset image - 新地图使用单一tileset
+		this.load.image("main_tileset", "static/assets/village/tilemap/5f4ad119bb2d8a8279ba90dad3a0d994.png");
 
-		// Load tilemap JSON
+		// Load tilemap JSON - 新地图
 		this.load.tilemapTiledJSON("map", "static/assets/village/tilemap/tilemap.json");
 
 		this.load.atlas("atlas", "static/assets/village/agents/伊莎贝拉/texture.png", filename="static/assets/village/agents/sprite.json");
@@ -101,45 +84,35 @@
 	function create() {
 		const map = this.make.tilemap({ key: "map" });
 
-		// Add tilesets and layers
-		const collisions = map.addTilesetImage("blocks", "blocks_1");
-		const walls = map.addTilesetImage("Room_Builder_32x32", "walls");
-		const interiors_pt1 = map.addTilesetImage("interiors_pt1", "interiors_pt1");
-		const interiors_pt2 = map.addTilesetImage("interiors_pt2", "interiors_pt2");
-		const interiors_pt3 = map.addTilesetImage("interiors_pt3", "interiors_pt3");
-		const interiors_pt4 = map.addTilesetImage("interiors_pt4", "interiors_pt4");
-		const interiors_pt5 = map.addTilesetImage("interiors_pt5", "interiors_pt5");
-		const CuteRPG_Field_B = map.addTilesetImage("CuteRPG_Field_B", "CuteRPG_Field_B");
-		const CuteRPG_Field_C = map.addTilesetImage("CuteRPG_Field_C", "CuteRPG_Field_C");
-		const CuteRPG_Harbor_C = map.addTilesetImage("CuteRPG_Harbor_C", "CuteRPG_Harbor_C");
-		const CuteRPG_Village_B = map.addTilesetImage("CuteRPG_Village_B", "CuteRPG_Village_B");
-		const CuteRPG_Forest_B = map.addTilesetImage("CuteRPG_Forest_B", "CuteRPG_Forest_B");
-		const CuteRPG_Desert_C = map.addTilesetImage("CuteRPG_Desert_C", "CuteRPG_Desert_C");
-		const CuteRPG_Mountains_B = map.addTilesetImage("CuteRPG_Mountains_B", "CuteRPG_Mountains_B");
-		const CuteRPG_Desert_B = map.addTilesetImage("CuteRPG_Desert_B", "CuteRPG_Desert_B");
-		const CuteRPG_Forest_C = map.addTilesetImage("CuteRPG_Forest_C", "CuteRPG_Forest_C");
+		// Add the main tileset - 新地图使用单一tileset
+		const mainTileset = map.addTilesetImage("5f4ad119bb2d8a8279ba90dad3a0d994", "main_tileset");
 
-		let tileset_group_1 = [CuteRPG_Field_B, CuteRPG_Field_C, CuteRPG_Harbor_C, CuteRPG_Village_B,
-			CuteRPG_Forest_B, CuteRPG_Desert_C, CuteRPG_Mountains_B, CuteRPG_Desert_B, CuteRPG_Forest_C,
-			interiors_pt1, interiors_pt2, interiors_pt3, interiors_pt4, interiors_pt5, walls];
-		const bottomGroundLayer = map.createLayer("Bottom Ground", tileset_group_1, 0, 0);
-		const exteriorGroundLayer = map.createLayer("Exterior Ground", tileset_group_1, 0, 0);
-		const exteriorDecorationL1Layer = map.createLayer("Exterior Decoration L1", tileset_group_1, 0, 0);
-		const exteriorDecorationL2Layer = map.createLayer("Exterior Decoration L2", tileset_group_1, 0, 0);
-		const interiorGroundLayer = map.createLayer("Interior Ground", tileset_group_1, 0, 0);
-		const wallLayer = map.createLayer("Wall", [CuteRPG_Field_C, walls], 0, 0);
-		const interiorFurnitureL1Layer = map.createLayer("Interior Furniture L1", tileset_group_1, 0, 0);
-		const interiorFurnitureL2Layer = map.createLayer("Interior Furniture L2 ", tileset_group_1, 0, 0);
-		const foregroundL1Layer = map.createLayer("Foreground L1", tileset_group_1, 0, 0);
-		const foregroundL2Layer = map.createLayer("Foreground L2", tileset_group_1, 0, 0);
+		// Create layers - 根据新地图的图层结构
+		const mainMapLayer = map.createLayer("主地图", mainTileset, 0, 0);
+		const block1Layer = map.createLayer("1街区", mainTileset, 0, 0);
+		const merlionParkLayer = map.createLayer("2鱼尾狮公园", mainTileset, 0, 0);
+		const gardensByBayLayer = map.createLayer("2滨海湾花园", mainTileset, 0, 0);
+		const ferrisWheelLayer = map.createLayer("2摩天轮", mainTileset, 0, 0);
+		const nationalGalleryLayer = map.createLayer("2国家美术馆", mainTileset, 0, 0);
+		const clarkeQuayLayer = map.createLayer("2克拉码头", mainTileset, 0, 0);
+		const cbdLayer = map.createLayer("2CBD区", mainTileset, 0, 0);
+		const marinaBaySandsLayer = map.createLayer("2金沙酒店", mainTileset, 0, 0);
+		const collisionsLayer = map.createLayer("collisions", mainTileset, 0, 0);
 
-		const collisionsLayer = map.createLayer("Collisions", collisions, 0, 0);
-
+		// Set collision properties
 		collisionsLayer.setCollisionByProperty({ collide: true });
 
+		// Set layer depths
 		collisionsLayer.setDepth(-1);
-		foregroundL1Layer.setDepth(2);
-		foregroundL2Layer.setDepth(2);
+		if (mainMapLayer) mainMapLayer.setDepth(0);
+		if (block1Layer) block1Layer.setDepth(1);
+		if (merlionParkLayer) merlionParkLayer.setDepth(1);
+		if (gardensByBayLayer) gardensByBayLayer.setDepth(1);
+		if (ferrisWheelLayer) ferrisWheelLayer.setDepth(1);
+		if (nationalGalleryLayer) nationalGalleryLayer.setDepth(1);
+		if (clarkeQuayLayer) clarkeQuayLayer.setDepth(1);
+		if (cbdLayer) cbdLayer.setDepth(1);
+		if (marinaBaySandsLayer) marinaBaySandsLayer.setDepth(1);
 
 		const canvas = game.canvas;
 		canvas.addEventListener("wheel", (event) => {
@@ -195,16 +168,15 @@
 		// Show conversation content
 		textConversation = add_text(this, 20, posY + currentTime.height + 10, " —— ", "#ccffcc");
 
-		// Setup camera
-		player = this.physics.add.sprite(2440, 500, "atlas", "down").setSize(30, 40).setOffset(0, 0);
+		// Setup camera - 调整初始位置以适应新地图
+		player = this.physics.add.sprite(1344, 704, "atlas", "down").setSize(30, 40).setOffset(0, 0); // 地图中心位置
 		player.setDepth(-1);
 		const camera = this.cameras.main;
 		camera.startFollow(player);
-		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels);
+		camera.setBounds(0, 0, map.widthInPixels, map.heightInPixels); // 新地图尺寸: 2688x1408
 		cursors = this.input.keyboard.createCursorKeys();
 
 		// Setup personas
-		// We start by creating the game sprite objects.
 		for (let i=0; i<Object.keys(spawn_tile_loc).length; i++) {
 			let persona_name = Object.keys(spawn_tile_loc)[i];
 			let start_pos = [spawn_tile_loc[persona_name][0] * tile_width + tile_width / 2, spawn_tile_loc[persona_name][1] * tile_width + tile_width];
@@ -213,7 +185,6 @@
 			new_sprite.displayWidth = 40;
 			new_sprite.scaleY = new_sprite.scaleX;
 
-			// Here, we are creating the persona and its pronunciatio sprites.
 			personas[persona_name] = new_sprite;
 			pronunciatios[persona_name] = this.add.text(
 				new_sprite.body.x - 15,
