@@ -3,7 +3,7 @@
 	let step = {{ step|tojson }};
 	let step_size = {{ sec_per_step|tojson }} * 1000; // Convert to milliseconds
 	let zoom = {{ zoom|tojson }};
-	if (zoom <= 0) zoom = document.documentElement.clientWidth / 2688; // 修改为新地图宽度 (84*32)
+	if (zoom <= 0) zoom = document.documentElement.clientWidth / 2688; // 新地图宽度 (84*32)
 
 	let tile_width = 32;
 	let movement_speed = {{ play_speed|tojson }};
@@ -65,10 +65,10 @@
 	function preload() {
 		this.load.crossOrigin = "";
 
-		// Load the main tileset image - 新地图使用单一tileset
+		// Load the main tileset image
 		this.load.image("main_tileset", "static/assets/village/tilemap/5f4ad119bb2d8a8279ba90dad3a0d994.png");
 
-		// Load tilemap JSON - 新地图
+		// Load tilemap JSON
 		this.load.tilemapTiledJSON("map", "static/assets/village/tilemap/tilemap.json");
 
 		this.load.atlas("atlas", "static/assets/village/agents/伊莎贝拉/texture.png", filename="static/assets/village/agents/sprite.json");
@@ -84,12 +84,17 @@
 	function create() {
 		const map = this.make.tilemap({ key: "map" });
 
-		// Add the main tileset - 新地图使用单一tileset
+		// Add the main tileset
 		const mainTileset = map.addTilesetImage("5f4ad119bb2d8a8279ba90dad3a0d994", "main_tileset");
 
-		// Create layers - 根据新地图的图层结构
+		// Create layers - 根据tilemap.json的图层结构
 		const mainMapLayer = map.createLayer("主地图", mainTileset, 0, 0);
 		const block1Layer = map.createLayer("1街区", mainTileset, 0, 0);
+		const praisePlazaLayer = map.createLayer("2赞美广场", mainTileset, 0, 0);
+		const chinatownLayer = map.createLayer("2牛车水", mainTileset, 0, 0);
+		const funanLayer = map.createLayer("2Funan购物中心", mainTileset, 0, 0);
+		const cityStreetsLayer = map.createLayer("2市区街道", mainTileset, 0, 0);
+		const artScienceMuseumLayer = map.createLayer("2艺术科学博物馆", mainTileset, 0, 0);
 		const merlionParkLayer = map.createLayer("2鱼尾狮公园", mainTileset, 0, 0);
 		const gardensByBayLayer = map.createLayer("2滨海湾花园", mainTileset, 0, 0);
 		const ferrisWheelLayer = map.createLayer("2摩天轮", mainTileset, 0, 0);
@@ -106,6 +111,11 @@
 		collisionsLayer.setDepth(-1);
 		if (mainMapLayer) mainMapLayer.setDepth(0);
 		if (block1Layer) block1Layer.setDepth(1);
+		if (praisePlazaLayer) praisePlazaLayer.setDepth(1);
+		if (chinatownLayer) chinatownLayer.setDepth(1);
+		if (funanLayer) funanLayer.setDepth(1);
+		if (cityStreetsLayer) cityStreetsLayer.setDepth(1);
+		if (artScienceMuseumLayer) artScienceMuseumLayer.setDepth(1);
 		if (merlionParkLayer) merlionParkLayer.setDepth(1);
 		if (gardensByBayLayer) gardensByBayLayer.setDepth(1);
 		if (ferrisWheelLayer) ferrisWheelLayer.setDepth(1);
@@ -168,7 +178,7 @@
 		// Show conversation content
 		textConversation = add_text(this, 20, posY + currentTime.height + 10, " —— ", "#ccffcc");
 
-		// Setup camera - 调整初始位置以适应新地图
+		// Setup camera - 地图尺寸: 84x44 tiles = 2688x1408 pixels
 		player = this.physics.add.sprite(1344, 704, "atlas", "down").setSize(30, 40).setOffset(0, 0); // 地图中心位置
 		player.setDepth(-1);
 		const camera = this.cameras.main;
