@@ -34,9 +34,7 @@ jobs:
       - name: Run all prompt tests
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-        run: |
-          chmod +x scripts/run_prompt_tests.sh
-          ./scripts/run_prompt_tests.sh
+        run: bash scripts/run_prompt_tests.sh
 
       - name: Upload reports
         uses: actions/upload-artifact@v4
