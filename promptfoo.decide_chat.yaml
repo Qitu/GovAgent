@@ -11,25 +11,24 @@ vars:
   context: ""
   date: "2025-10-18 17:00:00"
   chat_history: ""
-  agent_status: "Lei Li is heading to the meeting room"
-  another_status: "Meimei Han is currently using the bathroom"
-  agent: "Lei Li"
-  another: "Meimei Han"
+  agent_status: "Police is heading to the meeting room"
+  another_status: "Coordinator is currently coordinating logistics"
+  agent: "Police"
+  another: "Coordinator"
 
 scenarios:
-  - name: Likely to chat
+  - name: Likely to chat (Police and Coordinator)
     vars:
-      context: "They just met in the corridor, and the project deadline is near."
-      agent_status: "Lei Li is heading to the meeting room"
-      another_status: "Meimei Han is heading to the meeting room"
-  - name: Unlikely to chat
+      context: "They just met in the corridor, coordination needed for upcoming event."
+      agent_status: "Police is heading to the meeting room"
+      another_status: "Coordinator is heading to the meeting room"
+  - name: Unlikely to chat (Police and Crowd)
     vars:
-      context: "They are working on different tasks in different areas and are both busy."
-      agent_status: "Lei Li is already in a meeting"
-      another_status: "Meimei Han is currently using the bathroom"
+      context: "They are in different areas on different tasks and both are busy."
+      agent_status: "Police is already in a briefing"
+      another_status: "Crowd is currently queueing at the entrance"
 
 assertions:
-  # Output must strictly be "Yes" or "No"
   - type: javascript
     code: |
       const out = output.trim();

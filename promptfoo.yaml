@@ -1,6 +1,5 @@
 configVersion: 1
 
-# Use OpenAI/compatible API; inject key via OPENAI_API_KEY in CI
 providers:
   - id: openai:gpt-4o-mini
     config:
@@ -8,7 +7,6 @@ providers:
       temperature: 0.2
       maxOutputTokens: 256
 
-# Inline mustache prompt template (do not modify project prompt files)
 prompts:
   - text: |
       Below is a brief description of {{agent}}:
@@ -36,11 +34,10 @@ prompts:
           "{{agent}}": <what {{agent}} says>
       }
 
-# Default variables (can be overridden by scenarios)
 vars:
-  agent: Test Agent
-  another: Another Person
-  base_desc: An intelligent assistant who communicates clearly and avoids repetition.
+  agent: Coordinator
+  another: Police
+  base_desc: A coordinator who communicates clearly and avoids repetition.
   memory: ""
   address: 1 Test Street
   current_time: 2025-10-18 17:00
@@ -48,58 +45,51 @@ vars:
   current_context: ""
   conversation: ""
 
-# Three basic scenarios
 scenarios:
-  - name: Basic dialog
+  - name: Coordinator and Police - basic dialog
     vars:
-      agent: Lei Li
-      another: Meimei Han
-      base_desc: A friendly and rational assistant
-      memory: Preparing a project briefing recently
+      agent: Coordinator
+      another: Police
+      base_desc: A calm coordinator facilitating information sharing
+      memory: Preparing incident briefing recently
       address: Pudong New Area, Shanghai
       current_time: 2025/10/18 17:00
       previous_context: ""
       current_context: ""
-      conversation: "Lei Li: We need to prepare for tomorrow's briefing.\nMeimei Han: Okay, I'll organize the materials tonight."
+      conversation: "Coordinator: We need to prepare the briefing for tomorrow.\nPolice: Okay, I'll gather the reports tonight."
 
-  - name: Long dialog - avoid repetition
+  - name: Police and Crowd - avoid repetition in long dialog
     vars:
-      agent: Jack
-      another: Lee
-      base_desc: An assistant skilled at concise responses
-      memory: Yesterday they discussed the meeting agenda
+      agent: Police
+      another: Crowd
+      base_desc: An officer giving concise instructions
+      memory: Yesterday they discussed the event safety plan
       address: Zhongguancun, Beijing
       current_time: 2025/10/18 17:05
-      previous_context: "They just confirmed the meeting location."
+      previous_context: "They just confirmed the assembly point."
       current_context: ""
-      conversation: "Jack: The meeting is on 3F of Building A.\nLee: Got it, I'll arrive early.\nJack: Don't forget the projector cable."
+      conversation: "Police: The meeting point is at Gate A, 3rd floor.\nCrowd: Got it, we'll arrive early.\nPolice: Please remember the safety guidelines."
 
-  - name: Includes context
+  - name: Crowd and Coordinator - includes context
     vars:
-      agent: Alice
-      another: Bob
-      base_desc: Values politeness and efficiency
-      memory: "Task list completed: wrote the report, sent emails"
+      agent: Crowd
+      another: Coordinator
+      base_desc: Values order and efficiency
+      memory: "Task list completed: submitted forms, followed instructions"
       address: Nanshan District, Shenzhen
       current_time: 2025/10/18 17:10
-      previous_context: "Currently in the office, network is stable."
-      current_context: "The manager just reminded submitting on time."
-      conversation: "Alice: The report is almost done.\nBob: Then please send it to me ASAP."
+      previous_context: "Currently in the hall, network is stable."
+      current_context: "The manager reminded to submit on time."
+      conversation: "Crowd: The document is almost done.\nCoordinator: Please send it to me ASAP."
 
-# Assertions: structure, content, tone
 assertions:
-  # Must be JSON
   - type: contains-json
-  # Must include key with agent name
   - type: contains
     value: "\"{{agent}}\":"
-  # Weak regex validation for key-value string JSON
   - type: regex
     pattern: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
-  # Must not fully repeat the conversation log
   - type: not-contains
     value: "{{conversation}}"
-  # Length range and type checking (JS assertion)
   - type: javascript
     code: |
       let obj;
@@ -110,12 +100,9 @@ assertions:
       if (len < 5) return { pass: false, reason: 'too short' };
       if (len > 160) return { pass: false, reason: 'too long' };
       return true;
-  # Tone check (dialog politeness words)
   - type: javascript
     code: |
       const obj = JSON.parse(output);
       const reply = obj[vars.agent] || '';
       const ok = /you|please|thanks|thank you/.test(reply.toLowerCase());
       return ok ? true : { pass: false, reason: 'missing polite dialog tone words' };
-
-# Output will be saved to results/promptfoo/latest.json (configured by CI command)

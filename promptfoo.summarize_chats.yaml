@@ -9,27 +9,25 @@ prompts:
 
 vars:
   conversation: |
-    Lei Li: We need to prepare for tomorrow's briefing.
-    Meimei Han: Okay, I'll organize the materials tonight.
-    Lei Li: Please also confirm the meeting room booking.
-    Meimei Han: Sure, I'll handle it now.
+    Police: We need to prepare for tomorrow's briefing.
+    Coordinator: Okay, I'll organize the materials tonight.
+    Police: Please also confirm the meeting room booking.
+    Coordinator: Sure, I'll handle it now.
 
 scenarios:
-  - name: Short summary
+  - name: Short summary (Crowd and Coordinator)
     vars:
       conversation: |
-        A: The project briefing is tomorrow and needs preparation
-        B: Will organize materials tonight and confirm meeting room
+        Crowd: The event briefing is tomorrow and needs preparation
+        Coordinator: Will organize materials tonight and confirm meeting room
 
 assertions:
-  # Output length should not exceed 100 characters (rough character count)
   - type: javascript
     code: |
       const out = output.trim();
       if (out.length === 0) return { pass: false, reason: 'empty' };
       if (out.length > 100) return { pass: false, reason: 'exceeds 100 characters' };
       return true;
-  # Should not contain large verbatim quote blocks or be multi-line
   - type: not-contains
     value: "\"\"\""
   - type: javascript

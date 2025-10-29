@@ -8,17 +8,17 @@ prompts:
   - file: generative_agents/data/prompts/generate_chat_check_repeat.txt
 
 vars:
-  agent: "Jack"
-  conversation: "Jack: Our meeting starts at 3 pm.\nLee: Okay, confirmed for 3 pm."
-  content: "Jack: Our meeting starts at 3 pm."
+  agent: "Police"
+  conversation: "Police: Our briefing starts at 3 pm.\nCoordinator: Okay, confirmed for 3 pm."
+  content: "Police: Our briefing starts at 3 pm."
 
 scenarios:
   - name: Obvious repetition - expect "Yes"
     vars:
-      content: "Jack: Our meeting starts at 3 pm."
+      content: "Police: Our briefing starts at 3 pm."
   - name: Non-repetition - expect "No"
     vars:
-      content: "Jack: We should arrive 10 minutes early."
+      content: "Police: We should arrive 10 minutes early."
 
 assertions:
   - type: javascript
@@ -26,7 +26,6 @@ assertions:
       const out = output.trim();
       const ok = out === "Yes" || out === "No";
       return ok ? true : { pass: false, reason: 'Output must be "Yes" or "No"' };
-  # Scenario expectation check (weak check: repetition scenario should be "Yes")
   - type: javascript
     code: |
       const out = output.trim();
