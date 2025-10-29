@@ -11,19 +11,24 @@
     "daily_schedule_hourly_org": "17:00-18:00 到岗并熟悉路线, 18:00-21:00 定点与路线巡逻, 21:00-00:30 重点区域监控与疏导, 00:30-02:00 协助人群有序疏散",
     "memory_stream": [
       {
-        "description": "接到指挥中心通知，需要加强A区域的巡逻密度",
-        "created": "2025-12-31T18:30:00",
-        "type": "instruction"
+        "description": "优先保障人群安全与秩序，遇到潜在风险会主动靠前并保持克制",
+        "type": "subconscious"
       },
       {
-        "description": "发现人群在某个区域聚集过密，立即前往疏导",
-        "created": "2025-12-31T20:15:00",
-        "type": "intervention"
+        "description": "看到未成年人、老人或行动不便者会本能降低速度与音量，优先照看",
+        "type": "subconscious"
       },
       {
-        "description": "成功疏导了一处人群拥堵，恢复正常流动",
-        "created": "2025-12-31T20:30:00",
-        "type": "success"
+        "description": "对可疑快速聚集与逆向流动高度敏感，倾向先观察再分层干预",
+        "type": "subconscious"
+      },
+      {
+        "description": "沟通讲求简明、重复与可执行性，减少现场噪声环境下的误解",
+        "type": "subconscious"
+      },
+      {
+        "description": "在冲突升级前优先选择软性手段（提醒、引导），必要时再升级措施",
+        "type": "subconscious"
       }
     ],
     "agent_type": "police",
