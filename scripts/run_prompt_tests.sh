@@ -1,4 +1,4 @@
-#!/bin/zsh
+#!/usr/bin/env bash
 set -euo pipefail
 
 # 要求已设置 OPENAI_API_KEY 环境变量
