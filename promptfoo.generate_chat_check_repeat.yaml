@@ -2,7 +2,6 @@ configVersion: 1
 providers:
   - id: openai:gpt-4o-mini
     config:
-      apiKey: ${OPENAI_API_KEY}
       temperature: 0.0
 prompts:
   - file: generative_agents/data/prompts/generate_chat_check_repeat.txt

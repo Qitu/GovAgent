@@ -5,7 +5,6 @@ description: Generate chat - Coordinator/Police/Crowd
 providers:
   - id: openai:gpt-4o-mini
     config:
-      apiKey: ${OPENAI_API_KEY}
       temperature: 0.2
       maxOutputTokens: 256
 
