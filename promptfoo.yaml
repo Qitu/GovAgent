@@ -52,7 +52,7 @@ defaultTest:
     - type: contains
       value: "\"{{agent}}\":"
     - type: regex
-      pattern: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
+      value: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
     - type: not-contains
       value: "{{conversation}}"
     - type: javascript
