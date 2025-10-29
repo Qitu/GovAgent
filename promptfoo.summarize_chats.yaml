@@ -9,31 +9,31 @@ prompts:
 
 vars:
   conversation: |
-    李雷: 我们明天的汇报需要准备一下。
-    韩梅梅: 是的，我今晚会整理资料。
-    李雷: 麻烦你也确认一下会议室预定。
-    韩梅梅: 好的，我现在去处理。
+    Lei Li: We need to prepare for tomorrow's briefing.
+    Meimei Han: Okay, I'll organize the materials tonight.
+    Lei Li: Please also confirm the meeting room booking.
+    Meimei Han: Sure, I'll handle it now.
 
 scenarios:
-  - name: 简短总结
+  - name: Short summary
     vars:
       conversation: |
-        A: 项目明天汇报需准备
-        B: 今晚整理资料并确认会议室
+        A: The project briefing is tomorrow and needs preparation
+        B: Will organize materials tonight and confirm meeting room
 
 assertions:
-  # 输出长度不超过100字（粗略按字符数）
+  # Output length should not exceed 100 characters (rough character count)
   - type: javascript
     code: |
       const out = output.trim();
-      if (out.length === 0) return { pass: false, reason: '为空' };
-      if (out.length > 100) return { pass: false, reason: '超过100字' };
+      if (out.length === 0) return { pass: false, reason: 'empty' };
+      if (out.length > 100) return { pass: false, reason: 'exceeds 100 characters' };
       return true;
-  # 不应原封不动包含原对话大段（弱判定：不含引号块与多行）
+  # Should not contain large verbatim quote blocks or be multi-line
   - type: not-contains
     value: "\"\"\""
   - type: javascript
     code: |
       const out = output.trim();
-      if (out.includes("\n")) return { pass: false, reason: '不应是多行输出' };
+      if (out.includes("\n")) return { pass: false, reason: 'should be single-line output' };
       return true;

@@ -11,27 +11,27 @@ vars:
   context: ""
   date: "2025-10-18 17:00:00"
   chat_history: ""
-  agent_status: "李雷 正要去会议室"
-  another_status: "韩梅梅 已经在 使用浴室"
-  agent: "李雷"
-  another: "韩梅梅"
+  agent_status: "Lei Li is heading to the meeting room"
+  another_status: "Meimei Han is currently using the bathroom"
+  agent: "Lei Li"
+  another: "Meimei Han"
 
 scenarios:
-  - name: 可能会对话
+  - name: Likely to chat
     vars:
-      context: "两人刚在走廊碰面，项目临近截止。"
-      agent_status: "李雷 正要去会议室"
-      another_status: "韩梅梅 正要去会议室"
-  - name: 不太可能对话
+      context: "They just met in the corridor, and the project deadline is near."
+      agent_status: "Lei Li is heading to the meeting room"
+      another_status: "Meimei Han is heading to the meeting room"
+  - name: Unlikely to chat
     vars:
-      context: "两人正在不同区域进行不同任务，且忙碌。"
-      agent_status: "李雷 已经在 参加会议"
-      another_status: "韩梅梅 已经在 使用浴室"
+      context: "They are working on different tasks in different areas and are both busy."
+      agent_status: "Lei Li is already in a meeting"
+      another_status: "Meimei Han is currently using the bathroom"
 
 assertions:
-  # 输出必须严格为“是”或“否”
+  # Output must strictly be "Yes" or "No"
   - type: javascript
     code: |
       const out = output.trim();
-      const ok = out === "是" || out === "否";
-      return ok ? true : { pass: false, reason: '输出必须为“是”或“否”' };
+      const ok = out === "Yes" || out === "No";
+      return ok ? true : { pass: false, reason: 'Output must be "Yes" or "No"' };
