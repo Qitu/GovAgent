@@ -33,7 +33,7 @@ prompts:
       Based on the above <conversation_log> and <conversation_rules>, what will {{agent}} say to {{another}} now?
       Output strictly the following JSON format, and do not include any extra information:
       {
-          "{{agent}}": <what {{agent}} says>
+          "reply": <what {{agent}} says>
       }
 
 defaultTest:
@@ -50,14 +50,14 @@ defaultTest:
   assert:
     - type: contains-json
     - type: contains
-      value: "\"{{agent}}\":"
+      value: "\"reply\":"
     - type: regex
-      value: "\\{\\s*\"{{agent}}\"\\s*:\\s*\"[\\s\\S]+\"\\s*\\}"
+      value: "\\{\\s*\"reply\"\\s*:\\s*\"[\\s\\S]+\"\\s*\\}"
     - type: javascript
       code: |
         let obj;
         try { obj = JSON.parse(output); } catch (e) { return { pass: false, reason: 'not JSON' }; }
-        const reply = obj[vars.agent];
+        const reply = obj.reply;
         if (typeof reply !== 'string') return { pass: false, reason: 'value is not a string' };
         const len = reply.length;
         if (len < 5) return { pass: false, reason: 'too short' };
