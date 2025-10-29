@@ -8,7 +8,7 @@ providers:
       maxOutputTokens: 256
 
 prompts:
-  - text: |
+  - raw: |
       Below is a brief description of {{agent}}:
       {{base_desc}}
 
