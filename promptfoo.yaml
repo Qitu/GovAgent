@@ -1,5 +1,7 @@
 configVersion: 1
 
+description: Generate chat - Coordinator/Police/Crowd
+
 providers:
   - id: openai:gpt-4o-mini
     config:
@@ -8,7 +10,8 @@ providers:
       maxOutputTokens: 256
 
 prompts:
-  - raw: |
+  - label: generate_chat
+    raw: |
       Below is a brief description of {{agent}}:
       {{base_desc}}
 
@@ -34,19 +37,44 @@ prompts:
           "{{agent}}": <what {{agent}} says>
       }
 
-vars:
-  agent: Coordinator
-  another: Police
-  base_desc: A coordinator who communicates clearly and avoids repetition.
-  memory: ""
-  address: 1 Test Street
-  current_time: 2025-10-18 17:00
-  previous_context: ""
-  current_context: ""
-  conversation: ""
+defaultTest:
+  vars:
+    agent: Coordinator
+    another: Police
+    base_desc: A coordinator who communicates clearly and avoids repetition.
+    memory: ""
+    address: 1 Test Street
+    current_time: 2025-10-18 17:00
+    previous_context: ""
+    current_context: ""
+    conversation: ""
+  assert:
+    - type: contains-json
+    - type: contains
+      value: "\"{{agent}}\":"
+    - type: regex
+      pattern: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
+    - type: not-contains
+      value: "{{conversation}}"
+    - type: javascript
+      code: |
+        let obj;
+        try { obj = JSON.parse(output); } catch (e) { return { pass: false, reason: 'not JSON' }; }
+        const reply = obj[vars.agent];
+        if (typeof reply !== 'string') return { pass: false, reason: 'value is not a string' };
+        const len = reply.length;
+        if (len < 5) return { pass: false, reason: 'too short' };
+        if (len > 160) return { pass: false, reason: 'too long' };
+        return true;
+    - type: javascript
+      code: |
+        const obj = JSON.parse(output);
+        const reply = obj[vars.agent] || '';
+        const ok = /you|please|thanks|thank you/.test(reply.toLowerCase());
+        return ok ? true : { pass: false, reason: 'missing polite dialog tone words' };
 
-scenarios:
-  - name: Coordinator and Police - basic dialog
+tests:
+  - description: Coordinator and Police - basic dialog
     vars:
       agent: Coordinator
       another: Police
@@ -58,7 +86,7 @@ scenarios:
       current_context: ""
       conversation: "Coordinator: We need to prepare the briefing for tomorrow.\nPolice: Okay, I'll gather the reports tonight."
 
-  - name: Police and Crowd - avoid repetition in long dialog
+  - description: Police and Crowd - avoid repetition in long dialog
     vars:
       agent: Police
       another: Crowd
@@ -70,7 +98,7 @@ scenarios:
       current_context: ""
       conversation: "Police: The meeting point is at Gate A, 3rd floor.\nCrowd: Got it, we'll arrive early.\nPolice: Please remember the safety guidelines."
 
-  - name: Crowd and Coordinator - includes context
+  - description: Crowd and Coordinator - includes context
     vars:
       agent: Crowd
       another: Coordinator
@@ -81,28 +109,3 @@ scenarios:
       previous_context: "Currently in the hall, network is stable."
       current_context: "The manager reminded to submit on time."
       conversation: "Crowd: The document is almost done.\nCoordinator: Please send it to me ASAP."
-
-assertions:
-  - type: contains-json
-  - type: contains
-    value: "\"{{agent}}\":"
-  - type: regex
-    pattern: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
-  - type: not-contains
-    value: "{{conversation}}"
-  - type: javascript
-    code: |
-      let obj;
-      try { obj = JSON.parse(output); } catch (e) { return { pass: false, reason: 'not JSON' }; }
-      const reply = obj[vars.agent];
-      if (typeof reply !== 'string') return { pass: false, reason: 'value is not a string' };
-      const len = reply.length;
-      if (len < 5) return { pass: false, reason: 'too short' };
-      if (len > 160) return { pass: false, reason: 'too long' };
-      return true;
-  - type: javascript
-    code: |
-      const obj = JSON.parse(output);
-      const reply = obj[vars.agent] || '';
-      const ok = /you|please|thanks|thank you/.test(reply.toLowerCase());
-      return ok ? true : { pass: false, reason: 'missing polite dialog tone words' };
