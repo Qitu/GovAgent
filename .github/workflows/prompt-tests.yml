@@ -1,6 +1,7 @@
 name: Prompt Tests (All)
 
 on:
+  workflow_dispatch:
   push:
     paths:
       - "generative_agents/data/prompts/**"
