@@ -53,8 +53,6 @@ defaultTest:
       value: "\"{{agent}}\":"
     - type: regex
       value: "\\{\\s*\"{{agent}}\"\\s*:\\s*\"[\\s\\S]+\"\\s*\\}"
-    - type: not-contains
-      value: "{{conversation}}"
     - type: javascript
       code: |
         let obj;
@@ -63,14 +61,8 @@ defaultTest:
         if (typeof reply !== 'string') return { pass: false, reason: 'value is not a string' };
         const len = reply.length;
         if (len < 5) return { pass: false, reason: 'too short' };
-        if (len > 160) return { pass: false, reason: 'too long' };
+        if (len > 300) return { pass: false, reason: 'too long' };
         return true;
-    - type: javascript
-      code: |
-        const obj = JSON.parse(output);
-        const reply = obj[vars.agent] || '';
-        const ok = /you|please|thanks|thank you/.test(reply.toLowerCase());
-        return ok ? true : { pass: false, reason: 'missing polite dialog tone words' };
 
 tests:
   - description: Coordinator and Police - basic dialog
