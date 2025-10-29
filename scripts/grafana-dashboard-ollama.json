@@ -1,0 +1,91 @@
+{
+  "id": null,
+  "title": "Ollama Monitoring (App + Blackbox)",
+  "tags": ["ollama", "prometheus", "monitoring"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "10s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Request Success Rate (5m)",
+      "gridPos": {"x": 0, "y": 0, "w": 8, "h": 4},
+      "targets": [
+        {
+          "expr": "sum(rate(ollama_requests_total{status=\"success\"}[5m])) / sum(rate(ollama_requests_total[5m]))",
+          "legendFormat": "success_rate"
+        }
+      ],
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "values": false},
+        "orientation": "horizontal",
+        "textMode": "value"
+      }
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate (5m)",
+      "gridPos": {"x": 8, "y": 0, "w": 8, "h": 4},
+      "targets": [
+        {"expr": "sum(rate(ollama_requests_total{status=\"error\"}[5m]))", "legendFormat": "error_rate"}
+      ],
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "values": false},
+        "orientation": "horizontal",
+        "textMode": "value"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Request Latency P95 (5m)",
+      "gridPos": {"x": 16, "y": 0, "w": 8, "h": 8},
+      "targets": [
+        {"expr": "histogram_quantile(0.95, rate(ollama_request_latency_seconds_bucket[5m]))", "legendFormat": "p95"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Requests by Status",
+      "gridPos": {"x": 0, "y": 4, "w": 16, "h": 8},
+      "targets": [
+        {"expr": "rate(ollama_requests_total{status=\"success\"}[5m])", "legendFormat": "success"},
+        {"expr": "rate(ollama_requests_total{status=\"error\"}[5m])", "legendFormat": "error"}
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Token Usage (Total/Prompt/Completion) - 1h increase",
+      "gridPos": {"x": 0, "y": 12, "w": 24, "h": 8},
+      "targets": [
+        {"expr": "increase(ollama_total_tokens_total[1h])", "legendFormat": "total"},
+        {"expr": "increase(ollama_prompt_tokens_total[1h])", "legendFormat": "prompt"},
+        {"expr": "increase(ollama_completion_tokens_total[1h])", "legendFormat": "completion"}
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Ollama Availability (Blackbox)",
+      "gridPos": {"x": 0, "y": 20, "w": 8, "h": 4},
+      "targets": [
+        {"expr": "probe_success{job=\"ollama_blackbox\"}", "legendFormat": "probe_success"}
+      ],
+      "options": {
+        "reduceOptions": {"calcs": ["lastNotNull"], "values": false},
+        "orientation": "horizontal",
+        "textMode": "value"
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Blackbox Probe Duration",
+      "gridPos": {"x": 8, "y": 20, "w": 16, "h": 8},
+      "targets": [
+        {"expr": "probe_duration_seconds{job=\"ollama_blackbox\"}", "legendFormat": "duration"}
+      ]
+    }
+  ],
+  "templating": {"list": []},
+  "time": {"from": "now-6h", "to": "now"},
+  "annotations": {"list": []}
+}

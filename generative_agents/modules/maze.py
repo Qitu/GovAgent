@@ -141,14 +141,17 @@ class Maze:
             for f in frontier:
                 for c in self.get_around(f):
                     if (
-                        0 < c[0] < self.maze_width - 1
-                        and 0 < c[1] < self.maze_height - 1
+                        0 <= c[0] < self.maze_width
+                        and 0 <= c[1] < self.maze_height
                         and map[c[1]][c[0]] == 0
                         and c not in visited
                     ):
                         map[c[1]][c[0]] = map[f[1]][f[0]] + 1
                         new_frontier.append(c)
                         visited.add(c)
+            if not new_frontier:
+                # Destination unreachable; avoid infinite loop
+                return [src_coord] if src_coord == dst_coord else []
             frontier = new_frontier
         step = map[dst_coord[1]][dst_coord[0]]
         path = [dst_coord]

@@ -3,6 +3,40 @@
 import time
 import re
 import requests
+from prometheus_client import Counter, Histogram, REGISTRY
+
+# Prometheus metrics for Ollama usage and performance (idempotent creation)
+
+def _get_or_create_counter(name, documentation, labelnames=()):
+    try:
+        return Counter(name, documentation, labelnames)
+    except ValueError:
+        # Already registered in the default registry; reuse existing collector
+        return REGISTRY._names_to_collectors[name]  # type: ignore[attr-defined]
+
+
+def _get_or_create_histogram(name, documentation):
+    try:
+        return Histogram(name, documentation)
+    except ValueError:
+        return REGISTRY._names_to_collectors[name]  # type: ignore[attr-defined]
+
+
+OLLAMA_REQUESTS_TOTAL = _get_or_create_counter(
+    "ollama_requests_total", "Total number of Ollama requests", ["status"]
+)
+OLLAMA_REQUEST_LATENCY_SECONDS = _get_or_create_histogram(
+    "ollama_request_latency_seconds", "Latency of Ollama requests in seconds"
+)
+OLLAMA_PROMPT_TOKENS = _get_or_create_counter(
+    "ollama_prompt_tokens_total", "Total prompt tokens returned by Ollama"
+)
+OLLAMA_COMPLETION_TOKENS = _get_or_create_counter(
+    "ollama_completion_tokens_total", "Total completion tokens returned by Ollama"
+)
+OLLAMA_TOTAL_TOKENS = _get_or_create_counter(
+    "ollama_total_tokens_total", "Total tokens (prompt+completion) returned by Ollama"
+)
 
 
 class LLMModel:
@@ -107,13 +141,36 @@ class OllamaLLMModel(LLMModel):
             "stream": False,
         }
 
-        response = requests.post(
-            url=f"{self._base_url}/chat/completions",
-            headers=headers,
-            json=params,
-            stream=False
-        )
-        return response.json()
+        start = time.time()
+        status = "error"
+        try:
+            response = requests.post(
+                url=f"{self._base_url}/chat/completions",
+                headers=headers,
+                json=params,
+                stream=False,
+                timeout=60
+            )
+            response.raise_for_status()
+            data = response.json()
+            status = "success"
+            # Try to read usage from OpenAI-compatible response
+            usage = data.get("usage", {})
+            if isinstance(usage, dict):
+                prompt_tokens = usage.get("prompt_tokens")
+                completion_tokens = usage.get("completion_tokens")
+                total_tokens = usage.get("total_tokens")
+                if isinstance(prompt_tokens, int):
+                    OLLAMA_PROMPT_TOKENS.inc(prompt_tokens)
+                if isinstance(completion_tokens, int):
+                    OLLAMA_COMPLETION_TOKENS.inc(completion_tokens)
+                if isinstance(total_tokens, int):
+                    OLLAMA_TOTAL_TOKENS.inc(total_tokens)
+            return data
+        finally:
+            elapsed = time.time() - start
+            OLLAMA_REQUEST_LATENCY_SECONDS.observe(elapsed)
+            OLLAMA_REQUESTS_TOTAL.labels(status=status).inc()
 
     def _completion(self, prompt, temperature=0.5):
         if "qwen3" in self._model and "\n/nothink" not in prompt:
@@ -159,6 +216,9 @@ def parse_llm_output(response, patterns, mode="match_last", ignore_empty=False):
                 break
     if not ignore_empty:
         assert rets, "Failed to match llm output"
+    # When ignore_empty is True and nothing matched, return None gracefully
+    if not rets:
+        return None
     if mode == "match_first":
         return rets[0]
     if mode == "match_last":

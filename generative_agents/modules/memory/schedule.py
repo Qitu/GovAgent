@@ -74,18 +74,14 @@ class Schedule:
         d_plan = plan.get("decompose", {})
         if len(d_plan) > 0:
             return False
-        describe = plan["describe"]
-        if "sleep" not in describe and "bed" not in describe:
-            return True
-        if "睡" not in describe and "床" not in describe:
-            return True
-        if "sleeping" in describe or "asleep" in describe or "in bed" in describe:
+        describe = plan["describe"] or ""
+        desc_lower = describe.lower()
+        has_sleep_en = ("sleep" in desc_lower) or ("bed" in desc_lower) or ("sleeping" in desc_lower) or ("asleep" in desc_lower) or ("in bed" in desc_lower)
+        has_sleep_cn = ("睡" in describe) or ("床" in describe)
+
+        if any(k in desc_lower for k in ["sleeping", "asleep", "in bed"]) or has_sleep_cn:
             return False
-        if "睡" in describe or "床" in describe:
-            return False
-        if "sleep" in describe or "bed" in describe:
-            return plan["duration"] <= 60
-        if "睡" in describe or "床" in describe:
+        if has_sleep_en or has_sleep_cn:
             return plan["duration"] <= 60
         return True
 

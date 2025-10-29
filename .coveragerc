@@ -1,0 +1,17 @@
+[run]
+omit =
+    */tests/*
+    */.venv/*
+    */venv/*
+    */site-packages/*
+    */frontend/*
+    generative_agents/start.py
+    generative_agents/compress.py
+    generative_agents/replay.py
+
+[report]
+exclude_lines =
+    if __name__ == .__main__.
+    pragma: no cover
+    @overload
+    @abstractmethod
