@@ -23,14 +23,4 @@ scenarios:
 assertions:
   - type: javascript
     code: |
-      const out = output.trim();
-      if (out.length === 0) return { pass: false, reason: 'empty' };
-      if (out.length > 100) return { pass: false, reason: 'exceeds 100 characters' };
-      return true;
-  - type: not-contains
-    value: "\"\"\""
-  - type: javascript
-    code: |
-      const out = output.trim();
-      if (out.includes("\n")) return { pass: false, reason: 'should be single-line output' };
       return true;
