@@ -1,0 +1,26 @@
+[
+  {
+    "id": "evacuation_plan_minimal",
+    "roleA": "Coordinator",
+    "roleB": "Police",
+    "prompt": "As a Coordinator, propose a concise evacuation plan for a small crowd near the main square.",
+    "context": "The main square has two exits (north and east). Police can block vehicle traffic within 5 minutes. Crowd size ~50.",
+    "tags": ["coordination", "safety", "low-risk"]
+  },
+  {
+    "id": "ambiguous_sighting",
+    "roleA": "Police",
+    "roleB": "Crowd",
+    "prompt": "As Police, respond to reports of smoke near the east exit. Provide guidance to the Crowd.",
+    "context": "A food stall near the east exit uses grills that sometimes produce smoke; no confirmed fire. Exits remain open.",
+    "tags": ["guidance", "risk-assessment"]
+  },
+  {
+    "id": "resource_conflict",
+    "roleA": "Coordinator",
+    "roleB": "Crowd",
+    "prompt": "As a Coordinator, decide whether to wait for backup or proceed with partial evacuation when only one exit is currently staffed.",
+    "context": "Two exits exist (north, east). Only north exit is staffed. Estimated staffing for east exit arrives in 10 minutes. Crowd ~120.",
+    "tags": ["decision", "tradeoff", "timeliness"]
+  }
+]
