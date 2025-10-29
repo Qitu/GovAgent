@@ -1,0 +1,121 @@
+configVersion: 1
+
+# 使用 OpenAI/兼容接口；在 CI 通过 OPENAI_API_KEY 注入密钥
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      apiKey: ${OPENAI_API_KEY}
+      temperature: 0.2
+      maxOutputTokens: 256
+
+# 将 generate_chat.txt 的内容转换为 Mustache 模板内联（不改动项目原文件）
+prompts:
+  - text: |
+      以下是对 {{agent}} 的简要描述：
+      {{base_desc}}
+
+      以下是 {{agent}} 的记忆：
+      {{memory}}
+
+      当前位置：{{address}}
+      当前时间：{{current_time}}
+
+      {{previous_context}}{{current_context}}
+      {{agent}} 开始和 {{another}} 对话。以下是他们的对话记录：
+      <对话记录>
+      {{conversation}}
+      </对话记录>
+
+      <对话原则>
+      {{agent}} 不会重复<对话记录>中已有的内容
+      </对话原则>
+
+      基于以上<对话记录>和<对话原则>，现在 {{agent}} 会对 {{another}} 说什么？
+      直接输出以下格式的json，不要补充其他信息：
+      {
+          "{{agent}}": <{{agent}}说的话>
+      }
+
+# 默认变量，可被场景覆盖
+vars:
+  agent: 测试代理
+  another: 另一位
+  base_desc: 一个善于交流、避免重复的智能体
+  memory: ""
+  address: 测试街道1号
+  current_time: 2025-10-18 17:00
+  previous_context: ""
+  current_context: ""
+  conversation: ""
+
+# 三个基础场景
+scenarios:
+  - name: 基本对话
+    vars:
+      agent: 李雷
+      another: 韩梅梅
+      base_desc: 一个友善且理性的智能体
+      memory: 最近在准备项目汇报
+      address: 上海市浦东新区
+      current_time: 2025/10/18 17:00
+      previous_context: ""
+      current_context: ""
+      conversation: "李雷：我们明天的汇报需要准备一下。\n韩梅梅：是的，我今晚会整理资料。"
+
+  - name: 长对话避免复述
+    vars:
+      agent: 小王
+      another: 小李
+      base_desc: 擅长简洁回应的助理
+      memory: 昨天讨论过会议议程
+      address: 北京中关村
+      current_time: 2025/10/18 17:05
+      previous_context: "他们刚确认了会议地点。"
+      current_context: ""
+      conversation: "小王：会议地点在A楼3层。\n小李：好的，那我提前到。\n小王：别忘了带投影线。"
+
+  - name: 包含上下文
+    vars:
+      agent: Alice
+      another: Bob
+      base_desc: 注重礼貌和效率
+      memory: "已完成任务清单：写报告、发邮件"
+      address: 深圳南山区
+      current_time: 2025/10/18 17:10
+      previous_context: "当前正在办公室，网络稳定。"
+      current_context: "老板刚刚提醒要准时提交。"
+      conversation: "Alice：报告差不多了。\nBob：那就尽快发我看一下。"
+
+# 断言：结构、内容与语气
+assertions:
+  # 必须是 JSON
+  - type: contains-json
+  # 键包含 agent 名
+  - type: contains
+    value: "\"{{agent}}\":"
+  # 键-值为字符串的弱正则验证
+  - type: regex
+    pattern: "\\{\\s*\"{{agent}}\"\\s*:\\s*\".+\"\\s*\\}"
+  # 不得完整复述对话记录
+  - type: not-contains
+    value: "{{conversation}}"
+  # 长度范围与类型检查（JS断言）
+  - type: javascript
+    code: |
+      let obj;
+      try { obj = JSON.parse(output); } catch (e) { return { pass: false, reason: '非JSON' }; }
+      const reply = obj[vars.agent];
+      if (typeof reply !== 'string') return { pass: false, reason: '值非字符串' };
+      const len = reply.length;
+      if (len < 5) return { pass: false, reason: '过短' };
+      if (len > 160) return { pass: false, reason: '过长' };
+      return true;
+  # 语气词检查（对话风格）
+  - type: javascript
+    code: |
+      const obj = JSON.parse(output);
+      const reply = obj[vars.agent] || '';
+      const ok = /你|您|请|麻烦|谢谢/.test(reply);
+      return ok ? true : { pass: false, reason: '不含对话语气词' };
+
+# 输出保存到 results/promptfoo/latest.json（在 CI 命令中指定）

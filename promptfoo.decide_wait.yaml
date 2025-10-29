@@ -1,0 +1,41 @@
+configVersion: 1
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      apiKey: ${OPENAI_API_KEY}
+      temperature: 0.0
+prompts:
+  - file: generative_agents/data/prompts/decide_wait.txt
+
+# 为 decide_wait.txt，需要 examples_1 / examples_2 / task 三段文本
+vars:
+  examples_1: |
+    背景：示例-共享资源冲突
+    推理：对方已在使用目标资源，应该等待
+    答案：<选项A>
+  examples_2: |
+    背景：示例-不同区域活动
+    推理：不冲突，可继续当前行动
+    答案：<选项B>
+  task: |
+    背景：两人都需要使用打印机，另一人已在打印中
+    问题：当前是否应等待？
+
+scenarios:
+  - name: 资源冲突应等待
+    vars:
+      task: "背景：两人都需要使用打印机，另一人已在打印中\n问题：当前是否应等待？"
+  - name: 不同区域可继续
+    vars:
+      task: "背景：甲要去食堂吃午饭，乙在洗衣房洗衣服\n问题：甲是否应继续前往食堂？"
+
+assertions:
+  # 输出必须包含 <选项A> 或 <选项B>（模板示例格式）
+  - type: javascript
+    code: |
+      const out = output.trim();
+      const ok = /<选项A>|<选项B>/.test(out);
+      return ok ? true : { pass: false, reason: '输出需为<选项A>或<选项B>' };
+  # 不包含推理过程（粗略判定：不应出现“推理”字样）
+  - type: not-contains
+    value: "推理"

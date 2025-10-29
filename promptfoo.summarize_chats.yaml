@@ -1,0 +1,39 @@
+configVersion: 1
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      apiKey: ${OPENAI_API_KEY}
+      temperature: 0.2
+prompts:
+  - file: generative_agents/data/prompts/summarize_chats.txt
+
+vars:
+  conversation: |
+    李雷: 我们明天的汇报需要准备一下。
+    韩梅梅: 是的，我今晚会整理资料。
+    李雷: 麻烦你也确认一下会议室预定。
+    韩梅梅: 好的，我现在去处理。
+
+scenarios:
+  - name: 简短总结
+    vars:
+      conversation: |
+        A: 项目明天汇报需准备
+        B: 今晚整理资料并确认会议室
+
+assertions:
+  # 输出长度不超过100字（粗略按字符数）
+  - type: javascript
+    code: |
+      const out = output.trim();
+      if (out.length === 0) return { pass: false, reason: '为空' };
+      if (out.length > 100) return { pass: false, reason: '超过100字' };
+      return true;
+  # 不应原封不动包含原对话大段（弱判定：不含引号块与多行）
+  - type: not-contains
+    value: "\"\"\""
+  - type: javascript
+    code: |
+      const out = output.trim();
+      if (out.includes("\n")) return { pass: false, reason: '不应是多行输出' };
+      return true;

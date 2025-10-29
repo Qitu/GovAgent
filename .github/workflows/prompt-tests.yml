@@ -1,0 +1,44 @@
+name: Prompt Tests (All)
+
+on:
+  push:
+    paths:
+      - "generative_agents/data/prompts/**"
+      - "promptfoo.yaml"
+      - "promptfoo.*.yaml"
+      - "scripts/run_prompt_tests.sh"
+      - ".github/workflows/prompt-tests.yml"
+  pull_request:
+    paths:
+      - "generative_agents/data/prompts/**"
+      - "promptfoo.yaml"
+      - "promptfoo.*.yaml"
+      - "scripts/run_prompt_tests.sh"
+
+jobs:
+  eval-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install promptfoo
+        run: npm i -g promptfoo
+
+      - name: Run all prompt tests
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          chmod +x scripts/run_prompt_tests.sh
+          ./scripts/run_prompt_tests.sh
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: promptfoo-reports
+          path: results/promptfoo/

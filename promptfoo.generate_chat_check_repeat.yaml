@@ -1,0 +1,36 @@
+configVersion: 1
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      apiKey: ${OPENAI_API_KEY}
+      temperature: 0.0
+prompts:
+  - file: generative_agents/data/prompts/generate_chat_check_repeat.txt
+
+vars:
+  agent: "小王"
+  conversation: "小王: 我们下午三点开会。\n小李: 好的，确认下午三点。"
+  content: "小王: 我们下午三点开会。"
+
+scenarios:
+  - name: 明显重复-应回答“是”
+    vars:
+      content: "小王: 我们下午三点开会。"
+  - name: 非重复-应回答“否”
+    vars:
+      content: "小王: 我们需要提前十分钟到。"
+
+assertions:
+  - type: javascript
+    code: |
+      const out = output.trim();
+      const ok = out === "是" || out === "否";
+      return ok ? true : { pass: false, reason: '输出必须为“是”或“否”' };
+  # 针对场景进行期望校验（弱校验：重复场景应更可能“是”）
+  - type: javascript
+    code: |
+      const out = output.trim();
+      const isRepeatScenario = vars.content.includes("下午三点开会");
+      if (isRepeatScenario && out !== "是") return { pass: false, reason: '重复场景应为“是”' };
+      if (!isRepeatScenario && out !== "否") return { pass: false, reason: '非重复场景应为“否”' };
+      return true;
