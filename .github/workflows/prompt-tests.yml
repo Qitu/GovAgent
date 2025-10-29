@@ -19,6 +19,9 @@ on:
 jobs:
   eval-all:
     runs-on: ubuntu-latest
+    env:
+      # Prefer OPENAI_API_KEY; fallback to OPENAI_KEY if present
+      OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY != '' && secrets.OPENAI_API_KEY || secrets.OPENAI_KEY }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -29,11 +32,19 @@ jobs:
           node-version: "20"
 
       - name: Install promptfoo
-        run: npm i -g promptfoo
+        run: |
+          npm i -g promptfoo
+          promptfoo --version
+
+      - name: Check OPENAI_API_KEY presence
+        run: |
+          if [ -z "${OPENAI_API_KEY:-}" ]; then
+            echo "::error::OPENAI_API_KEY is empty. Configure repository secret OPENAI_API_KEY (or OPENAI_KEY as fallback).";
+            exit 1;
+          fi
+          echo "OPENAI_API_KEY length: ${#OPENAI_API_KEY} (masked)"
 
       - name: Run all prompt tests
-        env:
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: bash scripts/run_prompt_tests.sh
 
       - name: Upload reports
