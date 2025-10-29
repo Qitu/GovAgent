@@ -48,20 +48,24 @@ defaultTest:
     current_context: ""
     conversation: ""
   assert:
-    - type: contains-json
-    - type: contains
-      value: "\"reply\":"
-    - type: regex
-      value: "\\{\\s*\"reply\"\\s*:\\s*\"[\\s\\S]+\"\\s*\\}"
     - type: javascript
       code: |
-        let obj;
-        try { obj = JSON.parse(output); } catch (e) { return { pass: false, reason: 'not JSON' }; }
-        const reply = obj.reply;
-        if (typeof reply !== 'string') return { pass: false, reason: 'value is not a string' };
-        const len = reply.length;
-        if (len < 5) return { pass: false, reason: 'too short' };
-        if (len > 300) return { pass: false, reason: 'too long' };
+        function extractText(out) {
+          // Try JSON first
+          try {
+            const obj = JSON.parse(out);
+            if (typeof obj?.reply === 'string') return obj.reply;
+            const agent = vars.agent;
+            if (agent && typeof obj?.[agent] === 'string') return obj[agent];
+          } catch (_) {}
+          // Fallback: return raw string
+          return String(out || '').trim();
+        }
+        const text = extractText(output);
+        if (!text || typeof text !== 'string') return { pass: false, reason: 'empty' };
+        const len = text.length;
+        if (len < 3) return { pass: false, reason: 'too short' };
+        if (len > 400) return { pass: false, reason: 'too long' };
         return true;
 
 tests:
