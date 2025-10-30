@@ -1,57 +1,47 @@
 
 name: CI
 
-# Set the event to pull request event and push event of the [main] branch
 on:
   push:
     branches: [main]
-  # pull_request:
-  #   branches: [main]
+  pull_request:
+    branches: [main]
 
 permissions:
-  contents: write
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
-  CI:
+  tests:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js version
-        uses: actions/setup-node@v3
+      - name: Set up Miniconda (Python 3.12)
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          node-version: 16
+          auto-update-conda: true
+          activate-environment: generative_agents_cn
+          python-version: 3.12
+          use-mamba: true
 
-      - name: Install dependencies
+      - name: Install Python dependencies
+        shell: bash -l {0}
+        run: |
+          pip install -r requirements.txt
+
+      - name: Install Node dependencies
+        working-directory: generative_agents/frontend
         run: npm install
 
-      # - name: Lint check
-      #   run: npm run lint
+      - name: Run backend tests
+        shell: bash -l {0}
+        run: pytest
 
-      - name: Test
-        run: npm run test
-
-      - name: Project Build
+      - name: Build frontend
+        working-directory: generative_agents/frontend
         run: npm run build
-
-  CD:
-    runs-on: ubuntu-latest
-    needs: CI
-    steps:
-      - name: Deploy to dev server (digitalocean)
-        uses: appleboy/ssh-action@master
-        env:
-            GITHUB_USERNAME: ${{ secrets.GITHUB_USERNAME }}
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.DEV }}
-          port: 22
-          envs: GITHUB_USERNAME, GITHUB_TOKEN
-          script: |
-            lsof -ti:5001 | xargs -r kill -9
-            cd gov-agents/generative_agents
-            nohup python app.py > app.log 2>&1 &python app.py
-            
