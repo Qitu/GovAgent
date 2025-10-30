@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-CRM管理系统主入口文件
+Management System
 """
 
 from app import create_app
 
-# 创建Flask应用实例
+# Create Flask application
 app = create_app()
 
 if __name__ == '__main__':

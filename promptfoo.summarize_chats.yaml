@@ -8,17 +8,17 @@ prompts:
 
 vars:
   conversation: |
-    Police: We need to prepare for tomorrow's briefing.
-    Coordinator: Okay, I'll organize the materials tonight.
-    Police: Please also confirm the meeting room booking.
-    Coordinator: Sure, I'll handle it now.
+    Police: We need to prepare for tomorrow's crowd safety briefing at the concert venue.
+    Orchestra: We'll finalize the setlist timings tonight and coordinate stage access.
+    Police: Please also confirm the venue entry flow with the Crowd marshals.
+    Orchestra: Understood, we'll align with the Crowd volunteers now.
 
 scenarios:
-  - name: Short summary (Crowd and Coordinator)
+  - name: Short summary (Crowd and Orchestra)
     vars:
       conversation: |
-        Crowd: The event briefing is tomorrow and needs preparation
-        Coordinator: Will organize materials tonight and confirm meeting room
+        Crowd: The concert briefing is tomorrow and needs preparation
+        Orchestra: Will finalize setlist timings tonight and confirm entry flow
 
 assertions:
   - type: javascript

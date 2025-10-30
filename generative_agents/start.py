@@ -11,7 +11,7 @@ from modules.game import create_game, get_game
 from modules import utils
 
 personas = [
-    "人群智能体", "警察智能体", "协调者智能体"
+    "Crowd", "Police", "Orchestra"
 ]
 
 

@@ -8,7 +8,7 @@ prompts:
 
 vars:
   agent: "Police"
-  conversation: "Police: Our briefing starts at 3 pm.\nCoordinator: Okay, confirmed for 3 pm."
+  conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
   content: "Police: Our briefing starts at 3 pm."
 
 scenarios:

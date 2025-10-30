@@ -1,6 +1,6 @@
 configVersion: 1
 
-description: Generate chat - Coordinator/Police/Crowd
+description: Generate chat - Orchestra/Police/Crowd
 
 providers:
   - id: openai:gpt-4o-mini
@@ -38,9 +38,9 @@ prompts:
 
 defaultTest:
   vars:
-    agent: Coordinator
+    agent: Orchestra
     another: Police
-    base_desc: A coordinator who communicates clearly and avoids repetition.
+    base_desc: An Orchestra representative who communicates clearly and avoids repetition.
     memory: ""
     address: 1 Test Street
     current_time: 2025-10-18 17:00
@@ -54,17 +54,17 @@ defaultTest:
         return true;
 
 tests:
-  - description: Coordinator and Police - basic dialog
+  - description: Orchestra and Police - basic dialog
     vars:
-      agent: Coordinator
+      agent: Orchestra
       another: Police
-      base_desc: A calm coordinator facilitating information sharing
-      memory: Preparing incident briefing recently
+      base_desc: An Orchestra representative coordinating stage logistics
+      memory: Preparing concert briefing recently
       address: Pudong New Area, Shanghai
       current_time: 2025/10/18 17:00
       previous_context: ""
       current_context: ""
-      conversation: "Coordinator: We need to prepare the briefing for tomorrow.\nPolice: Okay, I'll gather the reports tonight."
+      conversation: "Orchestra: We need to prepare the concert briefing for tomorrow.\nPolice: Okay, I'll gather the safety reports tonight."
 
   - description: Police and Crowd - avoid repetition in long dialog
     vars:
@@ -78,14 +78,14 @@ tests:
       current_context: ""
       conversation: "Police: The meeting point is at Gate A, 3rd floor.\nCrowd: Got it, we'll arrive early.\nPolice: Please remember the safety guidelines."
 
-  - description: Crowd and Coordinator - includes context
+  - description: Crowd and Orchestra - includes context
     vars:
       agent: Crowd
-      another: Coordinator
+      another: Orchestra
       base_desc: Values order and efficiency
       memory: "Task list completed: submitted forms, followed instructions"
       address: Nanshan District, Shenzhen
       current_time: 2025/10/18 17:10
       previous_context: "Currently in the hall, network is stable."
       current_context: "The manager reminded to submit on time."
-      conversation: "Crowd: The document is almost done.\nCoordinator: Please send it to me ASAP."
+      conversation: "Crowd: The seating plan is almost done.\nOrchestra: Please send it to us ASAP."

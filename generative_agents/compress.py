@@ -201,17 +201,17 @@ def generate_report(checkpoints_folder, compressed_folder, compressed_file):
             conversation = json.load(f)
 
     def extract_description():
-        markdown_content = "# 基础人设\n\n"
+        markdown_content = "# Personality\n\n"
         for agent_name in personas:
             json_path = f"frontend/static/assets/village/agents/{agent_name}/agent.json"
             with open(json_path, "r", encoding="utf-8") as f:
                 json_data = json.load(f)
                 markdown_content += f"## {agent_name}\n\n"
-                markdown_content += f"年龄：{json_data['scratch']['age']}岁  \n"
-                markdown_content += f"先天：{json_data['scratch']['innate']}  \n"
-                markdown_content += f"后天：{json_data['scratch']['learned']}  \n"
-                markdown_content += f"生活习惯：{json_data['scratch']['lifestyle']}  \n"
-                markdown_content += f"当前状态：{json_data['currently']}\n\n"
+                markdown_content += f"Age：{json_data['scratch']['age']}岁  \n"
+                markdown_content += f"Innate：{json_data['scratch']['innate']}  \n"
+                markdown_content += f"Learned：{json_data['scratch']['learned']}  \n"
+                markdown_content += f"Habit：{json_data['scratch']['lifestyle']}  \n"
+                markdown_content += f"Status：{json_data['currently']}\n\n"
         return markdown_content
 
     def extract_action(json_data):
@@ -232,22 +232,22 @@ def generate_report(checkpoints_folder, compressed_folder, compressed_file):
 
             if len(markdown_content) < 1:
                 markdown_content = f"# {json_data['time']}\n\n"
-                markdown_content += "## 活动记录：\n\n"
+                markdown_content += "## Activities：\n\n"
 
             markdown_content += f"### {agent_name}\n"
 
             if len(action) < 1:
-                action = "睡觉"
+                action = "Sleep"
 
-            markdown_content += f"位置：{location}  \n"
-            markdown_content += f"活动：{action}  \n"
+            markdown_content += f"Location：{location}  \n"
+            markdown_content += f"Activity：{action}  \n"
 
             markdown_content += f"\n"
 
         if json_data['time'] not in conversation.keys():
             return markdown_content
 
-        markdown_content += "## 对话记录：\n\n"
+        markdown_content += "## Conversation：\n\n"
         for chats in conversation[json_data['time']]:
             for agents, chat in chats.items():
                 markdown_content += f"### {agents}\n\n"
