@@ -4,30 +4,31 @@ providers:
     config:
       temperature: 0.0
 prompts:
-  - file: generative_agents/data/prompts/decide_chat.txt
+  - label: decide_chat
+    file: generative_agents/data/prompts/decide_chat.txt
 
-vars:
-  context: ""
-  date: "2025-10-18 17:00:00"
-  chat_history: ""
-  agent_status: "Police is heading to the meeting room"
-  another_status: "Coordinator is currently coordinating logistics"
-  agent: "Police"
-  another: "Coordinator"
+defaultTest:
+  vars:
+    context: "Police and Orchestra are stationed near Marina Bay Sands to finalize the concert security route."
+    date: "2025-10-18 17:00:00"
+    chat_history: ""
+    agent_status: "Police officer is reviewing the main gate security at Gardens by the Bay"
+    another_status: "Orchestra liaison is coordinating instrument unloading at the stage loading bay"
+    agent: "Police"
+    another: "Orchestra"
 
-scenarios:
-  - name: Likely to chat (Police and Coordinator)
+tests:
+  - description: Likely to chat (Police and Orchestra)
     vars:
-      context: "They just met in the corridor, coordination needed for upcoming event."
-      agent_status: "Police is heading to the meeting room"
-      another_status: "Coordinator is heading to the meeting room"
-  - name: Unlikely to chat (Police and Crowd)
+      context: "They just met along Bayfront Avenue to synchronize the pre-show briefing."
+      agent_status: "Police officer is walking toward the Marina Bay Sands stage entrance"
+      another_status: "Orchestra liaison is heading to the same entrance to review the set timing"
+      agent: "Police"
+      another: "Orchestra"
+  - description: Unlikely to chat (Police and Crowd)
     vars:
-      context: "They are in different areas on different tasks and both are busy."
-      agent_status: "Police is already in a briefing"
-      another_status: "Crowd is currently queueing at the entrance"
-
-assertions:
-  - type: javascript
-    code: |
-      return true;
+      context: "They are in separate zones completing different urgent tasks."
+      agent_status: "Police officer is already delivering a briefing inside the command tent"
+      another_status: "Crowd marshal is guiding attendees through Gate B outside the Flower Dome"
+      agent: "Police"
+      another: "Crowd"
