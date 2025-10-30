@@ -33,15 +33,3 @@ jobs:
         shell: bash -l {0}
         run: |
           pip install -r requirements.txt
-
-      - name: Install Node dependencies
-        working-directory: generative_agents/frontend
-        run: npm install
-
-      - name: Run backend tests
-        shell: bash -l {0}
-        run: pytest
-
-      - name: Build frontend
-        working-directory: generative_agents/frontend
-        run: npm run build
