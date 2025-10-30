@@ -5,7 +5,7 @@ providers:
       temperature: 0.2
 prompts:
   - label: summarize_chats
-    file: generative_agents/data/prompts/summarize_chats.txt
+    promptPath: generative_agents/data/prompts/summarize_chats.txt
 
 defaultTest:
   vars:
