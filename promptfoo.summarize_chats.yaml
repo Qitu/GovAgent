@@ -4,23 +4,21 @@ providers:
     config:
       temperature: 0.2
 prompts:
-  - file: generative_agents/data/prompts/summarize_chats.txt
+  - label: summarize_chats
+    file: generative_agents/data/prompts/summarize_chats.txt
 
-vars:
-  conversation: |
-    Police: We need to prepare for tomorrow's crowd safety briefing at the concert venue.
-    Orchestra: We'll finalize the setlist timings tonight and coordinate stage access.
-    Police: Please also confirm the venue entry flow with the Crowd marshals.
-    Orchestra: Understood, we'll align with the Crowd volunteers now.
+defaultTest:
+  vars:
+    conversation: |
+      Police: We need to prepare for tomorrow's crowd safety briefing at the concert venue.
+      Orchestra: We'll finalize the setlist timings tonight and coordinate stage access.
+      Police: Please also confirm the venue entry flow with the Crowd marshals.
+      Orchestra: Understood, we'll align with the Crowd volunteers now.
 
-scenarios:
-  - name: Short summary (Crowd and Orchestra)
+tests:
+  - description: Short summary (Crowd and Orchestra)
     vars:
       conversation: |
         Crowd: The concert briefing is tomorrow and needs preparation
         Orchestra: Will finalize setlist timings tonight and confirm entry flow
 
-assertions:
-  - type: javascript
-    code: |
-      return true;

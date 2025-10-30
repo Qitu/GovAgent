@@ -4,22 +4,24 @@ providers:
     config:
       temperature: 0.0
 prompts:
-  - file: generative_agents/data/prompts/generate_chat_check_repeat.txt
+  - label: generate_chat_check_repeat
+    file: generative_agents/data/prompts/generate_chat_check_repeat.txt
 
-vars:
-  agent: "Police"
-  conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
-  content: "Police: Our briefing starts at 3 pm."
+defaultTest:
+  vars:
+    agent: "Police"
+    conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
+    content: "Police: Our briefing starts at 3 pm."
 
-scenarios:
-  - name: Obvious repetition - expect "Yes"
+tests:
+  - description: Obvious repetition - expect "Yes"
     vars:
+      agent: "Police"
+      conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
       content: "Police: Our briefing starts at 3 pm."
-  - name: Non-repetition - expect "No"
+  - description: Non-repetition - expect "No"
     vars:
+      agent: "Police"
+      conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
       content: "Police: We should arrive 10 minutes early."
 
-assertions:
-  - type: javascript
-    code: |
-      return true;

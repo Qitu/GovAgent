@@ -4,31 +4,28 @@ providers:
     config:
       temperature: 0.0
 prompts:
-  - file: generative_agents/data/prompts/decide_wait.txt
+  - label: decide_wait
+    file: generative_agents/data/prompts/decide_wait.txt
 
 # For decide_wait.txt, it expects three blocks: examples_1 / examples_2 / task
-vars:
-  examples_1: |
-    Background: Police are coordinating stage security while the Orchestra is conducting a soundcheck on the main stage
-    Reasoning: The Orchestra is occupying the main stage; to avoid interference and ensure safety, waiting is recommended
-    Answer: <OptionA>
-  examples_2: |
-    Background: Police are inspecting the audience entry gates while the Orchestra rehearses backstage in a different area
-    Reasoning: Activities are in different areas with no direct conflict; continue current action
-    Answer: <OptionB>
-  task: |
-    Background: Crowd marshals are guiding attendees through Gate B while the Orchestra is moving instruments through Gate A
-    Question: Should the Crowd wait at Gate B now?
+defaultTest:
+  vars:
+    examples_1: |
+      Background: Police are coordinating stage security while the Orchestra is conducting a soundcheck on the main stage
+      Reasoning: The Orchestra is occupying the main stage; to avoid interference and ensure safety, waiting is recommended
+      Answer: <OptionA>
+    examples_2: |
+      Background: Police are inspecting the audience entry gates while the Orchestra rehearses backstage in a different area
+      Reasoning: Activities are in different areas with no direct conflict; continue current action
+      Answer: <OptionB>
+    task: |
+      Background: Crowd marshals are guiding attendees through Gate B while the Orchestra is moving instruments through Gate A
+      Question: Should the Crowd wait at Gate B now?
 
-scenarios:
-  - name: Resource conflict - should wait
+tests:
+  - description: Resource conflict - should wait
     vars:
       task: "Background: Police and Orchestra both need the main corridor; Orchestra's instrument carts are passing through now\nQuestion: Should Police wait before moving the barrier?"
-  - name: Different areas - can continue
+  - description: Different areas - can continue
     vars:
       task: "Background: Crowd is queueing at the outer plaza while the Orchestra rehearses inside the hall\nQuestion: Should Crowd continue guiding the queue?"
-
-assertions:
-  - type: javascript
-    code: |
-      return true;
