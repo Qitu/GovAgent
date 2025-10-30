@@ -5,7 +5,7 @@ providers:
       temperature: 0.0
 prompts:
   - label: generate_chat_check_repeat
-    promptPath: generative_agents/data/prompts/generate_chat_check_repeat.txt
+    file: generative_agents/data/prompts/generate_chat_check_repeat.txt
 
 defaultTest:
   vars:

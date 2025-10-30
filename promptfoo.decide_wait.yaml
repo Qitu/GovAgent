@@ -5,7 +5,7 @@ providers:
       temperature: 0.0
 prompts:
   - label: decide_wait
-    promptPath: generative_agents/data/prompts/decide_wait.txt
+    file: generative_agents/data/prompts/decide_wait.txt
 
 # For decide_wait.txt, it expects three blocks: examples_1 / examples_2 / task
 defaultTest:

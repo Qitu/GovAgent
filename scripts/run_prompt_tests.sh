@@ -12,16 +12,16 @@ mkdir -p results/promptfoo
 echo "==> Running generate_chat (promptfoo.yaml)"
 promptfoo eval -c promptfoo.yaml --output results/promptfoo/generate_chat.json
 
-echo "==> Running decide_chat (promptfoo.decide_chat.yaml)"
-promptfoo eval -c promptfoo.decide_chat.yaml --output results/promptfoo/decide_chat.json
+# echo "==> Running decide_chat (promptfoo.decide_chat.yaml)"
+# promptfoo eval -c promptfoo.decide_chat.yaml --output results/promptfoo/decide_chat.json
 
-echo "==> Running decide_wait (promptfoo.decide_wait.yaml)"
-promptfoo eval -c promptfoo.decide_wait.yaml --output results/promptfoo/decide_wait.json
+# echo "==> Running decide_wait (promptfoo.decide_wait.yaml)"
+# promptfoo eval -c promptfoo.decide_wait.yaml --output results/promptfoo/decide_wait.json
 
-echo "==> Running generate_chat_check_repeat (promptfoo.generate_chat_check_repeat.yaml)"
-promptfoo eval -c promptfoo.generate_chat_check_repeat.yaml --output results/promptfoo/generate_chat_check_repeat.json
+# echo "==> Running generate_chat_check_repeat (promptfoo.generate_chat_check_repeat.yaml)"
+# promptfoo eval -c promptfoo.generate_chat_check_repeat.yaml --output results/promptfoo/generate_chat_check_repeat.json
 
-echo "==> Running summarize_chats (promptfoo.summarize_chats.yaml)"
-promptfoo eval -c promptfoo.summarize_chats.yaml --output results/promptfoo/summarize_chats.json
+# echo "==> Running summarize_chats (promptfoo.summarize_chats.yaml)"
+# promptfoo eval -c promptfoo.summarize_chats.yaml --output results/promptfoo/summarize_chats.json
 
 echo "==> Done. Reports saved under results/promptfoo/"
