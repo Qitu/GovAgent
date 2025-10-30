@@ -1,24 +1,24 @@
-以下是对 ${agent} 的简要描述：
+Below is a brief description of ${agent}:
 ${base_desc}
 
-以下是 ${agent} 的记忆：
+Below are ${agent}'s memories:
 ${memory}
 
-当前位置：${address}
-当前时间：${current_time}
+Current address: ${address}
+Current time: ${current_time}
 
 ${previous_context}${current_context}
-${agent} 开始和 ${another} 对话。以下是他们的对话记录：
-<对话记录>
+${agent} starts a conversation with ${another}. The following is their conversation log:
+<Conversation Log>
 ${conversation}
-</对话记录>
+</Conversation Log>
 
-<对话原则>
-${agent} 不会重复<对话记录>中已有的内容
-</对话原则>
+<Conversation Rules>
+${agent} must not repeat content that already appears in the <Conversation Log>.
+</Conversation Rules>
 
-基于以上<对话记录>和<对话原则>，现在 ${agent} 会对 ${another} 说什么？
-直接输出以下格式的json，不要补充其他信息：
+Based on the above <Conversation Log> and <Conversation Rules>, what will ${agent} say to ${another} now?
+Output the following JSON only, with no extra text:
 {
-    "${agent}": <${agent}说的话>
+    "${agent}": <what ${agent} says>
 }

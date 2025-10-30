@@ -1,23 +1,23 @@
-将动作转换为表情符（使用三个或三个以下表情符）。
+Convert an action into emoji (use three or fewer emojis).
 
-示例：
+Examples:
 
-动作：起床并开始晨间例行活动（洗澡）
-表情符：🛁🧖‍♀️
+Action: Get up and start a morning routine (shower)
+Emoji: 🚿🧖‍♀️
 
-动作：吃早餐（煮咖啡）
-表情符：☕️🥐
+Action: Eat breakfast (make coffee)
+Emoji: ☕️🥐
 
-动作：绘画（边画画边听古典音乐）
-表情符：🎨🎵
+Action: Draw (paint while listening to classical music)
+Emoji: 🎨🎵
 
-动作：锻炼（跑步）
-表情符：🏃‍♀️
+Action: Exercise (run)
+Emoji: 🏃‍♀️
 
-动作：吃早餐（在吐司上涂黄油）
-表情符：🧈🍞
+Action: Eat breakfast (spread butter on toast)
+Emoji: 🧈🍞
 
-根据以上示例，将以下动作转换为表情符（使用三个或三个以下表情符号）：
+Based on the examples above, convert the following action into emoji (use three or fewer emojis):
 
-动作：${action}
-表情符：
+Action: ${action}
+Emoji:

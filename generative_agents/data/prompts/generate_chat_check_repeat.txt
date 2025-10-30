@@ -1,9 +1,9 @@
-<对话记录>
+<Conversation Log>
 ${conversation}
-</对话记录>
+</Conversation Log>
 
-<新对话>
+<New Conversation>
 ${content}
-</新对话>
+</New Conversation>
 
-${agent} 在<新对话>中所说的内容，是否在<对话记录>中出现过？只用“是”或“否”回答：
+In <New Conversation>, is the content said by ${agent} already present in <Conversation Log>? Answer with "Yes" or "No" only:

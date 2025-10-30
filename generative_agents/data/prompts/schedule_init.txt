@@ -1,13 +1,11 @@
-"""
 ${base_desc}
 
-通常，${lifestyle}
-以下是 ${agent} 今天的大致计划（每条计划要包含时间，例如，早上7点吃早餐；中午12点吃午饭；晚上7看电视）：
-1. 早上 ${wake_up} 点起床
+Typically, ${lifestyle}
+Below is ${agent}'s rough plan for today (each item must include a time, e.g., 7:00 breakfast; 12:00 lunch; 19:00 TV):
+1. Wake up at ${wake_up}
 2.
 3.
-......
 """
 
-根据上述提示输出今日计划。每一行只包含一个序号和一项计划。
-格式：1. <计划>
+Based on the above, output today's plan. Each line must contain exactly one index and one plan item.
+Format: 1. <plan>

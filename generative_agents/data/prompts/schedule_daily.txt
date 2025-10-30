@@ -1,10 +1,9 @@
 ${base_desc}
 
-以下是 ${agent} 今天日程的每小时明细：
+Below is ${agent}'s hour-by-hour schedule for today:
 ${daily_schedule}
 
-请参考上述人物信息和日程明细，生成小时计划（24小时制），只填写<活动>内容，不要跳过任何一个时间点。
-小时计划必须遵守下面的格式：
+Using the above information, generate a 24-hour hourly plan (fill only <activity> per hour). Do not skip any hour.
+The hourly plan must follow this format:
 """
 ${hourly_schedule}
-"""

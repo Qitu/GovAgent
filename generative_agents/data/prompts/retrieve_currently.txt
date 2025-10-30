@@ -1,12 +1,12 @@
-${agent} 在 ${time} 的状态：
+${agent} at ${time} — current state:
 ${currently}
 
-${agent} 在 ${time} 结束时记得这些事情：
+At the end of ${time}, ${agent} should remember these items:
 ${plan}
 
-${agent} 在 ${time} 结束时的想法和感受：
+At the end of ${time}, ${agent}'s thoughts and feelings:
 ${thought}
 
-现在是 ${current_time}。根据上述情况，以第三人称，用一句话描述 ${agent} 在 ${current_time} 的状态，以反映 ${agent} 在 ${time} 结束时的想法和感受。
+Now it is ${current_time}. Based on the above, in third person and in one sentence, describe ${agent}'s state at ${current_time}, reflecting the thoughts and feelings at the end of ${time}.
 
-输出格式：状态: <新状态>
+Output format: State: <new state>

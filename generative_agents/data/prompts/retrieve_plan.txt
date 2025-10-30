@@ -1,8 +1,9 @@
 """
-${description}
+${base_desc}
+${plan}
 """
 
-根据以上内容，${agent} 在为 ${date} 制定计划时要记住什么？
-以 ${agent} 的视角，描述最需要记住的事情，如果有任何日程安排信息，要尽可能具体（包括时间和地点）。
-每一行只包含一个序号和一件事情。
-格式：1. <事情>
+Based on the above, what should ${agent} remember when planning for ${date}?
+From ${agent}'s perspective, describe the most important things to remember; if there are any schedule items, be as specific as possible (including time and location).
+Each line must contain exactly one index and one item.
+Format: 1. <item>

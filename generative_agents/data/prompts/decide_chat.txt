@@ -1,11 +1,10 @@
-背景：
+Background:
 """
 ${context}
 
-现在是 ${date}。${chat_history}
+Now it is ${date}.${chat_history}
 
 ${agent_status}
-${another_status}
 """
 
-根据上述背景判断，${agent} 是否有可能主动与 ${another} 对话？只用“是”或“否”回答：
+Based on the background above, is ${agent} likely to proactively start a conversation with ${another}? Answer with "Yes" or "No" only:

@@ -1,12 +1,12 @@
-<对话记录>
+<Conversation Log>
 ${conversation}
-</对话记录>
+</Conversation Log>
 
-<判断逻辑>
-如果最后一句话是疑问句，表明对话没有结束。
-如果最后一句话是在请求对方帮助，表明对话没有结束。
-如果最后一句话是想听对方的看法，表明对话没有结束。
-如果最后一句话是期待与对方继续讨论，表明对话没有结束。
-</判断逻辑>
+<Decision Logic>
+If the last sentence is a question, the conversation has not ended.
+If the last sentence requests help from the other side, the conversation has not ended.
+If the last sentence asks for the other side’s opinion, the conversation has not ended.
+If the last sentence expects further discussion with the other side, the conversation has not ended.
+</Decision Logic>
 
-根据以上<对话记录>和<判断逻辑>分析，${agent} 和 ${another} 的对话是否已经告一段落。只用“是”或“否”回答：
+Based on the above <Conversation Log> and <Decision Logic>, has the conversation between ${agent} and ${another} reached a stopping point? Answer with "Yes" or "No" only:

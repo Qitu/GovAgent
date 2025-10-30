@@ -1,26 +1,23 @@
-任务：将输入的内容格式转换为主谓宾结构。
-输出格式：(<主语>, <谓语>, <宾语>)
+Task: Convert the input into a subject-verb-object triple.
+Output format: (<subject>, <verb>, <object>)
 
-示例：
+Examples:
 
-输入：山姆正在吃早餐。
-输出：(<山姆>, <吃>, <早餐>)
+Input: Sam is eating breakfast.
+Output: (<Sam>, <eat>, <breakfast>)
 
-输入：俊园正在煮咖啡。
-输出：(<俊园>, <煮>, <咖啡>)
+Input: Junyuan is making coffee.
+Output: (<Junyuan>, <make>, <coffee>)
 
-输入：库克正在睡觉。
-输出：(<库克>, <正在>, <睡觉>)
+Input: Cook is sleeping.
+Output: (<Cook>, <is>, <sleep>)
 
-输入：迈克尔正在电脑上写电子邮件。
-输出：(<迈克尔>, <写>, <电子邮件>)
+Input: Michael is writing an email on the computer.
+Output: (<Michael>, <write>, <email>)
 
-输入：培西在教室里教学生。
-输出：(<培西>, <教>, <学生>)
+Input: Mary is running on a treadmill.
+Output: (<Mary>, <is>, <run>)
 
-输入：梅里正在跑步机上跑步。
-输出：(<梅里>, <正在>, <跑步>)
-
-根据示例和以下输入，直接输出答案。
-输入：${action}
-输出：
+Follow the examples and the input below, and output the answer directly.
+Input: ${action}
+Output:
