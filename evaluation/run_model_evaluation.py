@@ -61,8 +61,19 @@ _hallucination_model: AutoModelForSequenceClassification | None = None
 def _ensure_hallucination_model() -> AutoModelForSequenceClassification:
     global _hallucination_model
     if _hallucination_model is None:
+        token = (
+            os.getenv("HF_TOKEN")
+            or os.getenv("HUGGINGFACEHUB_API_TOKEN")
+            or ""
+        ).strip()
+        if not token:
+            raise RuntimeError(
+                "HF_TOKEN or HUGGINGFACEHUB_API_TOKEN is required to access vectara/hallucination_evaluation_model. "
+                "Request access at https://huggingface.co/vectara/hallucination_evaluation_model and set the token first."
+            )
         _hallucination_model = AutoModelForSequenceClassification.from_pretrained(
             "vectara/hallucination_evaluation_model",
+            token=token,
             trust_remote_code=True,
         )
     return _hallucination_model
