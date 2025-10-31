@@ -52,7 +52,7 @@ def test_is_awake_and_move(monkeypatch, tmp_path):
     agent = Agent(cfg, maze, conversation={}, logger=logger)
 
     # sleeping event (CN) -> not awake
-    agent.action = Action(Event("A", "正在", "睡觉", address=["w","s","a","o0"]))
+    agent.action = Action(Event("A", "正在", "Sleep", address=["w","s","a","o0"]))
     assert not agent.is_awake()
 
     # set a non-sleeping event -> awake

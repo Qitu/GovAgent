@@ -1,8 +1,8 @@
-"""错误处理模块"""
+"""Error handling module"""
 from flask import render_template
 
 def register_error_handlers(app):
-    """注册错误处理器"""
+    """Register error handlers"""
     
     @app.errorhandler(404)
     def not_found_error(error):

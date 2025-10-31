@@ -194,15 +194,21 @@ class Maze:
         return [self.tile_at(c) for c in coords]
 
     def get_around(self, coord, no_collision=True):
-        coords = [
+        candidates = [
             (coord[0] - 1, coord[1]),
             (coord[0] + 1, coord[1]),
             (coord[0], coord[1] - 1),
             (coord[0], coord[1] + 1),
         ]
-        if no_collision:
-            coords = [c for c in coords if not self.tile_at(c).collision]
-        return coords
+        valid_coords = []
+        for candidate in candidates:
+            x, y = candidate
+            if not (0 <= x < self.maze_width and 0 <= y < self.maze_height):
+                continue
+            if no_collision and self.tile_at(candidate).collision:
+                continue
+            valid_coords.append(candidate)
+        return valid_coords
 
     def get_address_tiles(self, address):
         addr = ":".join(address)

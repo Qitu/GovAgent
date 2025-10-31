@@ -1,12 +1,12 @@
 """
-模拟状态管理模块
-用于跟踪和管理模拟进程的状态
+Simulation status management module
+Used to track and manage the state of simulation processes
 """
 
 import threading
 from datetime import datetime
 
-# 全局模拟状态
+# Global simulation status
 simulation_status = {
     'running': False,
     'current_simulation': None,
@@ -17,21 +17,21 @@ simulation_status = {
     'process': None
 }
 
-# 线程锁
+# Thread lock
 status_lock = threading.Lock()
 
 def update_status(key, value):
-    """线程安全地更新状态"""
+    """Thread-safe status update"""
     with status_lock:
         simulation_status[key] = value
 
 def get_status():
-    """线程安全地获取状态"""
+    """Thread-safe status retrieval"""
     with status_lock:
         return simulation_status.copy()
 
 def reset_status():
-    """重置模拟状态"""
+    """Reset simulation status"""
     with status_lock:
         simulation_status.update({
             'running': False,
@@ -44,12 +44,12 @@ def reset_status():
         })
 
 def is_running():
-    """检查模拟是否正在运行"""
+    """Check whether a simulation is running"""
     with status_lock:
         return simulation_status['running']
 
 def set_running(simulation_name=None):
-    """设置模拟为运行状态"""
+    """Mark simulation as running"""
     with status_lock:
         simulation_status['running'] = True
         simulation_status['current_simulation'] = simulation_name
@@ -57,7 +57,7 @@ def set_running(simulation_name=None):
         simulation_status['progress'] = 0
 
 def set_stopped():
-    """设置模拟为停止状态"""
+    """Mark simulation as stopped"""
     with status_lock:
         simulation_status['running'] = False
         simulation_status['current_simulation'] = None

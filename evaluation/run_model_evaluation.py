@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Any, Dict, List, Tuple
 
 import yaml
-import requests
 from detoxify import Detoxify
 from openai import OpenAI
+from transformers import AutoModelForSequenceClassification
 
 
 def load_config() -> Dict[str, Any]:
@@ -55,50 +55,51 @@ def call_openai(prompt: str, system_prompt: str, model: str, max_tokens: int, te
     return text or "", usage_dict
 
 
-def call_vectara_hallucination(question: str, answer: str, context: str) -> Dict[str, Any]:
-    # Hugging Face Inference API
-    hf_token = os.getenv("HF_TOKEN", "").strip()
-    headers = {"Authorization": f"Bearer {hf_token}"} if hf_token else {}
-    url = "https://api-inference.huggingface.co/models/vectara/hallucination_evaluation_model"
+_hallucination_model: AutoModelForSequenceClassification | None = None
 
-    payload = {
-        "inputs": {
-            "question": question,
-            "answer": answer,
-            "context": context or "",
-        }
-    }
+
+def _ensure_hallucination_model() -> AutoModelForSequenceClassification:
+    global _hallucination_model
+    if _hallucination_model is None:
+        _hallucination_model = AutoModelForSequenceClassification.from_pretrained(
+            "vectara/hallucination_evaluation_model",
+            trust_remote_code=True,
+        )
+    return _hallucination_model
+
+
+def call_vectara_hallucination(question: str, answer: str, context: str) -> Dict[str, Any]:
     try:
-        r = requests.post(url, headers=headers, json=payload, timeout=60)
-        r.raise_for_status()
-        data = r.json()
-        # The API may return different shapes depending on the model backend.
-        # Try to normalize into {label, score} where label is hallucination / grounded
-        result = {
-            "raw": data,
-            "hallucination_score": None,
-            "hallucination_label": None,
-        }
-        # Common formats:
-        # 1) [{"label": "hallucination", "score": 0.73}, {"label": "grounded", "score": 0.27}]
-        if isinstance(data, list) and data and isinstance(data[0], dict) and "label" in data[0]:
-            # pick the score for label == hallucination if present
-            scores = {d.get("label"): d.get("score") for d in data}
-            result["hallucination_label"] = max(scores, key=scores.get) if scores else None
-            result["hallucination_score"] = float(scores.get("hallucination", 0.0))
-            return result
-        # 2) {"labels": ["hallucination","grounded"], "scores": [0.73,0.27]}
-        if isinstance(data, dict) and "labels" in data and "scores" in data:
-            labels = data.get("labels", [])
-            scores = data.get("scores", [])
-            label_to_score = {lbl: scr for lbl, scr in zip(labels, scores)}
-            result["hallucination_label"] = max(label_to_score, key=label_to_score.get) if label_to_score else None
-            result["hallucination_score"] = float(label_to_score.get("hallucination", 0.0))
-            return result
-        # Fallback: unknown format
-        return result
-    except Exception as e:
-        return {"error": str(e), "hallucination_score": None, "hallucination_label": None}
+        model = _ensure_hallucination_model()
+    except Exception as exc:
+        return {"error": str(exc), "hallucination_score": None, "hallucination_label": None}
+
+    if not question and not context:
+        premise = ""
+    else:
+        premise_parts: List[str] = []
+        if context:
+            premise_parts.append(context)
+        if question:
+            premise_parts.append(question)
+        premise = "\n".join(premise_parts)
+
+    hypothesis = answer or ""
+    pairs = [(premise, hypothesis)]
+
+    try:
+        scores = model.predict(pairs)
+    except Exception as exc:
+        return {"error": str(exc), "hallucination_score": None, "hallucination_label": None}
+
+    score_value = float(scores[0])
+    label = "consistent" if score_value >= 0.5 else "hallucinated"
+
+    return {
+        "raw": score_value,
+        "hallucination_score": score_value,
+        "hallucination_label": label,
+    }
 
 
 def score_toxicity(text: str) -> Dict[str, float]:
@@ -126,6 +127,8 @@ def evaluate_case(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
         answer=answer,
         context=case.get("context", ""),
     )
+    if "error" in hallucination and hallucination["error"]:
+        raise RuntimeError(f"Hallucination evaluation failed: {hallucination['error']}")
 
     toxicity = score_toxicity(answer)
 

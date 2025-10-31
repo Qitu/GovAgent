@@ -10,16 +10,16 @@ from .auth import login_required
 from .utils import get_simulation_list, get_recent_activities, get_analytics_data
 from .simulation_status import simulation_status
 
-# 从start.py导入personas
+# Import personas from start.py
 import sys
 sys.path.append('..')
 from start import personas
 
-# 导入compress模块的常量
+# Import constants from compress module
 try:
     from compress import frames_per_step, file_movement
 except ImportError:
-    # 如果无法导入，使用默认值
+    # Use default values if import fails
     frames_per_step = 60
     file_movement = "movement.json"
 
@@ -133,7 +133,7 @@ def simulation_detail(sim_name):
         flash('Simulation does not exist!', 'error')
         return redirect(url_for('main.simulations_management'))
     
-    # 获取模拟文件列表
+    # Retrieve simulation file list
     files = sorted(os.listdir(sim_path))
     json_files = [f for f in files if f.endswith('.json') and f != 'conversation.json']
     
@@ -144,7 +144,7 @@ def simulation_detail(sim_name):
         'created_time': datetime.fromtimestamp(os.path.getctime(sim_path)).strftime('%Y-%m-%d %H:%M:%S')
     }
     
-    # 获取最新的模拟状态
+    # Retrieve latest simulation status
     if json_files:
         latest_file = os.path.join(sim_path, json_files[-1])
         with open(latest_file, 'r', encoding='utf-8') as f:
@@ -163,7 +163,6 @@ def simulation_detail(sim_name):
 @login_required
 def analytics():
     """Data Analytics Page"""
-    # Get analytics data
     analytics_data = get_analytics_data()
     return render_template('crm/analytics.html', analytics=analytics_data)
 
@@ -175,11 +174,11 @@ def settings():
 
 @main_bp.route('/replay', methods=['GET'])
 def replay():
-    """Replay Page - 完整的回放功能，与replay.py完全一致"""
-    name = request.args.get("name", "")          # 记录名称
-    step = int(request.args.get("step", 0))      # 回放起始步数
-    speed = int(request.args.get("speed", 2))    # 回放速度（0~5）
-    zoom = float(request.args.get("zoom", 0.8))  # 画面缩放比例
+    """Replay Page - Identical functionality to replay.py"""
+    name = request.args.get("name", "")          # Simulation name
+    step = int(request.args.get("step", 0))      # Starting step
+    speed = int(request.args.get("speed", 2))    # Playback speed (0-5)
+    zoom = float(request.args.get("zoom", 0.8))  # Zoom level
 
     if len(name) > 0:
         compressed_folder = f"results/compressed/{name}"
@@ -196,7 +195,7 @@ def replay():
     if step < 1:
         step = 1
     if step > 1:
-        # 重新设置回放的起始时间
+        # Recalculate start time
         t = datetime.fromisoformat(params["start_datetime"])
         dt = t + timedelta(minutes=params["stride"]*(step-1))
         params["start_datetime"] = dt.isoformat()
@@ -204,7 +203,7 @@ def replay():
         if step >= len(params["all_movement"]):
             step = len(params["all_movement"])-1
 
-        # 重新设置Agent的初始位置
+        # Reset initial positions
         for agent in params["persona_init_pos"].keys():
             persona_init_pos = params["persona_init_pos"]
             persona_step_pos = params["all_movement"][f"{step}"]
@@ -238,7 +237,7 @@ def test_images():
             params = json.load(f)
         persona_names = list(params.get("persona_init_pos", {}).keys())
     else:
-        persona_names = ["阿伊莎", "克劳斯", "玛丽亚"]  # 默认测试名称
+        persona_names = ["Aisha", "Klaus", "Maria"]  # Default test names
     
     return render_template('crm/test_images.html', persona_names=persona_names)
 
@@ -346,7 +345,7 @@ def start_simulation():
     if not name or not start_time:
         return jsonify({'success': False, 'message': 'Please fill in required parameters'})
     
-    # 如果同名目录已存在，自动追加时间戳后缀，避免 start.py 进入 input 阻塞
+    # If directory with same name exists, append timestamp suffix to avoid blocking input in start.py
     checkpoints_dir = os.path.join('results', 'checkpoints')
     os.makedirs(checkpoints_dir, exist_ok=True)
     orig_name = name
@@ -358,12 +357,12 @@ def start_simulation():
     # Check if simulation is already running
     with simulation_lock:
         if simulation_process and simulation_process.poll() is None:
-            return jsonify({'success': False, 'message': '已有模拟在运行中'})
+            return jsonify({'success': False, 'message': 'A simulation is already running'})
         
-        # 清空之前的输出
+        # Clear previous output
         simulation_output = []
         
-        # 构建命令（注意：name 可能已被追加后缀）
+        # Build command (note: name may have suffix now)
         cmd = [
             'python3', 'start.py',
             '--name', name,
@@ -373,46 +372,46 @@ def start_simulation():
         ]
         
         try:
-            # 清空之前的输出
+            # Clear previous output
             simulation_output.clear()
             
-            # 设置环境变量禁用Python缓冲
+            # Set environment variables to disable Python buffering
             env = os.environ.copy()
             env['PYTHONUNBUFFERED'] = '1'
             env['PYTHONIOENCODING'] = 'utf-8'
             
-            # 启动模拟进程
+            # Launch simulation process
             simulation_process = subprocess.Popen(
                 cmd,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.STDOUT,
-                stdin=subprocess.DEVNULL,  # 防止任何交互式输入导致阻塞
+                stdin=subprocess.DEVNULL,  # Prevent interactive input from blocking
                 universal_newlines=True,
-                bufsize=0,  # 无缓冲，实时输出
-                env=env,    # 传递环境变量
-                cwd=os.getcwd()  # 确保在正确的工作目录
+                bufsize=0,  # Unbuffered for real-time output
+                env=env,
+                cwd=os.getcwd()
             )
             
-            # 更新模拟状态
+            # Update simulation status
             simulation_status['running'] = True
             simulation_status['current_simulation'] = name
             
-            # 启动输出监控线程
+            # Start output monitoring thread
             output_thread = threading.Thread(target=monitor_simulation_output)
             output_thread.daemon = True
             output_thread.start()
             
             return jsonify({
                 'success': True, 
-                'message': f'模拟 "{name}" 已开始启动，正在初始化环境...',
+                'message': f'Simulation "{name}" is starting and initializing...',
                 'simulation_name': name
             })
             
         except Exception as e:
-            return jsonify({'success': False, 'message': f'启动失败: {str(e)}'})
+            return jsonify({'success': False, 'message': f'Failed to start: {str(e)}'})
 
 def monitor_simulation_output():
-    """监控模拟输出的线程函数（稳定版：逐行读取）"""
+    """Monitor simulation output (stable version: line-by-line)"""
     global simulation_process, simulation_output
 
     if not simulation_process:
@@ -422,14 +421,11 @@ def monitor_simulation_output():
         with simulation_lock:
             simulation_output.append({
                 'timestamp': datetime.now().strftime('%H:%M:%S'),
-                'content': '🚀 模拟进程已启动，正在初始化...'
+                'content': '🚀 Simulation process started. Initializing...'
             })
 
-        # 逐行读取，避免 bytes/str 混用与复杂非阻塞
-        # universal_newlines=True 已启用，stdout 为文本模式
-        # 注意：readline 是阻塞的，但我们配合 poll() 与小睡眠实现近实时
+        # Read line-by-line to avoid bytes/str mixing and complex non-blocking logic
         while True:
-            # 若进程仍在运行，尽量按行读取
             if simulation_process.poll() is None:
                 line = simulation_process.stdout.readline()
                 if line:
@@ -443,10 +439,8 @@ def monitor_simulation_output():
                             if len(simulation_output) > 1000:
                                 simulation_output[:] = simulation_output[-1000:]
                 else:
-                    # 没有新行，短暂休息
                     time.sleep(0.05)
             else:
-                # 进程已结束，读尽剩余行
                 remainder = simulation_process.stdout.read()
                 if remainder:
                     for line in remainder.splitlines():
@@ -463,7 +457,7 @@ def monitor_simulation_output():
                 with simulation_lock:
                     simulation_output.append({
                         'timestamp': datetime.now().strftime('%H:%M:%S'),
-                        'content': f'✅ 模拟进程结束，退出码: {exit_code}'
+                        'content': f'✅ Simulation process finished. Exit code: {exit_code}'
                     })
                     simulation_status['running'] = False
                     simulation_status['current_simulation'] = None
@@ -473,7 +467,7 @@ def monitor_simulation_output():
         with simulation_lock:
             simulation_output.append({
                 'timestamp': datetime.now().strftime('%H:%M:%S'),
-                'content': f'❌ 监控输出时发生严重错误: {str(e)}'
+                'content': f'❌ Critical error while monitoring output: {str(e)}'
             })
             simulation_status['running'] = False
             simulation_status['current_simulation'] = None
@@ -481,20 +475,18 @@ def monitor_simulation_output():
 @main_bp.route('/simulation_output')
 @login_required
 def get_simulation_output():
-    """获取模拟输出"""
-    # 获取客户端最后接收的行数
+    """Retrieve simulation output"""
     last_line = int(request.args.get('last_line', 0))
     
     with simulation_lock:
         output_count = len(simulation_output)
         is_running = simulation_process and simulation_process.poll() is None
         
-        # 如果没有输出但有进程在运行，添加状态信息
         if output_count == 0 and is_running:
             return jsonify({
                 'output': [{
                     'timestamp': datetime.now().strftime('%H:%M:%S'),
-                    'content': '模拟进程正在启动中...',
+                    'content': 'Simulation process is starting...',
                     'line_number': 0
                 }],
                 'running': True,
@@ -505,7 +497,7 @@ def get_simulation_output():
             return jsonify({
                 'output': [{
                     'timestamp': datetime.now().strftime('%H:%M:%S'),
-                    'content': '等待模拟启动...',
+                    'content': 'Waiting for simulation to start...',
                     'line_number': 0
                 }],
                 'running': False,
@@ -513,7 +505,6 @@ def get_simulation_output():
                 'has_new_data': last_line == 0
             })
         
-        # 只返回新的输出行
         new_output = []
         if last_line < output_count:
             for i, line in enumerate(simulation_output[last_line:], start=last_line):
@@ -531,7 +522,7 @@ def get_simulation_output():
 @main_bp.route('/stop_simulation', methods=['POST'])
 @login_required
 def stop_simulation():
-    """停止模拟"""
+    """Stop simulation"""
     global simulation_process
     
     with simulation_lock:
@@ -545,8 +536,8 @@ def stop_simulation():
                 simulation_status['running'] = False
                 simulation_status['current_simulation'] = 'None'
                 
-                return jsonify({'success': True, 'message': '模拟已停止'})
+                return jsonify({'success': True, 'message': 'Simulation stopped'})
             except Exception as e:
-                return jsonify({'success': False, 'message': f'停止失败: {str(e)}'})
+                return jsonify({'success': False, 'message': f'Failed to stop: {str(e)}'})
         else:
-            return jsonify({'success': False, 'message': '没有运行中的模拟'})
+            return jsonify({'success': False, 'message': 'No running simulation found'})

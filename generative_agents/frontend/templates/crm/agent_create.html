@@ -88,7 +88,7 @@ document.getElementById('createAgentForm').addEventListener('submit', function(e
     const formData = new FormData(this);
     const data = Object.fromEntries(formData.entries());
     
-    // 显示加载状态
+    // 显示加载Status
     const submitBtn = this.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="mdi mdi-loading mdi-spin me-1"></i>Creating...';
@@ -112,7 +112,7 @@ document.getElementById('createAgentForm').addEventListener('submit', function(e
             }, 1500);
         } else {
             showAlert('error', result.message);
-            // 恢复按钮状态
+            // 恢复按钮Status
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
         }
@@ -120,7 +120,7 @@ document.getElementById('createAgentForm').addEventListener('submit', function(e
     .catch(error => {
         console.error('Error:', error);
         showAlert('error', 'Error occurred while creating agent');
-        // 恢复按钮状态
+        // 恢复按钮Status
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
     });

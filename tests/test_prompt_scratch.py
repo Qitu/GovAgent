@@ -56,7 +56,7 @@ def test_prompt_schedule_decompose_callback(monkeypatch):
     schedule = Schedule()
     plan = schedule.add_plan("do work", 30)
     cfg = s.prompt_schedule_decompose(plan, schedule)
-    resp = "1) ...*计划* Writing code（耗时:10, 剩余:20）\n2) ...*计划* Review（耗时:10, 剩余:10）"
+    resp = "1) ...*Plan* Writing code（耗时:10, 剩余:20）\n2) ...*Plan* Review（耗时:10, 剩余:10）"
     out = cfg["callback"](resp)
     assert out[0] == ("Writing code", 10) and out[1] == ("Review", 10)
 

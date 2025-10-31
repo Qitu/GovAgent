@@ -35,7 +35,7 @@ def get_location(address):
     return location
 
 
-# 插入第0帧数据（Agent的初始状态）
+# 插入第0帧数据（Agent的初始Status）
 def insert_frame0(init_pos, movement, agent_name):
     key = "0"
     if key not in movement.keys():
@@ -51,7 +51,7 @@ def insert_frame0(init_pos, movement, agent_name):
     movement[key][agent_name] = {
         "location": location,
         "movement": coord,
-        "description": "正在睡觉",
+        "description": "正在Sleep",
     }
     movement["description"][agent_name] = {
         "currently": json_data["currently"],
@@ -159,14 +159,14 @@ def generate_movement(checkpoints_folder, compressed_folder, compressed_file):
                         if len(action) < 1:
                             action = f'{agent_data["action"]["event"]["predicate"]}{agent_data["action"]["event"]["object"]}'
 
-                        # 判断该存档文件中当前Agent是否有新的对话（用于设置图标）
+                        # 判断该存档文件中当前Agent是否有新的Conversation（用于设置图标）
                         for persons in persons_in_conversation:
                             if agent_name in persons:
                                 had_conversation = True
                                 break
 
-                        # 针对睡觉和对话设置图标
-                        if "睡觉" in action:
+                        # 针对Sleep和Conversation设置图标
+                        if "Sleep" in action:
                             action = "😴 " + action
                         elif had_conversation:
                             action = "💬 " + action

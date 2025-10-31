@@ -71,7 +71,7 @@
 		// Load tilemap JSON
 		this.load.tilemapTiledJSON("map", "static/assets/village/tilemap/tilemap.json");
 
-		this.load.atlas("atlas", "static/assets/village/agents/伊莎贝拉/texture.png", filename="static/assets/village/agents/sprite.json");
+		this.load.atlas("atlas", "static/assets/village/agents/Crowd/texture.png", filename="static/assets/village/agents/sprite.json");
 
 		// Load persona atlases
 		for (var p in persona_names) {
@@ -87,21 +87,21 @@
 		// Add the main tileset
 		const mainTileset = map.addTilesetImage("5f4ad119bb2d8a8279ba90dad3a0d994", "main_tileset");
 
-		// Create layers - 根据tilemap.json的图层结构
-		const mainMapLayer = map.createLayer("主地图", mainTileset, 0, 0);
-		const block1Layer = map.createLayer("1街区", mainTileset, 0, 0);
-		const praisePlazaLayer = map.createLayer("2赞美广场", mainTileset, 0, 0);
-		const chinatownLayer = map.createLayer("2牛车水", mainTileset, 0, 0);
-		const funanLayer = map.createLayer("2Funan购物中心", mainTileset, 0, 0);
-		const cityStreetsLayer = map.createLayer("2市区街道", mainTileset, 0, 0);
-		const artScienceMuseumLayer = map.createLayer("2艺术科学博物馆", mainTileset, 0, 0);
-		const merlionParkLayer = map.createLayer("2鱼尾狮公园", mainTileset, 0, 0);
-		const gardensByBayLayer = map.createLayer("2滨海湾花园", mainTileset, 0, 0);
-		const ferrisWheelLayer = map.createLayer("2摩天轮", mainTileset, 0, 0);
-		const nationalGalleryLayer = map.createLayer("2国家美术馆", mainTileset, 0, 0);
-		const clarkeQuayLayer = map.createLayer("2克拉码头", mainTileset, 0, 0);
-		const cbdLayer = map.createLayer("2CBD区", mainTileset, 0, 0);
-		const marinaBaySandsLayer = map.createLayer("2金沙酒店", mainTileset, 0, 0);
+		// Create layers - 根据marinabay2_简约信息.json的图层结构
+		const mainMapLayer = map.createLayer("MainMap", mainTileset, 0, 0);
+		const streetLayer = map.createLayer("1Street", mainTileset, 0, 0);
+		const chijmesLayer = map.createLayer("2CHIJMES", mainTileset, 0, 0);
+		const chinatownLayer = map.createLayer("2Chinatown", mainTileset, 0, 0);
+		const funanLayer = map.createLayer("2Funan Mall", mainTileset, 0, 0);
+		const cityStreetsLayer = map.createLayer("2City_Street", mainTileset, 0, 0);
+		const artScienceMuseumLayer = map.createLayer("2ArtScience_Museum", mainTileset, 0, 0);
+		const merlionParkLayer = map.createLayer("2Merlion_Park", mainTileset, 0, 0);
+		const gardensByBayLayer = map.createLayer("2Gardens_by_the_Bay", mainTileset, 0, 0);
+		const singaporeFlyerLayer = map.createLayer("2Singapore_Flyer", mainTileset, 0, 0);
+		const nationalGalleryLayer = map.createLayer("2National_Gallery_Singapore", mainTileset, 0, 0);
+		const clarkeQuayLayer = map.createLayer("2Clarke_Quay", mainTileset, 0, 0);
+		const cbdLayer = map.createLayer("2CBD_Area", mainTileset, 0, 0);
+		const marinaBaySandsLayer = map.createLayer("2Marina_Bay_Sands", mainTileset, 0, 0);
 		const collisionsLayer = map.createLayer("collisions", mainTileset, 0, 0);
 
 		// Set collision properties
@@ -110,15 +110,15 @@
 		// Set layer depths
 		collisionsLayer.setDepth(-1);
 		if (mainMapLayer) mainMapLayer.setDepth(0);
-		if (block1Layer) block1Layer.setDepth(1);
-		if (praisePlazaLayer) praisePlazaLayer.setDepth(1);
+		if (streetLayer) streetLayer.setDepth(1);
+		if (chijmesLayer) chijmesLayer.setDepth(1);
 		if (chinatownLayer) chinatownLayer.setDepth(1);
 		if (funanLayer) funanLayer.setDepth(1);
 		if (cityStreetsLayer) cityStreetsLayer.setDepth(1);
 		if (artScienceMuseumLayer) artScienceMuseumLayer.setDepth(1);
 		if (merlionParkLayer) merlionParkLayer.setDepth(1);
 		if (gardensByBayLayer) gardensByBayLayer.setDepth(1);
-		if (ferrisWheelLayer) ferrisWheelLayer.setDepth(1);
+		if (singaporeFlyerLayer) singaporeFlyerLayer.setDepth(1);
 		if (nationalGalleryLayer) nationalGalleryLayer.setDepth(1);
 		if (clarkeQuayLayer) clarkeQuayLayer.setDepth(1);
 		if (cbdLayer) cbdLayer.setDepth(1);

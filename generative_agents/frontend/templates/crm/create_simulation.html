@@ -18,7 +18,7 @@
     </div>
 
     <div class="row">
-        <!-- 左侧：模拟配置表单 -->
+        <!-- Left: simulation configuration form -->
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header">
@@ -65,14 +65,14 @@
                         <div class="mb-3">
                             <div class="alert alert-info">
                                 <i class="mdi mdi-information-outline me-1"></i>
-                                <strong>Tip：</strong>The simulation will create an urban governance simulation sandbox containing multiple intelligent agents. Each agent possesses its own personality, objectives, and behavioral patterns.
+                                <strong>Tip:</strong> The simulation will create an urban governance sandbox containing multiple intelligent agents. Each agent has unique personalities, goals, and behavior patterns.
                             </div>
                         </div>
 
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary" id="startBtn">
                                 <i class="mdi mdi-play me-1"></i>
-                                Start Simulate
+                                Start Simulation
                             </button>
                             <button type="button" class="btn btn-danger" id="stopBtn" style="display: none;">
                                 <i class="mdi mdi-stop me-1"></i>
@@ -83,7 +83,7 @@
                 </div>
             </div>
 
-            <!-- 模拟状态卡片 -->
+            <!-- Simulation status card -->
             <div class="card">
                 <div class="card-header">
                     <h5 class="card-title mb-0">
@@ -95,28 +95,28 @@
                     <div class="row text-center">
                         <div class="col-4">
                             <div class="mb-2">
-                                <span class="badge badge-soft-primary fs-6" id="statusBadge">待启动</span>
+                                <span class="badge badge-soft-primary fs-6" id="statusBadge">Pending</span>
                             </div>
-                            <p class="text-muted mb-0 fs-6">运行状态</p>
+                            <p class="text-muted mb-0 fs-6">Run State</p>
                         </div>
                         <div class="col-4">
                             <div class="mb-2">
-                                <h5 class="mb-0" id="currentSim">无</h5>
+                                <h5 class="mb-0" id="currentSim">None</h5>
                             </div>
-                            <p class="text-muted mb-0 fs-6">当前模拟</p>
+                            <p class="text-muted mb-0 fs-6">Current Simulation</p>
                         </div>
                         <div class="col-4">
                             <div class="mb-2">
                                 <h5 class="mb-0" id="runTime">00:00:00</h5>
                             </div>
-                            <p class="text-muted mb-0 fs-6">运行时间</p>
+                            <p class="text-muted mb-0 fs-6">Elapsed Time</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 右侧：实时控制台 -->
+        <!-- Right: real-time console -->
         <div class="col-lg-6">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
@@ -131,15 +131,15 @@
                         </button>
                         <button class="btn btn-sm btn-outline-primary" id="toggleAutoScroll">
                             <i class="mdi mdi-arrow-down"></i>
-                            Auto scroll
+                            Auto Scroll
                         </button>
                     </div>
                 </div>
                 <div class="card-body p-0">
                     <div id="console" class="console-output">
                         <div class="console-line">
-                            <span class="console-timestamp">[系统]</span>
-                            <span class="console-content">等待模拟启动...</span>
+                            <span class="console-timestamp">[System]</span>
+                            <span class="console-content">Waiting for simulation to start...</span>
                         </div>
                     </div>
                 </div>
@@ -227,25 +227,25 @@ let lastLineReceived = 0;
 let isFirstFetch = true;
 
 $(document).ready(function() {
-    // 表单提交
+    // Submit form
     $('#simulationForm').on('submit', function(e) {
         e.preventDefault();
         startSimulation();
     });
 
-    // 停止模拟
+    // Stop simulation
     $('#stopBtn').on('click', function() {
         stopSimulation();
     });
 
-    // 清空控制台
+    // Clear console
     $('#clearConsole').on('click', function() {
-        $('#console').html('<div class="console-line"><span class="console-timestamp">[系统]</span><span class="console-content">控制台已清空</span></div>');
+        $('#console').html('<div class="console-line"><span class="console-timestamp">[System]</span><span class="console-content">Console cleared</span></div>');
         lastLineReceived = 0;
         isFirstFetch = true;
     });
 
-    // 切换自动滚动
+    // Toggle auto scroll
     $('#toggleAutoScroll').on('click', function() {
         autoScroll = !autoScroll;
         $(this).toggleClass('btn-outline-primary btn-primary');
@@ -254,14 +254,14 @@ $(document).ready(function() {
         }
     });
 
-    // 定期获取输出 - 更频繁的更新
+    // Fetch output frequently
     setInterval(fetchOutput, 500);
 });
 
 function startSimulation() {
     const formData = new FormData($('#simulationForm')[0]);
     
-    $('#startBtn').prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin me-1"></i>启动中...');
+    $('#startBtn').prop('disabled', true).html('<i class="mdi mdi-loading mdi-spin me-1"></i>Starting...');
     
     $.ajax({
         url: '{{ url_for("main.start_simulation") }}',
@@ -273,22 +273,21 @@ function startSimulation() {
             if (response.success) {
                 $('#startBtn').hide();
                 $('#stopBtn').show();
-                $('#statusBadge').removeClass('badge-soft-primary').addClass('badge-soft-success').text('运行中');
+                $('#statusBadge').removeClass('badge-soft-primary').addClass('badge-soft-success').text('Running');
                 $('#currentSim').text(response.simulation_name);
                 
-                // 开始计时
                 startTime = new Date();
                 timerInterval = setInterval(updateTimer, 1000);
                 
-                addConsoleMessage('系统', response.message, 'success');
+                addConsoleMessage('System', response.message, 'success');
             } else {
-                addConsoleMessage('错误', response.message, 'error');
-                $('#startBtn').prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulate');
+                addConsoleMessage('Error', response.message, 'error');
+                $('#startBtn').prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulation');
             }
         },
         error: function() {
-            addConsoleMessage('错误', '启动请求失败', 'error');
-            $('#startBtn').prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulate');
+            addConsoleMessage('Error', 'Failed to send start request', 'error');
+            $('#startBtn').prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulation');
         }
     });
 }
@@ -300,23 +299,22 @@ function stopSimulation() {
         success: function(response) {
             if (response.success) {
                 $('#stopBtn').hide();
-                $('#startBtn').show().prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulate');
-                $('#statusBadge').removeClass('badge-soft-success').addClass('badge-soft-danger').text('已停止');
-                $('#currentSim').text('无');
+                $('#startBtn').show().prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulation');
+                $('#statusBadge').removeClass('badge-soft-success').addClass('badge-soft-danger').text('Stopped');
+                $('#currentSim').text('None');
                 
-                // 停止计时
                 if (timerInterval) {
                     clearInterval(timerInterval);
                     timerInterval = null;
                 }
                 
-                addConsoleMessage('系统', response.message, 'warning');
+                addConsoleMessage('System', response.message, 'warning');
             } else {
-                addConsoleMessage('错误', response.message, 'error');
+                addConsoleMessage('Error', response.message, 'error');
             }
         },
         error: function() {
-            addConsoleMessage('错误', '停止请求失败', 'error');
+            addConsoleMessage('Error', 'Failed to send stop request', 'error');
         }
     });
 }
@@ -329,10 +327,8 @@ function fetchOutput() {
             last_line: lastLineReceived
         },
         success: function(response) {
-            // 只处理新的输出
             if (response.has_new_data && response.output && response.output.length > 0) {
                 response.output.forEach(function(line) {
-                    // 避免重复添加相同的状态消息
                     if (isFirstFetch || !isStatusMessage(line.content)) {
                         addConsoleMessage(line.timestamp, line.content);
                         lastLineReceived = line.line_number + 1;
@@ -341,13 +337,12 @@ function fetchOutput() {
                 isFirstFetch = false;
             }
             
-            // 更新运行状态
             updateSimulationStatus(response.running);
         },
         error: function(xhr, status, error) {
-            console.error('获取输出失败:', error);
-            if (!isFirstFetch) {  // 避免在初始化时显示错误
-                addConsoleMessage('错误', '无法获取模拟输出: ' + error, 'error');
+            console.error('Failed to fetch output:', error);
+            if (!isFirstFetch) {
+                addConsoleMessage('Error', 'Unable to retrieve simulation output: ' + error, 'error');
             }
         }
     });
@@ -355,10 +350,10 @@ function fetchOutput() {
 
 function isStatusMessage(content) {
     const statusMessages = [
-        '等待模拟启动',
-        '模拟进程正在启动中',
-        '等待模拟启动...',
-        '模拟进程正在启动中...'
+        'Waiting for simulation to start',
+        'Simulation process is starting',
+        'Waiting for simulation to start...',
+        'Simulation process is starting...'
     ];
     return statusMessages.some(msg => content.includes(msg));
 }
@@ -368,25 +363,23 @@ function updateSimulationStatus(isRunning) {
     const currentStatus = statusBadge.text();
     
     if (isRunning && !statusBadge.hasClass('badge-soft-success')) {
-        // 模拟正在运行但状态未更新
         statusBadge.removeClass('badge-soft-primary badge-soft-danger')
                   .addClass('badge-soft-success')
-                  .text('运行中');
+                  .text('Running');
     } else if (!isRunning && statusBadge.hasClass('badge-soft-success')) {
-        // 模拟已停止
         $('#stopBtn').hide();
-        $('#startBtn').show().prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulate');
+        $('#startBtn').show().prop('disabled', false).html('<i class="mdi mdi-play me-1"></i>Start Simulation');
         statusBadge.removeClass('badge-soft-success')
                   .addClass('badge-soft-primary')
-                  .text('已完成');
-        $('#currentSim').text('无');
+                  .text('Completed');
+        $('#currentSim').text('None');
         
         if (timerInterval) {
             clearInterval(timerInterval);
             timerInterval = null;
         }
         
-        addConsoleMessage('系统', '模拟已完成', 'success');
+        addConsoleMessage('System', 'Simulation completed', 'success');
     }
 }
 

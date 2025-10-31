@@ -218,7 +218,7 @@ class Associate:
         return self._retrieve_nodes("thought", text)
 
     def retrieve_chats(self, name=None):
-        text = ("对话 " + name) if name else None
+        text = ("Conversation " + name) if name else None
         return self._retrieve_nodes("chat", text)
 
     def retrieve_focus(self, focus, retrieve_max=30, reduce_all=True):

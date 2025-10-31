@@ -1,7 +1,7 @@
 ${base_desc}
 
-通常，${lifestyle}
+Ususally, ${lifestyle}
 
-根据上述提示，输出 ${agent} 的起床时间。只输出时间（24小时制），不要包含其他内容。
-格式要求：hh:mm
-示例：6:00
+Based on the tips above，print the time of ${agent} get up。only prin the time(24hours), do not include other things.
+Format：hh:mm
+Example：6:00

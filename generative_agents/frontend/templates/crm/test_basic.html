@@ -102,12 +102,12 @@
         var agentItems = document.querySelectorAll('.agent-item');
         agentItems.forEach(function(item) {
             item.addEventListener('click', function() {
-                // 移除所有活动状态
+                // 移除所有活动Status
                 agentItems.forEach(function(i) {
                     i.classList.remove('active');
                 });
                 
-                // 添加活动状态
+                // 添加活动Status
                 this.classList.add('active');
                 
                 // 显示代理信息

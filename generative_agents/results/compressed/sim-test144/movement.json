@@ -1,0 +1,1026 @@
+{
+  "start_datetime": "2025-02-13T09:30:00",
+  "stride": 10,
+  "sec_per_step": 10,
+  "persona_init_pos": {
+    "Crowd": [
+      6,
+      4
+    ],
+    "Police": [
+      2,
+      38
+    ],
+    "Orchestra": [
+      12,
+      32
+    ]
+  },
+  "all_movement": {
+    "description": {
+      "Crowd": {
+        "currently": "Orderly movement and waiting within the CHIJMES event plaza; follows on-site guidance; no item usage involved",
+        "scratch": {
+          "age": 28,
+          "innate": "Highly social; enjoys lively atmospheres; has basic spatial awareness and path planning ability",
+          "learned": "Experience participating in large events; understands crowd flow patterns; has fundamental safety awareness",
+          "lifestyle": "Likes attending large celebrations; good at finding suitable spots in crowds; adjusts movement based on density",
+          "daily_plan": "Move and wait orderly within CHIJMES plazas according to guidance; observe congestion and adjust stopping positions; no item-related operations",
+          "living_area": "CHIJMES event gathering zone",
+          "daily_schedule_hourly_org": "18:00-19:00 Arrive and select a spot around CHIJMES plaza, 19:00-22:00 Slow movement through CHIJMES walkways per guidance, 22:00-00:30 Wait in place or nearby corridors, 00:30-01:30 Orderly dispersal toward City_Street exits",
+          "memory_stream": [
+            {
+              "description": "Tends to follow the majority movement but proactively seeks more comfortable space when over-crowded",
+              "type": "subconscious"
+            },
+            {
+              "description": "More willing to cooperate upon seeing clear guidance or orderly queues; avoids conflict with others",
+              "type": "subconscious"
+            },
+            {
+              "description": "Feels safer in the presence of police/security and tends to linger or slow down nearby",
+              "type": "subconscious"
+            },
+            {
+              "description": "Sensitive to crowding, noise, and pushing; prefers open and well-lit areas",
+              "type": "subconscious"
+            },
+            {
+              "description": "When waiting, prefers simple, clear feedback on time/direction to reduce uncertainty",
+              "type": "subconscious"
+            }
+          ],
+          "agent_type": "crowd",
+          "behavior_patterns": {
+            "movement_speed": "normal",
+            "crowd_following": true,
+            "path_optimization": true,
+            "density_awareness": true,
+            "waiting_tolerance": "high"
+          },
+          "special_abilities": [
+            "Basic movement: can move normally within crowds",
+            "Path selection: chooses optimal paths based on density",
+            "Waiting behavior: can patiently wait in designated areas",
+            "Density awareness: perceives surrounding density and reacts",
+            "Following behavior: can follow crowd flow"
+          ]
+        }
+      },
+      "Police": {
+        "currently": "Patrolling and supervising the Chinatown corridors as planned; monitoring crowd density and providing guidance; no item usage involved",
+        "scratch": {
+          "age": 35,
+          "innate": "Strong sense of responsibility; sharp observation and quick response; adept at handling emergencies",
+          "learned": "Professionally trained in crowd management; familiar with large-event security procedures; experienced in crisis handling",
+          "lifestyle": "Acts strictly according to duty plans; prioritizes public safety; has a strong sense of mission",
+          "daily_plan": "Patrol along preset routes through Chinatown streets and key access corridors; monitor and guide the crowd; support congested areas when necessary; no item-related operations",
+          "living_area": "Chinatown security sector",
+          "daily_schedule_hourly_org": "17:00-18:00 On duty and route familiarization in Chinatown, 18:00-21:00 Fixed-point and route patrol across Chinatown corridors, 21:00-00:30 Key-area monitoring and guidance near CHIJMES access points, 00:30-02:00 Assist orderly dispersal along City_Street bridges",
+          "memory_stream": [
+            {
+              "description": "Prioritizes crowd safety and order; proactively steps forward to potential risks while remaining restrained",
+              "type": "subconscious"
+            },
+            {
+              "description": "Instinctively slows down and lowers voice near minors, elderly, or people with mobility difficulties, prioritizing care",
+              "type": "subconscious"
+            },
+            {
+              "description": "Highly sensitive to suspicious rapid gathering and reverse flows; prefers observe-then-tiered intervention",
+              "type": "subconscious"
+            },
+            {
+              "description": "Communication emphasizes brevity, repetition, and actionability to reduce misunderstanding in noisy environments",
+              "type": "subconscious"
+            },
+            {
+              "description": "Before escalation, prefers soft measures (reminders, guidance), escalating only when necessary",
+              "type": "subconscious"
+            }
+          ],
+          "agent_type": "police",
+          "behavior_patterns": {
+            "movement_speed": "fast",
+            "patrol_route": "systematic",
+            "intervention_threshold": "medium",
+            "communication_active": true,
+            "authority_level": "high"
+          },
+          "special_abilities": [
+            "Patrol: systematic patrol along predefined routes",
+            "Guidance: proactively guides crowds when gatherings occur",
+            "Intervention: timely intervention for abnormal situations",
+            "Communication: keeps contact with command center and other officers",
+            "Rapid response: quickly reaches areas needing support"
+          ]
+        }
+      },
+      "Orchestra": {
+        "currently": "Stationary at the City_Street monitoring node, observing the overall situation, analyzing crowd flow, and dispatching police resources; no item usage involved",
+        "scratch": {
+          "age": 42,
+          "innate": "Possesses excellent global situational awareness and strategic thinking; adept at data analysis and decision-making",
+          "learned": "Rich experience in managing large events; proficient in crowd dynamics; capable of risk anticipation",
+          "lifestyle": "Monitors activity progress from a global perspective, forecasts potential risks through data analysis, and coordinates resources",
+          "daily_plan": "At a fixed City_Street monitoring point, conduct global monitoring and resource dispatch based on data and observation; when necessary, reassign idle police forces to support congested areas; no item-related operations",
+          "living_area": "City_Street command overlook",
+          "daily_schedule_hourly_org": "17:00-18:00 System checks and situational assessment from City_Street hub, 18:00-21:00 Real-time monitoring of flows between CHIJMES and Chinatown, 21:00-00:30 Peak-hour coordination across City_Street corridors, 00:30-02:00 Dispersal coordination and wrap-up for Funan Mall and adjacent sectors",
+          "memory_stream": [
+            {
+              "description": "Always prioritize overall stability and public safety; prefer caution over aggression",
+              "type": "subconscious"
+            },
+            {
+              "description": "Instinctively heightens alertness when crowd density rises; tends to pre-reserve buffers and redundant channels",
+              "type": "subconscious"
+            },
+            {
+              "description": "Prefers data-driven decisions with multi-source corroboration; avoids emotional or single-signal misjudgments",
+              "type": "subconscious"
+            },
+            {
+              "description": "Guidance-before-intervention; prioritize soft measures and resource reallocation over hard control",
+              "type": "subconscious"
+            },
+            {
+              "description": "When uncertainty is high, first gather more signals and close the loop with frontline teams before deciding",
+              "type": "subconscious"
+            }
+          ],
+          "agent_type": "orchestrator",
+          "behavior_patterns": {
+            "movement_speed": "stationary",
+            "monitoring_scope": "global",
+            "decision_making": "data_driven",
+            "coordination_style": "proactive",
+            "risk_assessment": "continuous"
+          },
+          "special_abilities": [
+            "Situation monitoring: real-time monitoring of crowd status across the entire event area",
+            "Density analysis: analyze crowd density by region and forecast trend changes",
+            "Flow coordination: macro-level coordination and guidance of crowd movement",
+            "Risk early warning: identify potential safety risks and issue early alerts",
+            "Resource allocation: coordinate reasonable allocation of police and other resources",
+            "Emergency command: unified command and coordination under emergencies"
+          ],
+          "monitoring_systems": [
+            "Crowd density monitoring system",
+            "Video surveillance network",
+            "Communication command system",
+            "Data analytics platform"
+          ],
+          "coordination_protocols": {
+            "density_threshold": "Initiate guidance when density exceeds 4 people per square meter",
+            "flow_conflict_detection": "Intervene promptly upon detecting counter-flow or opposing streams",
+            "emergency_response": "Level-3 emergency response mechanism",
+            "resource_allocation": "Dynamic reallocation principles"
+          }
+        }
+      }
+    },
+    "conversation": {
+      "20250213-09:30": ""
+    },
+    "0": {
+      "Crowd": {
+        "location": "CHIJMES",
+        "movement": [
+          6,
+          4
+        ],
+        "description": "正在Sleep"
+      },
+      "Police": {
+        "location": "Chinatown",
+        "movement": [
+          2,
+          38
+        ],
+        "description": "正在Sleep"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "movement": [
+          12,
+          32
+        ],
+        "description": "正在Sleep"
+      }
+    },
+    "1": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          4
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          38
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          32
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "2": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          5
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          37
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          33
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "3": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          6
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          36
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          34
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "4": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          7
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          35
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          35
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "5": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          8
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          34
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          36
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "6": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          9
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          33
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          37
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "7": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          10
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          32
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          38
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "8": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          31
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          39
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "9": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          12
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          30
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          40
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "10": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          13
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          29
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          11,
+          40
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "11": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          14
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          28
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          10,
+          40
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "12": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          15
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          27
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          9,
+          40
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "13": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          16
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          26
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Orchestra": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          8,
+          40
+        ],
+        "action": "生成警力调度建议方案"
+      }
+    },
+    "14": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          17
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          25
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "15": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          18
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          24
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "16": {
+      "Crowd": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          5,
+          18
+        ],
+        "action": "观察周围人群密度"
+      },
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          23
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "17": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          22
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "18": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          21
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "19": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          20
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "20": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          19
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "21": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          18
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "22": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          17
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "23": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          16
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "24": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          15
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "25": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          14
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "26": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          13
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "27": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          12
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "28": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          2,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "29": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          3,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "30": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          4,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "31": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          5,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "32": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          6,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "33": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          7,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "34": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          8,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "35": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          9,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "36": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          10,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "37": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          11,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "38": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          12,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "39": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          13,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "40": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          14,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "41": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          15,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "42": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          16,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "43": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          17,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "44": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          18,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "45": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          19,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "46": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          20,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "47": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          21,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "48": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          22,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "49": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          23,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "50": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          24,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "51": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          25,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "52": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          26,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "53": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          27,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "54": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          28,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "55": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          29,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "56": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          30,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "57": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          31,
+          11
+        ],
+        "action": "前往 Chinatown，Chinatown"
+      }
+    },
+    "58": {
+      "Police": {
+        "location": "Chinatown，Chinatown",
+        "movement": [
+          32,
+          11
+        ],
+        "action": "观察周围人群动态"
+      }
+    },
+    "59": {},
+    "60": {}
+  }
+}

@@ -1,0 +1,119 @@
+start_datetime
+2025-02-13T09:30:00
+stride
+sec_per_step
+persona_init_pos
+Crowd
+Crowd2
+Crowd3
+Crowd4
+Crowd5
+Police
+Police2
+Orchestra
+all_movement
+description
+currently
+在 CHIJMES 活动广场有序移动和等待，遵循现场指引，无物品使用
+scratch
+age
+innate
+learned
+lifestyle
+daily_plan
+按照指引在 CHIJMES 广场内有序移动和等待，观察拥堵并调整停留位置，无需使用物品
+living_area
+CHIJMES 活动聚集区
+daily_schedule_hourly_org
+18:00-19:00 抵达并在 CHIJMES 广场周边选定位置，19:00-22:00 按指引缓步穿行 CHIJMES 走道，22:00-00:30 在原地或附近通道等待，00:30-01:30 有序朝 City_Street 出口疏散
+memory_stream
+type
+subconscious
+agent_type
+crowd
+behavior_patterns
+movement_speed
+normal
+crowd_following
+path_optimization
+density_awareness
+waiting_tolerance
+high
+special_abilities
+Patrolling and supervising the Chinatown corridors as planned; monitoring crowd density and providing guidance; no item usage involved
+Strong sense of responsibility; sharp observation and quick response; adept at handling emergencies
+Professionally trained in crowd management; familiar with large-event security procedures; experienced in crisis handling
+Acts strictly according to duty plans; prioritizes public safety; has a strong sense of mission
+Patrol along preset routes through Chinatown streets and key access corridors; monitor and guide the crowd; support congested areas when necessary; no item-related operations
+Chinatown security sector
+17:00-18:00 On duty and route familiarization in Chinatown, 18:00-21:00 Fixed-point and route patrol across Chinatown corridors, 21:00-00:30 Key-area monitoring and guidance near CHIJMES access points, 00:30-02:00 Assist orderly dispersal along City_Street bridges
+Prioritizes crowd safety and order; proactively steps forward to potential risks while remaining restrained
+Instinctively slows down and lowers voice near minors, elderly, or people with mobility difficulties, prioritizing care
+Highly sensitive to suspicious rapid gathering and reverse flows; prefers observe-then-tiered intervention
+Communication emphasizes brevity, repetition, and actionability to reduce misunderstanding in noisy environments
+Before escalation, prefers soft measures (reminders, guidance), escalating only when necessary
+police
+fast
+patrol_route
+systematic
+intervention_threshold
+medium
+communication_active
+authority_level
+Patrol: systematic patrol along predefined routes
+Guidance: proactively guides crowds when gatherings occur
+Intervention: timely intervention for abnormal situations
+Communication: keeps contact with command center and other officers
+Rapid response: quickly reaches areas needing support
+Stationary at the City_Street monitoring node, observing the overall situation, analyzing crowd flow, and dispatching police resources; no item usage involved
+Possesses excellent global situational awareness and strategic thinking; adept at data analysis and decision-making
+Rich experience in managing large events; proficient in crowd dynamics; capable of risk anticipation
+Monitors activity progress from a global perspective, forecasts potential risks through data analysis, and coordinates resources
+At a fixed City_Street monitoring point, conduct global monitoring and resource dispatch based on data and observation; when necessary, reassign idle police forces to support congested areas; no item-related operations
+City_Street command overlook
+17:00-18:00 System checks and situational assessment from City_Street hub, 18:00-21:00 Real-time monitoring of flows between CHIJMES and Chinatown, 21:00-00:30 Peak-hour coordination across City_Street corridors, 00:30-02:00 Dispersal coordination and wrap-up for Funan Mall and adjacent sectors
+Always prioritize overall stability and public safety; prefer caution over aggression
+Instinctively heightens alertness when crowd density rises; tends to pre-reserve buffers and redundant channels
+Prefers data-driven decisions with multi-source corroboration; avoids emotional or single-signal misjudgments
+Guidance-before-intervention; prioritize soft measures and resource reallocation over hard control
+When uncertainty is high, first gather more signals and close the loop with frontline teams before deciding
+orchestrator
+stationary
+monitoring_scope
+global
+decision_making
+data_driven
+coordination_style
+proactive
+risk_assessment
+continuous
+Situation monitoring: real-time monitoring of crowd status across the entire event area
+Density analysis: analyze crowd density by region and forecast trend changes
+Flow coordination: macro-level coordination and guidance of crowd movement
+Risk early warning: identify potential safety risks and issue early alerts
+Resource allocation: coordinate reasonable allocation of police and other resources
+Emergency command: unified command and coordination under emergencies
+monitoring_systems
+Crowd density monitoring system
+Video surveillance network
+Communication command system
+Data analytics platform
+coordination_protocols
+density_threshold
+Initiate guidance when density exceeds 4 people per square meter
+flow_conflict_detection
+Intervene promptly upon detecting counter-flow or opposing streams
+emergency_response
+Level-3 emergency response mechanism
+resource_allocation
+Dynamic reallocation principles
+conversation
+location
+CHIJMES
+movement
+正在Sleep
+Chinatown
+City_Street
+Chinatown，Chinatown
+action
+前往 Chinatown，Chinatown

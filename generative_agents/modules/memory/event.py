@@ -14,8 +14,8 @@ class Event:
         self.subject = subject
         # self.predicate = predicate or "is"
         # self.object = object or "idle"
-        self.predicate = predicate or "此时"
-        self.object = object or "空闲"
+        self.predicate = predicate or "Now"
+        self.object = object or "Idle"
         self._describe = describe or ""
         self.address = address or []
         self.emoji = emoji or ""
@@ -50,8 +50,8 @@ class Event:
     def update(self, predicate=None, object=None, describe=None):
         # self.predicate = predicate or "is"
         # self.object = object or "idle"
-        self.predicate = predicate or "此时"
-        self.object = object or "空闲"
+        self.predicate = predicate or "Now"
+        self.object = object or "Idle"
         self._describe = describe or self._describe
 
     def to_id(self):

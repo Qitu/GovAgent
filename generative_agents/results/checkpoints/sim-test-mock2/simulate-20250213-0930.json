@@ -46,70 +46,70 @@
         "daily_schedule": [
           {
             "idx": 0,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 0,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 1,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 60,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 2,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 120,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 3,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 180,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 4,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 240,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 5,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 300,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 6,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 360,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 7,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 420,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 8,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 480,
             "duration": 60,
             "decompose": {}
           },
           {
             "idx": 9,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 540,
             "duration": 60,
             "decompose": [
@@ -147,7 +147,7 @@
           },
           {
             "idx": 10,
-            "describe": "睡觉",
+            "describe": "Sleep",
             "start": 600,
             "duration": 60,
             "decompose": {}
@@ -260,7 +260,7 @@
         "event": {
           "subject": "人群智能体",
           "predicate": "正在",
-          "object": "睡觉",
+          "object": "Sleep",
           "describe": "",
           "address": [
             "滨海湾公园",
