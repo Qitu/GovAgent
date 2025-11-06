@@ -2,9 +2,12 @@ import os
 import json
 import argparse
 from datetime import datetime
+from pathlib import Path
 
 from modules.maze import Maze
 from start import personas
+from db import repository
+from db.session import ensure_engine
 
 file_markdown = "simulation.md"
 file_movement = "movement.json"
@@ -12,39 +15,47 @@ file_movement = "movement.json"
 frames_per_step = 60  # 每个step包含的帧数
 
 
-# 从存档文件中读取stride
-def get_stride(json_files):
-    if len(json_files) < 1:
+def load_history(sim_name: str, checkpoints_folder: Path):
+    ensure_engine()
+    steps = repository.get_steps_for_run(sim_name)
+    if steps:
+        history = [step.state for step in steps]
+        conversation = repository.get_conversation_map(sim_name)
+        return history, conversation
+
+    conversation_file = checkpoints_folder / "conversation.json"
+    conversation = {}
+    if conversation_file.exists():
+        conversation = json.loads(conversation_file.read_text(encoding="utf-8"))
+
+    json_files = sorted([
+        p for p in checkpoints_folder.glob("*.json") if p.name != "conversation.json"
+    ])
+
+    history = [json.loads(p.read_text(encoding="utf-8")) for p in json_files]
+    return history, conversation
+
+
+def get_stride(history):
+    if not history:
         return 1
-
-    with open(json_files[-1], "r", encoding="utf-8") as f:
-        config = json.load(f)
-
-    return config["stride"]
+    return int(history[0].get("stride", 1))
 
 
-# 将address转换为字符串
 def get_location(address):
-    # 仅为兼容原版
-    # if address[0] == "<waiting>" or address[0] == "<persona>":
-    #     return None
-
-    # 不需要显示address第一级（"the Ville"）
     location = "，".join(address[1:])
-
     return location
 
 
-# 插入第0帧数据（Agent的初始Status）
 def insert_frame0(init_pos, movement, agent_name):
     key = "0"
-    if key not in movement.keys():
-        movement[key] = dict()
+    if key not in movement:
+        movement[key] = {}
 
     json_path = f"frontend/static/assets/village/agents/{agent_name}/agent.json"
     with open(json_path, "r", encoding="utf-8") as f:
         json_data = json.load(f)
-        address = json_data["spatial"]["address"]["living_area"]
+        address = json_data["spatial"]["address"].get("living_area", [])
     location = get_location(address)
     coord = json_data["coord"]
     init_pos[agent_name] = coord
@@ -53,152 +64,117 @@ def insert_frame0(init_pos, movement, agent_name):
         "movement": coord,
         "description": "正在Sleep",
     }
-    movement["description"][agent_name] = {
+    movement.setdefault("description", {})[agent_name] = {
         "currently": json_data["currently"],
         "scratch": json_data["scratch"],
     }
 
 
-# 从所有存档文件中提取数据（用于回放）
-def generate_movement(checkpoints_folder, compressed_folder, compressed_file):
-    movement_file = os.path.join(compressed_folder, compressed_file)
+def generate_movement(sim_name, history, conversation, compressed_folder, compressed_file):
+    movement_file = Path(compressed_folder) / compressed_file
 
-    conversation_file = "conversation.json"
-    conversation = {}
-    if os.path.exists(os.path.join(checkpoints_folder, conversation_file)):
-        with open(os.path.join(checkpoints_folder, conversation_file), "r", encoding="utf-8") as f:
-            conversation = json.load(f)
+    if not history:
+        raise ValueError("No simulation history found")
 
-    files = sorted(os.listdir(checkpoints_folder))
-    json_files = list()
-    for file_name in files:
-        if file_name.endswith(".json") and file_name != conversation_file:
-            json_files.append(os.path.join(checkpoints_folder, file_name))
-
-    persona_init_pos = dict()
-    all_movement = dict()
-    all_movement["description"] = dict()
-    all_movement["conversation"] = dict()
-
-    stride = get_stride(json_files)
-    sec_per_step = stride
+    files_stride = get_stride(history)
+    sec_per_step = files_stride
 
     result = {
-        "start_datetime": "",  # 起始时间
-        "stride": stride,  # 每个step对应的分钟数（必须与生成时的参数一致）
-        "sec_per_step": sec_per_step,  # 回放时每一帧对应的秒数
-        "persona_init_pos": persona_init_pos,  # 每个Agent的初始位置
-        "all_movement": all_movement,  # 所有Agent在每个setp中的位置变化
+        "start_datetime": "",
+        "stride": files_stride,
+        "sec_per_step": sec_per_step,
+        "persona_init_pos": {},
+        "all_movement": {"description": {}, "conversation": {}},
     }
 
-    last_location = dict()
+    persona_init_pos = result["persona_init_pos"]
+    all_movement = result["all_movement"]
+    last_location = {}
 
-    # 加载地图数据，用于计算Agent移动路径
-    json_path = "frontend/static/assets/village/maze.json"
-    with open(json_path, "r", encoding="utf-8") as f:
-        json_data = json.load(f)
-        maze = Maze(json_data, None)
+    maze_path = "frontend/static/assets/village/maze.json"
+    with open(maze_path, "r", encoding="utf-8") as f:
+        maze = Maze(json.load(f), None)
 
-    for file_name in json_files:
-        # 依次读取所有存档文件
-        with open(file_name, "r", encoding="utf-8") as f:
-            json_data = json.load(f)
-            step = json_data["step"]
-            agents = json_data["agents"]
+    for step_state in history:
+        step = int(step_state.get("step", 0))
+        agents = step_state.get("agents", {})
+        sim_time = step_state.get("time")
 
-            # 保存回放的起始时间
-            if len(result["start_datetime"]) < 1:
-                t = datetime.strptime(json_data["time"], "%Y%m%d-%H:%M")
-                result["start_datetime"] = t.isoformat()
+        if not result["start_datetime"] and sim_time:
+            t = datetime.strptime(sim_time, "%Y%m%d-%H:%M")
+            result["start_datetime"] = t.isoformat()
 
-            # 遍历单个存档文件中的所有Agent
-            for agent_name, agent_data in agents.items():
-                # 插入第0帧
-                if step == 1:
-                    insert_frame0(persona_init_pos, all_movement, agent_name)
+        for agent_name, agent_data in agents.items():
+            if step == 1 and "0" not in all_movement:
+                insert_frame0(persona_init_pos, all_movement, agent_name)
 
-                source_coord = last_location.get(agent_name, all_movement["0"][agent_name])["movement"]
-                target_coord = agent_data["coord"]
-                location = get_location(agent_data["action"]["event"]["address"])
-                if location is None:
-                    location = last_location.get(agent_name, all_movement["0"][agent_name])["location"]
-                    path = [source_coord]
+            source_coord = last_location.get(agent_name, all_movement["0"][agent_name])["movement"]
+            target_coord = agent_data["coord"]
+            location = get_location(agent_data["action"]["event"].get("address", []))
+            if not location:
+                location = last_location.get(agent_name, all_movement["0"][agent_name])["location"]
+                path = [source_coord]
+            else:
+                path = maze.find_path(source_coord, target_coord)
+
+            had_conversation = False
+            step_conversation = ""
+            persons_in_conversation = []
+            chats_list = conversation.get(sim_time, []) if conversation else []
+            for chats in chats_list:
+                for persons, chat in chats.items():
+                    persons_in_conversation.append(persons.split(" @ ")[0].split(" -> "))
+                    step_conversation += f"\n地点：{persons.split(' @ ')[1]}\n\n"
+                    for c in chat:
+                        agent = c[0]
+                        text = c[1]
+                        step_conversation += f"{agent}：{text}\n"
+
+            for i in range(frames_per_step):
+                moving = len(path) > 1
+                if path:
+                    movement = list(path[0])
+                    path = path[1:]
+                    last_location.setdefault(agent_name, {})
+                    last_location[agent_name]["movement"] = movement
+                    last_location[agent_name]["location"] = location
                 else:
-                    path = maze.find_path(source_coord, target_coord)
+                    movement = None
 
-                had_conversation = False
-                step_conversation = ""
-                persons_in_conversation = []
-                step_time = json_data["time"]
-                if step_time in conversation.keys():
-                    for chats in conversation[step_time]:
-                        for persons, chat in chats.items():
-                            persons_in_conversation.append(persons.split(" @ ")[0].split(" -> "))
-                            step_conversation += f"\n地点：{persons.split(' @ ')[1]}\n\n"
-                            for c in chat:
-                                agent = c[0]
-                                text = c[1]
-                                step_conversation += f"{agent}：{text}\n"
+                if moving:
+                    action = f"前往 {location}"
+                elif movement is not None:
+                    action = agent_data["action"]["event"].get("describe", "")
+                    if not action:
+                        action = f"{agent_data['action']['event'].get('predicate', '')}{agent_data['action']['event'].get('object', '')}"
+                    for persons in persons_in_conversation:
+                        if agent_name in persons:
+                            had_conversation = True
+                            break
+                    if "Sleep" in action:
+                        action = "😴 " + action
+                    elif had_conversation:
+                        action = "💬 " + action
 
-                for i in range(frames_per_step):
-                    moving = len(path) > 1
-                    if len(path) > 0:
-                        movement = list(path[0])
-                        path = path[1:]
-                        if agent_name not in last_location.keys():
-                            last_location[agent_name] = dict()
-                        last_location[agent_name]["movement"] = movement
-                        last_location[agent_name]["location"] = location
-                    else:
-                        movement = None
+                step_key = f"{(step - 1) * frames_per_step + 1 + i}"
+                all_movement.setdefault(step_key, {})
+                if movement is not None:
+                    all_movement[step_key][agent_name] = {
+                        "location": location,
+                        "movement": movement,
+                        "action": action,
+                    }
+            if step_conversation:
+                all_movement["conversation"][sim_time] = step_conversation
 
-                    if moving:
-                        action = f"前往 {location}"
-                    elif movement is not None:
-                        action = agent_data["action"]["event"]["describe"]
-                        if len(action) < 1:
-                            action = f'{agent_data["action"]["event"]["predicate"]}{agent_data["action"]["event"]["object"]}'
-
-                        # 判断该存档文件中当前Agent是否有新的Conversation（用于设置图标）
-                        for persons in persons_in_conversation:
-                            if agent_name in persons:
-                                had_conversation = True
-                                break
-
-                        # 针对Sleep和Conversation设置图标
-                        if "Sleep" in action:
-                            action = "😴 " + action
-                        elif had_conversation:
-                            action = "💬 " + action
-
-                    step_key = "%d" % ((step-1) * frames_per_step + 1 + i)
-                    if step_key not in all_movement.keys():
-                        all_movement[step_key] = dict()
-
-                    if movement is not None:
-                        all_movement[step_key][agent_name] = {
-                            "location": location,
-                            "movement": movement,
-                            "action": action,
-                        }
-                all_movement["conversation"][step_time] = step_conversation
-
-    # 保存数据
-    with open(movement_file, "w", encoding="utf-8") as f:
-        f.write(json.dumps(result, indent=2, ensure_ascii=False))
-
+    movement_file.parent.mkdir(parents=True, exist_ok=True)
+    movement_file.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
     return result
 
 
-# 生成Markdown文档
-def generate_report(checkpoints_folder, compressed_folder, compressed_file):
-    last_state = dict()
-
-    conversation_file = "conversation.json"
-    conversation = {}
-    if os.path.exists(os.path.join(checkpoints_folder, conversation_file)):
-        with open(os.path.join(checkpoints_folder, conversation_file), "r", encoding="utf-8") as f:
-            conversation = json.load(f)
+def generate_report(history, conversation, compressed_folder, compressed_file):
+    markdown_path = Path(compressed_folder) / compressed_file
+    last_state = {}
 
     def extract_description():
         markdown_content = "# Personality\n\n"
@@ -214,15 +190,15 @@ def generate_report(checkpoints_folder, compressed_folder, compressed_file):
                 markdown_content += f"Status：{json_data['currently']}\n\n"
         return markdown_content
 
-    def extract_action(json_data):
+    def extract_action(step_state):
         markdown_content = ""
-        agents = json_data["agents"]
+        agents = step_state.get("agents", {})
         for agent_name, agent_data in agents.items():
-            if agent_name not in last_state.keys():
-                last_state[agent_name] = {"currently": "", "location": "", "action": ""}
+            if agent_name not in last_state:
+                last_state[agent_name] = {"location": "", "action": ""}
 
-            location = "，".join(agent_data["action"]["event"]["address"])
-            action = agent_data["action"]["event"]["describe"]
+            location = "，".join(agent_data["action"]["event"].get("address", []))
+            action = agent_data["action"]["event"].get("describe", "")
 
             if location == last_state[agent_name]["location"] and action == last_state[agent_name]["action"]:
                 continue
@@ -230,62 +206,49 @@ def generate_report(checkpoints_folder, compressed_folder, compressed_file):
             last_state[agent_name]["location"] = location
             last_state[agent_name]["action"] = action
 
-            if len(markdown_content) < 1:
-                markdown_content = f"# {json_data['time']}\n\n"
+            if not markdown_content:
+                markdown_content = f"# {step_state['time']}\n\n"
                 markdown_content += "## Activities：\n\n"
 
             markdown_content += f"### {agent_name}\n"
-
-            if len(action) < 1:
-                action = "Sleep"
-
             markdown_content += f"Location：{location}  \n"
-            markdown_content += f"Activity：{action}  \n"
+            markdown_content += f"Activity：{action or 'Sleep'}  \n\n"
 
-            markdown_content += f"\n"
-
-        if json_data['time'] not in conversation.keys():
-            return markdown_content
-
-        markdown_content += "## Conversation：\n\n"
-        for chats in conversation[json_data['time']]:
-            for agents, chat in chats.items():
-                markdown_content += f"### {agents}\n\n"
-                for item in chat:
-                    markdown_content += f"`{item[0]}`\n> {item[1]}\n\n"
+        step_time = step_state.get("time")
+        if conversation and step_time in conversation:
+            markdown_content += "## Conversation：\n\n"
+            for chats in conversation[step_time]:
+                for agents, chat in chats.items():
+                    markdown_content += f"### {agents}\n\n"
+                    for item in chat:
+                        markdown_content += f"`{item[0]}`\n> {item[1]}\n\n"
         return markdown_content
 
-    all_markdown_content = extract_description()
-    files = sorted(os.listdir(checkpoints_folder))
-    for file_name in files:
-        if (not file_name.endswith(".json")) or (file_name == conversation_file):
-            continue
+    markdown_content = extract_description()
+    for step_state in history:
+        markdown_content += extract_action(step_state) + "\n\n"
 
-        file_path = os.path.join(checkpoints_folder, file_name)
-        with open(file_path, "r", encoding="utf-8") as f:
-            json_data = json.load(f)
-            content = extract_action(json_data)
-            all_markdown_content += content + "\n\n"
-    with open(f"{compressed_folder}/{compressed_file}", "w", encoding="utf-8") as compressed_file:
-        compressed_file.write(all_markdown_content)
+    markdown_path.parent.mkdir(parents=True, exist_ok=True)
+    markdown_path.write_text(markdown_content, encoding="utf-8")
 
 
-parser = argparse.ArgumentParser()
-parser.add_argument("--name", type=str, default="", help="the name of the simulation")
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--name", type=str, default="", help="the name of the simulation")
+    args = parser.parse_args()
+
+    name = args.name or input("Please enter a simulation name: ")
+    checkpoints_folder = Path(f"results/checkpoints/{name}")
+    if not checkpoints_folder.exists():
+        raise FileNotFoundError(f"Simulation '{name}' does not exist")
+
+    compressed_folder = Path(f"results/compressed/{name}")
+    compressed_folder.mkdir(parents=True, exist_ok=True)
+
+    history, conversation = load_history(name, checkpoints_folder)
+    generate_report(history, conversation, compressed_folder, file_markdown)
+    generate_movement(name, history, conversation, compressed_folder, file_movement)
 
 
 if __name__ == "__main__":
-    name = args.name
-    if len(name) < 1:
-        name = input("Please enter a simulation name: ")
-
-    while not os.path.exists(f"results/checkpoints/{name}"):
-        name = input(f"'{name}' doesn't exists, please re-enter the simulation name: ")
-
-    checkpoints_folder = f"results/checkpoints/{name}"
-    compressed_folder = f"results/compressed/{name}"
-    os.makedirs(compressed_folder, exist_ok=True)
-
-    generate_report(checkpoints_folder, compressed_folder, file_markdown)
-    generate_movement(checkpoints_folder, compressed_folder, file_movement)
+    main()

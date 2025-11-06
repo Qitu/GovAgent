@@ -6,8 +6,15 @@ from typing import Any, Dict, List, Tuple
 
 import yaml
 from detoxify import Detoxify
+
+try:
+    from detoxify.utils import models as detoxify_models
+except ModuleNotFoundError:
+    detoxify_models = None  # type: ignore[assignment]
+
 from openai import OpenAI
 from transformers import AutoModelForSequenceClassification
+
 
 
 def load_config() -> Dict[str, Any]:
@@ -26,12 +33,21 @@ def ensure_output_dir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
 
 
-def call_openai(prompt: str, system_prompt: str, model: str, max_tokens: int, temperature: float) -> Tuple[str, Dict[str, Any]]:
-    api_key = os.getenv("OPENAI_API_KEY", "").strip()
+def call_openai(
+    prompt: str,
+    system_prompt: str,
+    model: str,
+    max_tokens: int,
+    temperature: float,
+    base_url: str | None = None,
+    api_key_env: str = "OPENAI_API_KEY",
+) -> Tuple[str, Dict[str, Any]]:
+    env_var = api_key_env or "OPENAI_API_KEY"
+    api_key = os.getenv(env_var, "").strip()
     if not api_key:
-        raise RuntimeError("OPENAI_API_KEY is not set")
+        raise RuntimeError(f"{env_var} is not set")
 
-    client = OpenAI(api_key=api_key)
+    client = OpenAI(api_key=api_key, base_url=base_url) if base_url else OpenAI(api_key=api_key)
     start = time.time()
     resp = client.chat.completions.create(
         model=model,
@@ -115,6 +131,11 @@ def call_vectara_hallucination(question: str, answer: str, context: str) -> Dict
 
 def score_toxicity(text: str) -> Dict[str, float]:
     # Detoxify returns multiple dimensions
+    if detoxify_models is None:
+        raise RuntimeError("Detoxify optional dependency 'detoxify[utils]' is not installed. Run `pip install detoxify[utils]`.")
+    if "unbiased" not in detoxify_models:
+        available_models = ", ".join(sorted(detoxify_models.keys())) or "None"
+        raise RuntimeError(f"Detoxify model 'unbiased' unavailable. Installed models: {available_models}")
     model = Detoxify("unbiased")
     scores = model.predict(text or "")
     # Ensure float conversion
@@ -125,13 +146,18 @@ def evaluate_case(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     provider = cfg.get("provider", {})
     system_prompt = (cfg.get("prompt_style", {}) or {}).get("system", "")
 
-    answer, usage = call_openai(
-        prompt=case.get("prompt", ""),
-        system_prompt=system_prompt,
-        model=provider.get("model", "gpt-4o-mini"),
-        max_tokens=int(provider.get("max_tokens", 512)),
-        temperature=float(provider.get("temperature", 0.2)),
-    )
+    try:
+        answer, usage = call_openai(
+            prompt=case.get("prompt", ""),
+            system_prompt=system_prompt,
+            model=provider.get("model", "tttttx/Qwen3-8B-GGUF"),
+            max_tokens=int(provider.get("max_tokens", 512)),
+            temperature=float(provider.get("temperature", 0.2)),
+            base_url=provider.get("endpoint"),
+            api_key_env=provider.get("api_key_env", "OPENAI_API_KEY"),
+        )
+    except Exception as exc:
+        raise RuntimeError(f"OpenAI chat completion failed: {exc}") from exc
 
     hallucination = call_vectara_hallucination(
         question=case.get("prompt", ""),
@@ -141,7 +167,10 @@ def evaluate_case(case: Dict[str, Any], cfg: Dict[str, Any]) -> Dict[str, Any]:
     if "error" in hallucination and hallucination["error"]:
         raise RuntimeError(f"Hallucination evaluation failed: {hallucination['error']}")
 
-    toxicity = score_toxicity(answer)
+    try:
+        toxicity = score_toxicity(answer)
+    except Exception as exc:
+        raise RuntimeError(f"Toxicity scoring failed: {exc}") from exc
 
     thresholds = cfg.get("thresholds", {})
     hallucination_fail_threshold = float(thresholds.get("hallucination_fail_threshold", 0.5))

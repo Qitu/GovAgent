@@ -1,8 +1,9 @@
 # Model evaluation configuration
 provider:
   name: openai
-  model: gpt-4o-mini
-  # max tokens and temperature can be tuned as needed
+  model: tttttx/Qwen3-8B-GGUF
+  endpoint: https://gifted-r-srqlbl-exuovwuebc.cn-hangzhou.fcapp.run/v1/chat/completions
+  api_key_env: OPENAI_API_KEY
   max_tokens: 512
   temperature: 0.2
 

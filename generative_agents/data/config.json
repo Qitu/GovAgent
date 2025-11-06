@@ -12,8 +12,8 @@
         "think": {
             "llm": {
                 "provider": "ollama",
-                "model": "qwen3:8b-q4_K_M",
-                "base_url": "http://127.0.0.1:11434/v1",
+                "model": "tttttx/Qwen3-8B-GGUF",
+                "base_url": "https://gifted-r-srqlbl-exuovwuebc.cn-hangzhou.fcapp.run/v1",
                 "api_key": ""
             },
             "interval": 1000,

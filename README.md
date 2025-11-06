@@ -39,7 +39,26 @@ git clone https://github.com/x-glacier/GenerativeAgentsCN.git
 cd GenerativeAgentsCN
 ```
 
-### 1.2 配置大语言模型（LLM）
+### 1.2 配置 MySQL
+
+1. 准备数据库（示例命令）：
+   ```bash
+   mysql -uroot -p -e "CREATE DATABASE IF NOT EXISTS generative_agents CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+   ```
+2. 设置环境变量（可写入 `.env`）：
+   ```bash
+   export MYSQL_HOST=127.0.0.1
+   export MYSQL_PORT=3306
+   export MYSQL_USER=root
+   export MYSQL_PASSWORD=your_password
+   export MYSQL_DB=generative_agents
+   ```
+3. 首次运行时会自动建表，如需独立执行：
+   ```bash
+   python -m generative_agents.db.session --init
+   ```
+
+### 1.3 配置大语言模型（LLM）
 
 修改配置文件 `generative_agents/data/config.json`:
 1. 默认使用[Ollama](https://ollama.com/)加载本地量化模型，并提供OpenAI兼容API。需要先拉取量化模型（参考[ollama.md](docs/ollama.md)），并确保`base_url`和`model`与Ollama中的配置一致。

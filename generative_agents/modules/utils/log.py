@@ -2,6 +2,7 @@
 
 import os
 import logging
+from logging import handlers
 from typing import Union
 
 from .timer import get_timer
@@ -105,18 +106,29 @@ def create_file_logger(
     log_name = os.path.basename(path)
     logger = logging.getLogger(log_name)
     logger.setLevel(level)
-    if any(
-        isinstance(h, logging.FileHandler) and h.baseFilename == path
-        for h in logger.handlers
-    ):
+    existing_handler = next(
+        (
+            h
+            for h in logger.handlers
+            if isinstance(h, logging.FileHandler) and getattr(h, "baseFilename", None) == path
+        ),
+        None,
+    )
+    if existing_handler:
         return logger
     formatter = logging.Formatter(
         "%(asctime)s %(filename)s[ln:%(lineno)d]<%(levelname)s> %(message)s"
     )
-    handlers = [
-        logging.FileHandler(path, mode="a", encoding=None, delay=False),
-        logging.StreamHandler(),
-    ]
+    file_handler = handlers.RotatingFileHandler(
+        path,
+        mode="a",
+        maxBytes=5 * 1024 * 1024,
+        backupCount=5,
+        encoding="utf-8",
+        delay=False,
+    )
+    stream_handler = logging.StreamHandler()
+    handlers = [file_handler, stream_handler]
     for handler in handlers:
         handler.setLevel(level)
         handler.setFormatter(formatter)

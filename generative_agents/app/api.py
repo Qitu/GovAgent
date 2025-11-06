@@ -4,6 +4,9 @@ import os
 import json
 import threading
 from datetime import datetime
+from pathlib import Path
+from db import repository
+from db.session import ensure_engine
 from .auth import login_required
 from .simulation_status import simulation_status
 
@@ -91,26 +94,25 @@ def compress_data():
         if not name:
             return jsonify({'status': 'error', 'message': 'Simulation name cannot be empty'})
 
-        # Check if simulation exists
-        checkpoints_path = f"results/checkpoints/{name}"
-        if not os.path.exists(checkpoints_path):
+        # Verify simulation exists in DB
+        ensure_engine()
+        run = repository.get_run_with_details(name)
+        if run is None:
             return jsonify({'status': 'error', 'message': f'Simulation "{name}" does not exist'})
-        
-        # Check if simulation is completed (has conversation.json file)
-        conversation_file = os.path.join(checkpoints_path, 'conversation.json')
-        if not os.path.exists(conversation_file):
+
+        # Ensure we have conversation data (simulation completed)
+        if not run.conversation_entries:
             return jsonify({'status': 'error', 'message': f'Simulation "{name}" is not completed, cannot compress'})
 
-        # Check if already compressed
-        compressed_path = f"results/compressed/{name}"
-        if os.path.exists(compressed_path):
-            movement_file = os.path.join(compressed_path, 'movement.json')
-            md_file = os.path.join(compressed_path, 'simulation.md')
-            if os.path.exists(movement_file) and os.path.exists(md_file):
+        # Check compression directory
+        compressed_path = Path(f"results/compressed/{name}")
+        if compressed_path.exists():
+            movement_file = compressed_path / 'movement.json'
+            md_file = compressed_path / 'simulation.md'
+            if movement_file.exists() and md_file.exists():
                 return jsonify({'status': 'error', 'message': f'Simulation "{name}" has already been compressed'})
 
-        # Build command path, ensure using absolute path
-        base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        base_dir = Path(__file__).resolve().parents[1]
         cmd = f"python3 compress.py --name {name}"
         
         result = subprocess.run(

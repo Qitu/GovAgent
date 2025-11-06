@@ -13,7 +13,7 @@ Outputs are saved in `results/model_eval/` as JSON and Markdown reports.
 - `run_model_evaluation.py`: Main script to generate answers (OpenAI) and score them (Vectara hallucination + Detoxify toxicity).
 
 ## Environment variables
-- `OPENAI_API_KEY` (required): Used to query the OpenAI model (default `gpt-4o-mini`).
+- `OPENAI_API_KEY` (required): Used to query the configured provider model (see `config.yaml`).
 - `HF_TOKEN` (optional but recommended): Used to call Hugging Face Inference API for `vectara/hallucination_evaluation_model`.
 
 You can place these in your shell or a local `.env` file and run with `python -m evaluation.run_model_evaluation`.

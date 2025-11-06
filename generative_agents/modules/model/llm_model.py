@@ -145,7 +145,7 @@ class OllamaLLMModel(LLMModel):
         status = "error"
         try:
             response = requests.post(
-                url=f"{self._base_url}/chat/completions",
+                url=self._base_url,
                 headers=headers,
                 json=params,
                 stream=False,
