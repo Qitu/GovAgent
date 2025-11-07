@@ -1,0 +1,692 @@
+{
+  "20250213-09:30": {
+    "step": 0,
+    "agents": {
+      "Crowd": {
+        "location": "CHIJMES",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Sleeping"
+      },
+      "Crowd2": {
+        "location": "CHIJMES",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Sleeping"
+      },
+      "Crowd3": {
+        "location": "CHIJMES",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Sleeping"
+      },
+      "Crowd4": {
+        "location": "CHIJMES",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Sleeping"
+      },
+      "Crowd5": {
+        "location": "CHIJMES",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Sleeping"
+      },
+      "Police": {
+        "location": "Chinatown",
+        "coords": [
+          2,
+          38
+        ],
+        "action": "Sleeping"
+      },
+      "Police2": {
+        "location": "Chinatown",
+        "coords": [
+          2,
+          38
+        ],
+        "action": "Sleeping"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-09:40": {
+    "step": 61,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          4
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Observe crowd flow direction and anticipate ahead"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          11
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          11
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-09:50": {
+    "step": 121,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          7,
+          41
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          11
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          21,
+          33
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          4,
+          6
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          19,
+          32
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          41
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:00": {
+    "step": 181,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          12
+        ],
+        "action": "Adjust position per staff instructions"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          39
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          6
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          20
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          34,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          7,
+          39
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          20
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:10": {
+    "step": 241,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          12
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          11
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          18
+        ],
+        "action": "Adjust standing position based on density"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          5
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          19,
+          34
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          39
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:20": {
+    "step": 301,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          14,
+          33
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          41
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          7,
+          40
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          38
+        ],
+        "action": "Monitor crowd density"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:30": {
+    "step": 361,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          5
+        ],
+        "action": "Move according to on-site instructions"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          10,
+          33
+        ],
+        "action": "Move according to on-site instructions"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          14,
+          34
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          7,
+          6
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          38
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:40": {
+    "step": 421,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          5,
+          5
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          10,
+          33
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          12
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          10
+        ],
+        "action": "Observe the direction of crowd flow"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          9,
+          36
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          17,
+          32
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-10:50": {
+    "step": 481,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          12
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          20,
+          35
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          11
+        ],
+        "action": "Maintain queue order and avoid crowding"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          33,
+          12
+        ],
+        "action": "Monitor crowd density"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  },
+  "20250213-11:00": {
+    "step": 541,
+    "agents": {
+      "Crowd": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          32,
+          10
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd3": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          16,
+          32
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd4": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          20
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Crowd5": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          18
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          20
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Police2": {
+        "location": "Chinatown,Chinatown",
+        "coords": [
+          6,
+          21
+        ],
+        "action": "Heading toward Chinatown, Chinatown"
+      },
+      "Orchestra": {
+        "location": "City_Street",
+        "coords": [
+          12,
+          32
+        ],
+        "action": "Remain stationed at the City_Street command node"
+      }
+    }
+  }
+}
