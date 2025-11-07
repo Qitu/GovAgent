@@ -445,7 +445,10 @@
       }
     },
     "conversation": {
-      "20250213-09:30": ""
+      "20250213-09:30": "\nLocation: CHIJMES event plaza\n\nCrowd: The entrance is getting crowded. Do we need to line up?\nPolice: Please stay in formation and move along the guideline slowly; we will lead you toward Chinatown.\nCrowd2: Thanks for the reminder. We'll follow along.\nOrchestrator (over command channel): Police2, move to the north corridor of Chinatown. A minor bottleneck is forming there.\nPolice2: Copy. Heading over to support now.\n",
+      "20250213-09:40": "\nLocation: Chinatown north corridor\n\nPolice2: Orchestrator, I'm on site. I see people starting to backtrack.\nOrchestrator: Coordinate with Police to create a temporary buffer zone and let families with children pass first.\nPolice: Crowd4, please queue to the right. We'll clear a lane for seniors and kids.\nCrowd4: Understood. We'll cooperate.\nCrowd3: Thank you, officer. The line is moving much smoother.\n",
+      "20250213-09:50": "\nLocation: Chinatown central plaza\n\nCrowd5: It's getting tight here. Can we still move further in?\nPolice: Hold on a moment. We're redirecting people and the line ahead is moving.\nOrchestrator (over command channel): Police, open Exit 3 and divert part of the crowd toward City_Street.\nPolice: Copy. I'll notify the volunteers to assist right away.\nCrowd: Got the instructions. We'll follow the new route.\n",
+      "20250213-10:00": "\nLocation: City_Street connecting corridor\n\nOrchestrator (over command channel): Police2, check the south staircase on City_Street. Reports say some people are lingering there.\nPolice2: On my way to the stairs. Crowd2, please move slowly along the left railing.\nCrowd2: Understood. We'll keep moving.\nCrowd3: The officers' guidance is helping the line move faster.\nPolice: I'm at the south staircase. Order is good. Maintaining the flow.\n"
     },
     "0": {
       "Crowd": {
