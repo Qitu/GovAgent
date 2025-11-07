@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: agents-service
+  namespace: agents-ns
+  labels:
+    app: agents-service
+spec:
+  type: ClusterIP
+  selector:
+    app: agents-service
+  ports:
+  - name: http
+    port: 8000
+    targetPort: http

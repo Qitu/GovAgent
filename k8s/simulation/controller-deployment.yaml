@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation-controller
+  namespace: simulation-ns
+  labels:
+    app: simulation-controller
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simulation-controller
+  template:
+    metadata:
+      labels:
+        app: simulation-controller
+    spec:
+      serviceAccountName: simulation-service-account
+      containers:
+      - name: simulation-controller
+        image: ghcr.io/gov-agents/simulation-controller:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: http
+        envFrom:
+        - configMapRef:
+            name: simulation-config
+        - secretRef:
+            name: simulation-service-credentials
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "2"
+            memory: "4Gi"
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          failureThreshold: 3
+        livenessProbe:
+          httpGet:
+            path: /livez
+            port: http
+          initialDelaySeconds: 30
+          periodSeconds: 20
+          failureThreshold: 3

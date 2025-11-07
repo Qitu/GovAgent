@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agents-ns
+  labels:
+    purpose: agents
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: simulation-ns
+  labels:
+    purpose: simulation
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend-ns
+  labels:
+    purpose: frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: supporting-ns
+  labels:
+    purpose: supporting

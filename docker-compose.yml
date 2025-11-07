@@ -1,0 +1,106 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:15
+    container_name: gov-agents-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gov_agents}
+      POSTGRES_USER: ${POSTGRES_USER:-gov_agents}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeMe}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - gov_agents_net
+  llm-proxy:
+    build:
+      context: ./llm_proxy
+    image: gov-agents-llm-proxy:latest
+    container_name: gov-agents-llm-proxy
+    restart: unless-stopped
+    environment:
+      PROVIDER_TIMEOUT_SECONDS: "30"
+      PROVIDER_RETRY_ATTEMPTS: "3"
+      PROVIDER_ALLOWED_LIST: "openai,qwen,deepseek"
+      RATE_LIMIT_PER_MINUTE: "120"
+      LOG_LEVEL: "INFO"
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      QWEN_API_KEY: ${QWEN_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    networks:
+      - gov_agents_net
+  backend:
+    build:
+      context: ./backend
+    image: gov-agents-backend:latest
+    container_name: gov-agents-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      llm-proxy:
+        condition: service_started
+    environment:
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:-super-secret-key}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://gov_agents:changeMe@postgres:5432/gov_agents}
+      LLM_PROXY_URL: http://llm-proxy:8080
+      RESULT_STORAGE_BUCKET: ${RESULT_STORAGE_BUCKET:-results}
+      SIMULATION_CONCURRENCY: ${SIMULATION_CONCURRENCY:-4}
+      METRICS_EXPORTER_ENABLED: "true"
+      APP_ENV: ${APP_ENV:-production}
+      # Optional overrides taken from .env or environment
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      QWEN_API_KEY: ${QWEN_API_KEY:-}
+      DEEPSEEK_API_KEY: ${DEEPSEEK_API_KEY:-}
+    volumes:
+      - ./generative_agents/results:/app/results
+      - ./generative_agents/frontend/static:/app/frontend/static
+      - ./generative_agents/frontend/templates:/app/frontend/templates
+      - ./generative_agents/data:/app/data
+      - ./generative_agents/assets:/app/assets
+    ports:
+      - "5001:5001"
+    networks:
+      - gov_agents_net
+  simulation-jobs:
+    build:
+      context: ./simulation_jobs
+    image: gov-agents-simulation-jobs:latest
+    container_name: gov-agents-simulation-jobs
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      llm-proxy:
+        condition: service_started
+    environment:
+      DATABASE_URL: ${DATABASE_URL:-postgresql://gov_agents:changeMe@postgres:5432/gov_agents}
+      LLM_PROXY_URL: http://llm-proxy:8080
+      RESULT_STORAGE_BUCKET: ${RESULT_STORAGE_BUCKET:-results}
+    volumes:
+      - ./generative_agents/results:/app/results
+      - ./generative_agents/data:/app/data
+      - ./generative_agents/assets:/app/assets
+    networks:
+      - gov_agents_net
+  frontend:
+    build:
+      context: ./frontend
+    image: gov-agents-frontend:latest
+    container_name: gov-agents-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    environment:
+      VITE_API_BASE_URL: http://backend:5001
+      VITE_PUBLIC_FEATURE_FLAGS: ${PUBLIC_FEATURE_FLAGS:-{}}
+    ports:
+      - "3000:80"
+    networks:
+      - gov_agents_net
+volumes:
+  postgres_data:
+networks:
+  gov_agents_net:
+    driver: bridge

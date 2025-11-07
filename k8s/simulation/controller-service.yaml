@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: simulation-controller
+  namespace: simulation-ns
+  labels:
+    app: simulation-controller
+spec:
+  selector:
+    app: simulation-controller
+  ports:
+  - name: http
+    port: 8080
+    targetPort: http

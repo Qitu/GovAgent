@@ -1,0 +1,482 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: agents-ns
+  labels:
+    purpose: agents
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: simulation-ns
+  labels:
+    purpose: simulation
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: frontend-ns
+  labels:
+    purpose: frontend
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: supporting-ns
+  labels:
+    purpose: supporting
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agents-config
+  namespace: agents-ns
+data:
+  APP_ENV: "production"
+  LLM_PROXY_URL: "http://llm-proxy.supporting-ns.svc.cluster.local:8080"
+  DATABASE_HOST: "postgres.supporting-ns.svc.cluster.local"
+  DATABASE_NAME: "gov_agents"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: agents-service-credentials
+  namespace: agents-ns
+type: Opaque
+stringData:
+  DATABASE_URL: "postgresql://gov-agents:changeMe@postgres.supporting-ns.svc.cluster.local:5432/gov_agents"
+  POSTGRES_PASSWORD: "changeMe"
+  LLM_PROXY_TOKEN: "replace-with-real-token"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: simulation-config
+  namespace: simulation-ns
+data:
+  RESULT_BUCKET: "results"
+  AGENTS_SERVICE_URL: "http://agents-service.agents-ns.svc.cluster.local:5001"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: simulation-credentials
+  namespace: simulation-ns
+type: Opaque
+stringData:
+  DATABASE_URL: "postgresql://gov-agents:changeMe@postgres.supporting-ns.svc.cluster.local:5432/gov_agents"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: frontend-ns
+data:
+  VITE_API_BASE_URL: "http://agents-service.agents-ns.svc.cluster.local:5001"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: llm-proxy-credentials
+  namespace: supporting-ns
+type: Opaque
+stringData:
+  OPENAI_API_KEY: "replace-with-openai-key"
+  QWEN_API_KEY: "replace-with-qwen-key"
+  DEEPSEEK_API_KEY: "replace-with-deepseek-key"
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: supporting-ns
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:15
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: "gov_agents"
+        - name: POSTGRES_USER
+          value: "gov_agents"
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: agents-service-credentials
+              key: POSTGRES_PASSWORD
+        envFrom:
+        - secretRef:
+            name: agents-service-credentials
+        volumeMounts:
+        - name: postgres-data
+          mountPath: /var/lib/postgresql/data
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      storageClassName: alicloud-disk-ssd
+      resources:
+        requests:
+          storage: 20Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: supporting-ns
+spec:
+  selector:
+    app: postgres
+  ports:
+  - name: postgres
+    port: 5432
+    targetPort: 5432
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: llm-proxy
+  namespace: supporting-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: llm-proxy
+  template:
+    metadata:
+      labels:
+        app: llm-proxy
+    spec:
+      containers:
+      - name: llm-proxy
+        image: registry.cn-hangzhou.aliyuncs.com/gov-agents/llm-proxy:v20241107
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - secretRef:
+            name: llm-proxy-credentials
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: llm-proxy
+  namespace: supporting-ns
+spec:
+  selector:
+    app: llm-proxy
+  ports:
+  - name: http
+    port: 8080
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: agents-service
+  namespace: agents-ns
+  labels:
+    app: agents-service
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: agents-service
+  template:
+    metadata:
+      labels:
+        app: agents-service
+    spec:
+      containers:
+      - name: agents-service
+        image: registry.cn-hangzhou.aliyuncs.com/gov-agents/backend:v20241107
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5001
+        envFrom:
+        - configMapRef:
+            name: agents-config
+        - secretRef:
+            name: agents-service-credentials
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 5001
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 5001
+          initialDelaySeconds: 30
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: "500m"
+            memory: "1Gi"
+          limits:
+            cpu: "1"
+            memory: "2Gi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: agents-service
+  namespace: agents-ns
+spec:
+  selector:
+    app: agents-service
+  ports:
+  - name: http
+    port: 5001
+    targetPort: 5001
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: agents-hpa
+  namespace: agents-ns
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: agents-service
+  minReplicas: 2
+  maxReplicas: 6
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 60
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: simulation-controller
+  namespace: simulation-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: simulation-controller
+  template:
+    metadata:
+      labels:
+        app: simulation-controller
+    spec:
+      containers:
+      - name: simulation-controller
+        image: registry.cn-hangzhou.aliyuncs.com/gov-agents/simulation-jobs:v20241107
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: simulation-config
+        - secretRef:
+            name: simulation-credentials
+        readinessProbe:
+          exec:
+            command: ["python", "healthcheck.py"]
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        livenessProbe:
+          exec:
+            command: ["python", "healthcheck.py"]
+          initialDelaySeconds: 60
+          periodSeconds: 60
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "512Mi"
+          limits:
+            cpu: "1"
+            memory: "1Gi"
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: simulation-batch
+  namespace: simulation-ns
+spec:
+  schedule: "0 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: simulation-job
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: simulation-job
+            image: registry.cn-hangzhou.aliyuncs.com/gov-agents/simulation-jobs:v20241107
+            imagePullPolicy: Always
+            envFrom:
+            - configMapRef:
+                name: simulation-config
+            - secretRef:
+                name: simulation-credentials
+            command: ["python", "start.py"]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: frontend-ns
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: registry.cn-hangzhou.aliyuncs.com/gov-agents/frontend:v20241107
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
+        envFrom:
+        - configMapRef:
+            name: frontend-config
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 10
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 20
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: frontend-ns
+spec:
+  selector:
+    app: frontend
+  ports:
+  - name: http
+    port: 80
+    targetPort: 80
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: frontend
+  namespace: frontend-ns
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/loadbalancer-id: lb-REPLACE_WITH_ALB_ID
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP":80},{"HTTPS":443}]'
+    alb.ingress.kubernetes.io/certificate-id: acs-acm-REPLACE_WITH_CERT_ID
+spec:
+  rules:
+  - host: app.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend
+            port:
+              number: 80
+  tls:
+  - hosts:
+    - app.example.com
+    secretName: alb-auto-generated-tls
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-agents-egress
+  namespace: agents-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: agents-service
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          purpose: supporting
+      podSelector:
+        matchLabels:
+          app: llm-proxy
+    ports:
+    - protocol: TCP
+      port: 8080
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          purpose: supporting
+      podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-agents
+  namespace: frontend-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: frontend
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          purpose: agents
+      podSelector:
+        matchLabels:
+          app: agents-service
+    ports:
+    - protocol: TCP
+      port: 5001

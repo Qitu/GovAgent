@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: agents-config
+  namespace: agents-ns
+data:
+  APP_ENV: "production"
+  LLM_PROXY_URL: "http://llm-proxy.supporting-ns.svc.cluster.local:8080"
+  SIMULATION_CONTROLLER_URL: "http://simulation-controller.simulation-ns.svc.cluster.local:8080"
+  POSTGRES_HOST: "postgres.supporting-ns.svc.cluster.local"
+  POSTGRES_DB: "gov_agents"
+  METRICS_EXPORTER_ENABLED: "true"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: simulation-config
+  namespace: simulation-ns
+data:
+  RESULT_STORAGE_BUCKET: "s3://gov-agents-simulation-results"
+  SIMULATION_CONCURRENCY: "4"
+  POSTGRES_HOST: "postgres.supporting-ns.svc.cluster.local"
+  POSTGRES_DB: "gov_agents"
+  LLM_PROXY_URL: "http://llm-proxy.supporting-ns.svc.cluster.local:8080"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: frontend-ns
+data:
+  API_BASE_URL: "https://api.gov-agents.example.com"
+  INTERNAL_API_BASE_URL: "http://agents-service.agents-ns.svc.cluster.local:8000"
+  PUBLIC_FEATURE_FLAGS: "{}"
+  SENTRY_DSN: ""
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: llm-proxy-config
+  namespace: supporting-ns
+data:
+  PROVIDER_TIMEOUT_SECONDS: "30"
+  PROVIDER_RETRY_ATTEMPTS: "3"
+  PROVIDER_ALLOWED_LIST: "openai,qwen,deepseek"
+  RATE_LIMIT_PER_MINUTE: "120"
+  LOG_LEVEL: "INFO"

@@ -1,0 +1,103 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-frontend-to-agents
+  namespace: agents-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: agents-service
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: frontend
+      podSelector:
+        matchLabels:
+          app: web-frontend
+    ports:
+    - protocol: TCP
+      port: 8000
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-agents-to-simulation
+  namespace: simulation-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: simulation-controller
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: agents
+      podSelector:
+        matchLabels:
+          app: agents-service
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-agents-to-llm
+  namespace: supporting-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: llm-proxy
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: agents
+      podSelector:
+        matchLabels:
+          app: agents-service
+    - namespaceSelector:
+        matchLabels:
+          purpose: simulation
+      podSelector:
+        matchLabels:
+          app: simulation-controller
+    ports:
+    - protocol: TCP
+      port: 8080
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-agents-to-postgres
+  namespace: supporting-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: postgres
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - namespaceSelector:
+        matchLabels:
+          purpose: agents
+      podSelector:
+        matchLabels:
+          app: agents-service
+    - namespaceSelector:
+        matchLabels:
+          purpose: simulation
+      podSelector:
+        matchLabels:
+          app: simulation-controller
+    ports:
+    - protocol: TCP
+      port: 5432

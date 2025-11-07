@@ -445,7 +445,10 @@
       }
     },
     "conversation": {
-      "20250213-09:30": ""
+      "20250213-09:30": "\n地点：CHIJMES 活动广场\n\nCrowd: 入口这边人越来越多，我们需要排队吗？\nPolice: 请保持队形，沿着导引线慢慢前进，我们会把你们带到 Chinatown。\nCrowd2: 谢谢提醒，我们会跟着走。\nOrchestra（通过指挥频道）: Police2，请提前前往 Chinatown 北侧通道，那里出现轻微瓶颈。\nPolice2: 收到，我现在过去增援。\n",
+      "20250213-09:40": "\n地点：Chinatown 北侧通道\n\nPolice2: Orchestra，我已到位，看到人流开始回流。\nOrchestra: 请与 Police 协作，拉开临时缓冲区，优先让带小孩的人通行。\nPolice: Crowd4，请往右侧排队，我们会为老人和小孩留出通道。\nCrowd4: 理解，我们会配合。\nCrowd3: 谢谢警官，队伍顺畅多了。\n",
+      "20250213-09:50": "\n地点：Chinatown 中央广场\n\nCrowd5: 这里好像有点拥挤，我们还能继续往内走吗？\nPolice: 请稍等，我们正在分流，前方队伍正在移动。\nOrchestra（通过指挥频道）: Police，请把三号出口开放出来，让部分人往 City_Street 引导。\nPolice: 好的，我马上通知志愿者协助引导。\nCrowd: 收到指引，我们会跟着新路线走。\n",
+      "20250213-10:00": "\n地点：City_Street 连接廊道\n\nOrchestra（通过指挥频道）: Police2，请检查 City_Street 南侧的台阶，有报告说有人停留太久。\nPolice2: 我正在赶往台阶位置，Crowd2，请沿着左边护栏慢慢前进。\nCrowd2: 明白，我们会保持移动。\nCrowd3: 看到了警察的提示，队伍移动快多了。\nPolice: 已到达南侧台阶，现场秩序良好，继续维持人流。\n"
     },
     "0": {
       "Crowd": {

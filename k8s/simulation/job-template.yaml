@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: simulation-job-template
+  namespace: simulation-ns
+  annotations:
+    helm.sh/hook: test
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        app: simulation-job
+    spec:
+      serviceAccountName: simulation-service-account
+      restartPolicy: Never
+      containers:
+      - name: simulation-job
+        image: ghcr.io/gov-agents/simulation-job:latest
+        imagePullPolicy: IfNotPresent
+        envFrom:
+        - configMapRef:
+            name: simulation-config
+        - secretRef:
+            name: simulation-service-credentials
+        env:
+        - name: JOB_ID
+          value: "example"
+        - name: SIMULATION_INPUT_PATH
+          value: "s3://gov-agents-simulation-results/input/example.json"
+        - name: SIMULATION_OUTPUT_PATH
+          value: "s3://gov-agents-simulation-results/output/example.json"

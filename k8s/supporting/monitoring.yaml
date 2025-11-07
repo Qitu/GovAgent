@@ -1,0 +1,37 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: agents-service-monitor
+  namespace: supporting-ns
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+    - agents-ns
+  selector:
+    matchLabels:
+      app: agents-service
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: simulation-controller-monitor
+  namespace: supporting-ns
+  labels:
+    release: prometheus
+spec:
+  namespaceSelector:
+    matchNames:
+    - simulation-ns
+  selector:
+    matchLabels:
+      app: simulation-controller
+  endpoints:
+  - port: http
+    path: /metrics
+    interval: 30s

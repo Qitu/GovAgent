@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: agents-egress
+  namespace: agents-ns
+spec:
+  podSelector:
+    matchLabels:
+      app: agents-service
+  policyTypes:
+  - Egress
+  egress:
+  - to:
+    - namespaceSelector:
+        matchLabels:
+          purpose: simulation
+      podSelector:
+        matchLabels:
+          app: simulation-controller
+    - namespaceSelector:
+        matchLabels:
+          purpose: supporting
+      podSelector:
+        matchLabels:
+          app: llm-proxy
+    - namespaceSelector:
+        matchLabels:
+          purpose: supporting
+      podSelector:
+        matchLabels:
+          app: postgres
+    ports:
+    - protocol: TCP
+      port: 8080
+    - protocol: TCP
+      port: 8443
+    - protocol: TCP
+      port: 5432
