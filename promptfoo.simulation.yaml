@@ -1,0 +1,141 @@
+configVersion: 1
+
+description: Simulation command directives - Orchestra/Police/Crowd
+
+providers:
+  - id: openai:gpt-4o-mini
+    config:
+      temperature: 0.0
+      maxOutputTokens: 256
+
+prompts:
+  - label: simulation_directive
+    raw: |
+      You are running a city evacuation simulation. Follow the operating pattern strictly:
+      1. Verify context and mission focus before you speak.
+      2. Issue a concise directive in one sentence that advances the mission.
+      3. Reference remote tooling when you are beyond voice range. On-site agents should reference nearby cues when speaking face to face.
+      4. Do not repeat wording already present in the latest conversation log.
+
+      Agent profile:
+      {{base_desc}}
+
+      Planning directives:
+      {{planning_directives}}
+
+      Remote tools available:
+      {{remote_tools}}
+
+      Current location: {{location}}
+      Current timestamp: {{timestamp}}
+
+      Latest situational context:
+      {{situation}}
+
+      Conversation log so far:
+      <conversation_log>
+      {{conversation}}
+      </conversation_log>
+
+      Based on the above, what will {{agent}} say to {{another}} now?
+      Reply strictly in JSON:
+      {
+          "reply": "<what {{agent}} says>"
+      }
+
+defaultTest:
+  vars:
+    agent: Orchestra
+    another: Police
+    base_desc: |
+      Name: Orchestra Agent. Role: Command center coordinator stationed at City_Street hub. Personality: calm, data-driven, gives crisp directives.
+    planning_directives: |
+      - Stage 1: Compile inputs from surveillance feeds, field reports, and predictive analytics to lay out the day's control objectives.
+      - Stage 2: Translate objectives into a sequenced command timeline (checkpoints, alerts, reallocations) so downstream units understand when and why adjustments fire.
+    remote_tools: |
+      - Secure Command Channel (encrypted)
+      - Live operations dashboard (heatmap + alerts)
+    location: City_Street monitoring node
+    timestamp: 2025-02-13 09:40
+    situation: Peak influx is forming at the Chinatown north corridor; on-site teams are requesting guidance for dispersal.
+    conversation: |
+      Orchestra: Maintain current corridor pacing until I confirm buffer capacity.
+      Police: Copy, holding the corridor at a steady flow.
+  assertions:
+    - type: javascript
+      code: |
+        const text = JSON.parse(output).reply;
+        return text.toLowerCase().includes("command channel");
+
+tests:
+  - description: Orchestra directs Police via remote channel during congestion
+    vars:
+      agent: Orchestra
+      another: Police
+      base_desc: |
+        Name: Orchestra Agent. Role: Oversees global crowd coordination from City_Street. Communicates decisions over encrypted comms.
+        Risk posture: precautionary; reacts to density spikes swiftly.
+      planning_directives: |
+        - Stage 1: Compile inputs from surveillance feeds, field reports, and predictive analytics to lay out the day's control objectives.
+        - Stage 2: Translate objectives into a sequenced command timeline (checkpoints, alerts, reallocations) so downstream units understand when and why adjustments fire.
+      remote_tools: |
+        - Secure Command Channel (encrypted push-to-talk)
+        - Drone feed overlays for density hot spots
+      location: City_Street monitoring node
+      timestamp: 2025-02-13 09:40
+      situation: "Heatmap shows density >4/m² at Trengganu Street east. Crowd clusters are drifting back toward Pagoda Street."
+      conversation: |
+        Orchestra: Keep the corridor organized while I review the latest counts.
+        Police: Copy, maintaining single-file flow and waiting for new routing instructions.
+    assertions:
+      - type: javascript
+        code: |
+          const text = JSON.parse(output).reply;
+          return text.toLowerCase().includes("command channel") && text.toLowerCase().includes("trengganu street");
+
+  - description: Police gives on-site redirection to nearby Crowd
+    vars:
+      agent: Police
+      another: Crowd
+      base_desc: |
+        Officer assigned to Chinatown north corridor. Speaks in brisk, actionable phrases and highlights landmarks.
+      planning_directives: |
+        - Step 1: Review overnight intelligence, patrol handover notes, and real-time instructions from Orchestra before locking the timeline.
+        - Step 2: Build an hour-by-hour action plan that explicitly sequences patrol legs, bottleneck checks, and coordination handoffs, so contingencies can be slotted in quickly.
+      remote_tools: |
+        - Helmet comm link to Orchestra
+        - Handheld density meter
+      location: Chinatown north corridor (on foot, 5 meters from crowd)
+      timestamp: 2025-02-13 09:45
+      situation: "Families with strollers are pausing near the lantern arch; need to open a path toward the south staircase."
+      conversation: |
+        Police: Hold the rope line while I secure the next section.
+        Crowd: Understood, we're staying in formation.
+    assertions:
+      - type: javascript
+        code: |
+          const text = JSON.parse(output).reply;
+          return text.toLowerCase().includes("lantern arch") || text.toLowerCase().includes("south staircase");
+
+  - description: Crowd escalates update back to Orchestra through nearby Police relay
+    vars:
+      agent: Crowd
+      another: Orchestra
+      base_desc: |
+        Crowd representative tasked with relaying queue status. Polite, concise, prioritizes efficiency.
+      planning_directives: |
+        - Step 1: Review the latest on-site announcements and crowd density cues so the personal timeline aligns with official guidance.
+        - Step 2: Lay out today's schedule with explicit times for arrival, movement adjustments, waiting, and dispersal to keep decisions orderly and updateable.
+      remote_tools: |
+        - Uses Police relay to reach Orchestra's command channel
+      location: Chinatown lantern arch queue
+      timestamp: 2025-02-13 09:50
+      situation: "Queue front is stalled; volunteers report stroller clustering near the arch."
+      conversation: |
+        Crowd: Our front row just halted near the lantern arch.
+        Police: I'm notifying Orchestra now; hold steady until we redirect.
+    assertions:
+      - type: javascript
+        code: |
+          const text = JSON.parse(output).reply;
+          return text.toLowerCase().includes("relay") && text.toLowerCase().includes("command") && !text.includes("Crowd:");

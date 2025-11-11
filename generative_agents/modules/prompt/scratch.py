@@ -1,5 +1,6 @@
 """generative_agents.prompt.scratch"""
 
+import json
 import random
 import datetime
 import re
@@ -18,13 +19,51 @@ class Scratch:
         self.template_path = "data/prompts"
 
     def build_prompt(self, template, data):
+        sanitized_data = self._sanitize_template_data(data)
         with open(f"{self.template_path}/{template}.txt", "r", encoding="utf-8") as file:
             file_content = file.read()
 
         template = Template(file_content)
-        filled_content = template.substitute(data)
+        filled_content = template.safe_substitute(sanitized_data)
 
-        return filled_content
+        return self._truncate_text(filled_content)
+
+    def _sanitize_template_data(self, data):
+        if not isinstance(data, dict):
+            return {}
+        return {key: self._sanitize_text(value) for key, value in data.items()}
+
+    def _sanitize_text(self, text):
+        if text is None:
+            return ""
+        if isinstance(text, (dict, list)):
+            text = json.dumps(text, ensure_ascii=False)
+        if not isinstance(text, str):
+            text = str(text)
+        text = self._strip_control_characters(text)
+        text = self._filter_sensitive_sequences(text)
+        return self._truncate_text(text)
+
+    def _strip_control_characters(self, text):
+        return "".join(ch for ch in text if ch.isprintable() or ch in "\n\r\t")
+
+    def _filter_sensitive_sequences(self, text):
+        blacklisted_patterns = [
+            r"(?i)ignore\s+previous\s+instructions",
+            r"(?i)forget\s+all\s+prior\s+context",
+            r"(?i)system:\s*",
+            r"(?i)user:\s*",
+            r"(?i)assistant:\s*",
+        ]
+        sanitized = text
+        for pattern in blacklisted_patterns:
+            sanitized = re.sub(pattern, "[filtered]", sanitized)
+        return sanitized
+
+    def _truncate_text(self, text, max_length=2000):
+        if len(text) <= max_length:
+            return text
+        return text[: max_length - 3] + "..."
 
     def _base_desc(self):
         return self.build_prompt(

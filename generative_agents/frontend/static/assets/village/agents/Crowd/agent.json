@@ -9,6 +9,10 @@
     "daily_plan": "Move and wait orderly within CHIJMES plazas according to guidance; observe congestion and adjust stopping positions; no item-related operations",
     "living_area": "CHIJMES event gathering zone",
     "daily_schedule_hourly_org": "18:00-19:00 Arrive and select a spot around CHIJMES plaza, 19:00-22:00 Slow movement through CHIJMES walkways per guidance, 22:00-00:30 Wait in place or nearby corridors, 00:30-01:30 Orderly dispersal toward City_Street exits",
+    "planning_directives": [
+      "Step 1: Review the latest on-site announcements and crowd density cues so the personal timeline aligns with official guidance.",
+      "Step 2: Lay out today's schedule with explicit times for arrival, movement adjustments, waiting, and dispersal to keep decisions orderly and updateable."
+    ],
     "memory_stream": [
       {
         "description": "Tends to follow the majority movement but proactively seeks more comfortable space when over-crowded",

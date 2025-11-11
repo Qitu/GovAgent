@@ -86,10 +86,10 @@ class SimulateServer:
                     "step": i + 1,
                 }
             )
-            # 保存Agent活动数据
+            # Save agent activities
             with open(f"{self.checkpoints_folder}/simulate-{sim_time.replace(':', '')}.json", "w", encoding="utf-8") as f:
                 f.write(json.dumps(self.config, indent=2, ensure_ascii=False))
-            # 保存Conversation数据
+            # Sabe conversation data
             with open(f"{self.checkpoints_folder}/conversation.json", "w", encoding="utf-8") as f:
                 f.write(json.dumps(self.game.conversation, indent=2, ensure_ascii=False))
 

@@ -9,6 +9,10 @@
     "daily_plan": "At a fixed City_Street monitoring point, conduct global monitoring and resource dispatch based on data and observation; when necessary, reassign idle police forces to support congested areas; no item-related operations",
     "living_area": "City_Street command overlook",
     "daily_schedule_hourly_org": "17:00-18:00 System checks and situational assessment from City_Street hub, 18:00-21:00 Real-time monitoring of flows between CHIJMES and Chinatown, 21:00-00:30 Peak-hour coordination across City_Street corridors, 00:30-02:00 Dispersal coordination and wrap-up for Funan Mall and adjacent sectors",
+    "planning_directives": [
+      "Stage 1: Compile inputs from surveillance feeds, field reports, and predictive analytics to lay out the day's control objectives.",
+      "Stage 2: Translate objectives into a sequenced command timeline (checkpoints, alerts, reallocations) so downstream units understand when and why adjustments fire."
+    ],
     "memory_stream": [
       {
         "description": "Always prioritize overall stability and public safety; prefer caution over aggression",

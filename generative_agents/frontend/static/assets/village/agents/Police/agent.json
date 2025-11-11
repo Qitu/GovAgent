@@ -9,6 +9,10 @@
     "daily_plan": "Patrol along preset routes through Chinatown streets and key access corridors; monitor and guide the crowd; support congested areas when necessary; no item-related operations",
     "living_area": "Chinatown security sector",
     "daily_schedule_hourly_org": "17:00-18:00 On duty and route familiarization in Chinatown, 18:00-21:00 Fixed-point and route patrol across Chinatown corridors, 21:00-00:30 Key-area monitoring and guidance near CHIJMES access points, 00:30-02:00 Assist orderly dispersal along City_Street bridges",
+    "planning_directives": [
+      "Step 1: Review overnight intelligence, patrol handover notes, and real-time instructions from Orchestra before locking the timeline.",
+      "Step 2: Build an hour-by-hour action plan that explicitly sequences patrol legs, bottleneck checks, and coordination handoffs, so contingencies can be slotted in quickly."
+    ],
     "memory_stream": [
       {
         "description": "Prioritizes crowd safety and order; proactively steps forward to potential risks while remaining restrained",

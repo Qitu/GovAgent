@@ -7,21 +7,24 @@ if [[ -z "${OPENAI_API_KEY:-}" ]]; then
   exit 1
 fi
 
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <promptfoo-config> [output-name]"
+  echo "Example: $0 promptfoo.yaml generate_chat.json"
+  exit 1
+fi
+
+CONFIG="$1"
+OUTPUT_NAME="${2:-$(basename "${CONFIG}" .yaml).json}"
+
+if [[ ! -f "${CONFIG}" ]]; then
+  echo "ERROR: Config file ${CONFIG} not found"
+  exit 1
+fi
+
 mkdir -p results/promptfoo
+OUTPUT_PATH="results/promptfoo/${OUTPUT_NAME}"
 
-echo "==> Running generate_chat (promptfoo.yaml)"
-promptfoo eval -c promptfoo.yaml --output results/promptfoo/generate_chat.json
+echo "==> Running promptfoo eval (${CONFIG})"
+promptfoo eval -c "${CONFIG}" --output "${OUTPUT_PATH}"
 
-# echo "==> Running decide_chat (promptfoo.decide_chat.yaml)"
-# promptfoo eval -c promptfoo.decide_chat.yaml --output results/promptfoo/decide_chat.json
-
-# echo "==> Running decide_wait (promptfoo.decide_wait.yaml)"
-# promptfoo eval -c promptfoo.decide_wait.yaml --output results/promptfoo/decide_wait.json
-
-# echo "==> Running generate_chat_check_repeat (promptfoo.generate_chat_check_repeat.yaml)"
-# promptfoo eval -c promptfoo.generate_chat_check_repeat.yaml --output results/promptfoo/generate_chat_check_repeat.json
-
-# echo "==> Running summarize_chats (promptfoo.summarize_chats.yaml)"
-# promptfoo eval -c promptfoo.summarize_chats.yaml --output results/promptfoo/summarize_chats.json
-
-echo "==> Done. Reports saved under results/promptfoo/"
+echo "==> Done. Report saved to ${OUTPUT_PATH}"
