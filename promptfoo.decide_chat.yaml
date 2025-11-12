@@ -1,11 +1,24 @@
 configVersion: 1
+
+description: Decide whether two agents should start a chat
+
 providers:
   - id: openai:gpt-4o-mini
     config:
       temperature: 0.0
+
 prompts:
   - label: decide_chat
-    file: generative_agents/data/prompts/decide_chat.txt
+    raw: |
+      You are evaluating whether two agents should start a chat.
+
+      Context: {{context}}
+      Time: {{date}}
+      {{agent}} status: {{agent_status}}
+      {{another}} status: {{another_status}}
+      Chat history: {{chat_history}}
+
+      Reply with a single word answer: yes or no.
 
 defaultTest:
   vars:
@@ -25,6 +38,7 @@ tests:
       another_status: "Orchestra liaison is heading to the same entrance to review the set timing"
       agent: "Police"
       another: "Orchestra"
+
   - description: Unlikely to chat (Police and Crowd)
     vars:
       context: "They are in separate zones completing different urgent tasks."

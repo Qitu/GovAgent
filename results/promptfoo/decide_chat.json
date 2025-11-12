@@ -1,0 +1,258 @@
+{
+  "evalId": "eval-YsX-2025-11-12T04:57:01",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-11-12T04:57:01.812Z",
+    "prompts": [
+      {
+        "raw": "You are evaluating whether two agents should start a chat.\n\nContext: {{context}}\nTime: {{date}}\n{{agent}} status: {{agent_status}}\n{{another}} status: {{another_status}}\nChat history: {{chat_history}}\n\nReply with a single word answer: yes or no.\n",
+        "label": "decide_chat",
+        "id": "b8cdd8eb573f590afd2e452b3e0cede4aef7ff7eea99c303e55bf43846dc124a",
+        "provider": "openai:gpt-4o-mini",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 2,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 269312,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 2,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))",
+        "gradingResult": null,
+        "id": "1f144b20-57cc-4c64-943a-4cd03dc3f8f5",
+        "latencyMs": 133156,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are evaluating whether two agents should start a chat.\n\nContext: They just met along Bayfront Avenue to synchronize the pre-show briefing.\nTime: 2025-10-18 17:00:00\nPolice status: Police officer is walking toward the Marina Bay Sands stage entrance\nOrchestra status: Orchestra liaison is heading to the same entrance to review the set timing\nChat history: \n\nReply with a single word answer: yes or no.\n",
+          "label": "decide_chat"
+        },
+        "promptId": "b8cdd8eb573f590afd2e452b3e0cede4aef7ff7eea99c303e55bf43846dc124a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "openai:gpt-4o-mini",
+          "label": ""
+        },
+        "response": {
+          "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))"
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "Likely to chat (Police and Orchestra)",
+          "vars": {
+            "context": "They just met along Bayfront Avenue to synchronize the pre-show briefing.",
+            "date": "2025-10-18 17:00:00",
+            "chat_history": "",
+            "agent_status": "Police officer is walking toward the Marina Bay Sands stage entrance",
+            "another_status": "Orchestra liaison is heading to the same entrance to review the set timing",
+            "agent": "Police",
+            "another": "Orchestra"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "context": "They just met along Bayfront Avenue to synchronize the pre-show briefing.",
+          "date": "2025-10-18 17:00:00",
+          "chat_history": "",
+          "agent_status": "Police officer is walking toward the Marina Bay Sands stage entrance",
+          "another_status": "Orchestra liaison is heading to the same entrance to review the set timing",
+          "agent": "Police",
+          "another": "Orchestra"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))",
+        "gradingResult": null,
+        "id": "12b920ca-aa33-4fdb-a07d-d93d33bb5949",
+        "latencyMs": 136156,
+        "namedScores": {},
+        "prompt": {
+          "raw": "You are evaluating whether two agents should start a chat.\n\nContext: They are in separate zones completing different urgent tasks.\nTime: 2025-10-18 17:00:00\nPolice status: Police officer is already delivering a briefing inside the command tent\nCrowd status: Crowd marshal is guiding attendees through Gate B outside the Flower Dome\nChat history: \n\nReply with a single word answer: yes or no.\n",
+          "label": "decide_chat"
+        },
+        "promptId": "b8cdd8eb573f590afd2e452b3e0cede4aef7ff7eea99c303e55bf43846dc124a",
+        "promptIdx": 0,
+        "provider": {
+          "id": "openai:gpt-4o-mini",
+          "label": ""
+        },
+        "response": {
+          "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))"
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "Unlikely to chat (Police and Crowd)",
+          "vars": {
+            "context": "They are in separate zones completing different urgent tasks.",
+            "date": "2025-10-18 17:00:00",
+            "chat_history": "",
+            "agent_status": "Police officer is already delivering a briefing inside the command tent",
+            "another_status": "Crowd marshal is guiding attendees through Gate B outside the Flower Dome",
+            "agent": "Police",
+            "another": "Crowd"
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "vars": {
+          "context": "They are in separate zones completing different urgent tasks.",
+          "date": "2025-10-18 17:00:00",
+          "chat_history": "",
+          "agent_status": "Police officer is already delivering a briefing inside the command tent",
+          "another_status": "Crowd marshal is guiding attendees through Gate B outside the Flower Dome",
+          "agent": "Police",
+          "another": "Crowd"
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 2
+      }
+    ],
+    "stats": {
+      "successes": 0,
+      "failures": 0,
+      "errors": 2,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Decide whether two agents should start a chat",
+    "prompts": [
+      {
+        "label": "decide_chat",
+        "raw": "You are evaluating whether two agents should start a chat.\n\nContext: {{context}}\nTime: {{date}}\n{{agent}} status: {{agent_status}}\n{{another}} status: {{another_status}}\nChat history: {{chat_history}}\n\nReply with a single word answer: yes or no.\n"
+      }
+    ],
+    "providers": [
+      {
+        "id": "openai:gpt-4o-mini",
+        "config": {
+          "temperature": 0
+        }
+      }
+    ],
+    "tests": [
+      {
+        "description": "Likely to chat (Police and Orchestra)",
+        "vars": {
+          "context": "They just met along Bayfront Avenue to synchronize the pre-show briefing.",
+          "agent_status": "Police officer is walking toward the Marina Bay Sands stage entrance",
+          "another_status": "Orchestra liaison is heading to the same entrance to review the set timing",
+          "agent": "Police",
+          "another": "Orchestra"
+        }
+      },
+      {
+        "description": "Unlikely to chat (Police and Crowd)",
+        "vars": {
+          "context": "They are in separate zones completing different urgent tasks.",
+          "agent_status": "Police officer is already delivering a briefing inside the command tent",
+          "another_status": "Crowd marshal is guiding attendees through Gate B outside the Flower Dome",
+          "agent": "Police",
+          "another": "Crowd"
+        }
+      }
+    ],
+    "scenarios": [],
+    "env": {},
+    "sharing": false,
+    "defaultTest": {
+      "vars": {
+        "context": "Police and Orchestra are stationed near Marina Bay Sands to finalize the concert security route.",
+        "date": "2025-10-18 17:00:00",
+        "chat_history": "",
+        "agent_status": "Police officer is reviewing the main gate security at Gardens by the Bay",
+        "another_status": "Orchestra liaison is coordinating instrument unloading at the stage loading bay",
+        "agent": "Police",
+        "another": "Orchestra"
+      },
+      "assert": [],
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "results/promptfoo/decide_chat.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.118.17",
+    "nodeVersion": "v22.14.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2025-11-12T04:59:18.009Z",
+    "evaluationCreatedAt": "2025-11-12T04:57:01.812Z"
+  }
+}
