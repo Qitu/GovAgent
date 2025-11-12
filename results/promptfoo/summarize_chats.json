@@ -1,0 +1,174 @@
+{
+  "evalId": "eval-7CY-2025-11-12T06:10:24",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-11-12T06:10:24.854Z",
+    "prompts": [
+      {
+        "raw": "Conversation:\n\"\"\"\n{{conversation}}\n\"\"\"\n\nSummarize the above conversation in one sentence no longer than 100 characters.\n",
+        "label": "summarize_chats",
+        "id": "12d921bad2d825d79c265aff6939efc854acc6996758acdb2446b8217df90172",
+        "provider": "openai:gpt-4o-mini",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 1,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 136965,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 1,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))",
+        "gradingResult": null,
+        "id": "d8260848-ab8e-48a2-a3cc-e3d4b59e85d0",
+        "latencyMs": 136965,
+        "namedScores": {},
+        "prompt": {
+          "raw": "Conversation:\n\"\"\"\nCrowd: The concert briefing is tomorrow and needs preparation.\nOrchestra: We'll finalize setlist timings tonight and confirm entry flow.\n\"\"\"\n\nSummarize the above conversation in one sentence no longer than 100 characters.\n",
+          "label": "summarize_chats"
+        },
+        "promptId": "12d921bad2d825d79c265aff6939efc854acc6996758acdb2446b8217df90172",
+        "promptIdx": 0,
+        "provider": {
+          "id": "openai:gpt-4o-mini",
+          "label": ""
+        },
+        "response": {
+          "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))"
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "Short summary (Crowd and Orchestra)",
+          "vars": {
+            "conversation": "Crowd: The concert briefing is tomorrow and needs preparation.\nOrchestra: We'll finalize setlist timings tonight and confirm entry flow."
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "conversation": "Crowd: The concert briefing is tomorrow and needs preparation.\nOrchestra: We'll finalize setlist timings tonight and confirm entry flow."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 2
+      }
+    ],
+    "stats": {
+      "successes": 0,
+      "failures": 0,
+      "errors": 1,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 1,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Summarize short multi-agent conversations",
+    "prompts": [
+      {
+        "label": "summarize_chats",
+        "raw": "Conversation:\n\"\"\"\n{{conversation}}\n\"\"\"\n\nSummarize the above conversation in one sentence no longer than 100 characters.\n"
+      }
+    ],
+    "providers": [
+      {
+        "id": "openai:gpt-4o-mini",
+        "config": {
+          "temperature": 0.2
+        }
+      }
+    ],
+    "tests": [
+      {
+        "description": "Short summary (Crowd and Orchestra)",
+        "vars": {
+          "conversation": "Crowd: The concert briefing is tomorrow and needs preparation.\nOrchestra: We'll finalize setlist timings tonight and confirm entry flow.\n"
+        }
+      }
+    ],
+    "scenarios": [],
+    "env": {},
+    "sharing": false,
+    "defaultTest": {
+      "vars": {
+        "conversation": "Police: We need to prepare for tomorrow's crowd safety briefing at the concert venue.\nOrchestra: We'll finalize the setlist timings tonight and coordinate stage access.\nPolice: Please also confirm the venue entry flow with the Crowd marshals.\nOrchestra: Understood, we'll align with the Crowd volunteers now.\n"
+      },
+      "assert": [],
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "results/promptfoo/summarize_chats.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.118.17",
+    "nodeVersion": "v22.14.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2025-11-12T06:12:41.851Z",
+    "evaluationCreatedAt": "2025-11-12T06:10:24.854Z"
+  }
+}

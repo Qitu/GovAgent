@@ -1,11 +1,25 @@
 configVersion: 1
+
+description: Detect whether a new line repeats existing chat content
+
 providers:
   - id: openai:gpt-4o-mini
     config:
       temperature: 0.0
+
 prompts:
   - label: generate_chat_check_repeat
-    file: generative_agents/data/prompts/generate_chat_check_repeat.txt
+    raw: |
+      <Conversation Log>
+      {{conversation}}
+      </Conversation Log>
+
+      <New Conversation>
+      {{content}}
+      </New Conversation>
+
+      In <New Conversation>, is the content said by {{agent}} already present in <Conversation Log>?
+      Reply with a single word: Yes or No.
 
 defaultTest:
   vars:
@@ -19,9 +33,9 @@ tests:
       agent: "Police"
       conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
       content: "Police: Our briefing starts at 3 pm."
+
   - description: Non-repetition - expect "No"
     vars:
       agent: "Police"
       conversation: "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm."
       content: "Police: We should arrive 10 minutes early."
-

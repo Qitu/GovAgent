@@ -1,11 +1,21 @@
 configVersion: 1
+
+description: Summarize short multi-agent conversations
+
 providers:
   - id: openai:gpt-4o-mini
     config:
       temperature: 0.2
+
 prompts:
   - label: summarize_chats
-    file: generative_agents/data/prompts/summarize_chats.txt
+    raw: |
+      Conversation:
+      """
+      {{conversation}}
+      """
+
+      Summarize the above conversation in one sentence no longer than 100 characters.
 
 defaultTest:
   vars:
@@ -19,6 +29,5 @@ tests:
   - description: Short summary (Crowd and Orchestra)
     vars:
       conversation: |
-        Crowd: The concert briefing is tomorrow and needs preparation
-        Orchestra: Will finalize setlist timings tonight and confirm entry flow
-
+        Crowd: The concert briefing is tomorrow and needs preparation.
+        Orchestra: We'll finalize setlist timings tonight and confirm entry flow.

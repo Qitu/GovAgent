@@ -1,0 +1,234 @@
+{
+  "evalId": "eval-dqL-2025-11-12T06:15:08",
+  "results": {
+    "version": 3,
+    "timestamp": "2025-11-12T06:15:08.726Z",
+    "prompts": [
+      {
+        "raw": "<Conversation Log>\n{{conversation}}\n</Conversation Log>\n\n<New Conversation>\n{{content}}\n</New Conversation>\n\nIn <New Conversation>, is the content said by {{agent}} already present in <Conversation Log>?\nReply with a single word: Yes or No.\n",
+        "label": "generate_chat_check_repeat",
+        "id": "1cd76fd39297f4f211adc269dc585441063669b3e0420f9d9615198570ac714e",
+        "provider": "openai:gpt-4o-mini",
+        "metrics": {
+          "score": 0,
+          "testPassCount": 0,
+          "testFailCount": 0,
+          "testErrorCount": 2,
+          "assertPassCount": 0,
+          "assertFailCount": 0,
+          "totalLatencyMs": 243868,
+          "tokenUsage": {
+            "prompt": 0,
+            "completion": 0,
+            "cached": 0,
+            "total": 0,
+            "numRequests": 2,
+            "completionDetails": {
+              "reasoning": 0,
+              "acceptedPrediction": 0,
+              "rejectedPrediction": 0
+            },
+            "assertions": {
+              "total": 0,
+              "prompt": 0,
+              "completion": 0,
+              "cached": 0,
+              "numRequests": 0,
+              "completionDetails": {
+                "reasoning": 0,
+                "acceptedPrediction": 0,
+                "rejectedPrediction": 0
+              }
+            }
+          },
+          "namedScores": {},
+          "namedScoresCount": {},
+          "cost": 0
+        }
+      }
+    ],
+    "results": [
+      {
+        "cost": 0,
+        "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))",
+        "gradingResult": null,
+        "id": "3e5eefeb-654d-4278-8d15-3880264b4b84",
+        "latencyMs": 110864,
+        "namedScores": {},
+        "prompt": {
+          "raw": "<Conversation Log>\nPolice: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.\n</Conversation Log>\n\n<New Conversation>\nPolice: Our briefing starts at 3 pm.\n</New Conversation>\n\nIn <New Conversation>, is the content said by Police already present in <Conversation Log>?\nReply with a single word: Yes or No.\n",
+          "label": "generate_chat_check_repeat"
+        },
+        "promptId": "1cd76fd39297f4f211adc269dc585441063669b3e0420f9d9615198570ac714e",
+        "promptIdx": 0,
+        "provider": {
+          "id": "openai:gpt-4o-mini",
+          "label": ""
+        },
+        "response": {
+          "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))"
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "Obvious repetition - expect \"Yes\"",
+          "vars": {
+            "agent": "Police",
+            "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+            "content": "Police: Our briefing starts at 3 pm."
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 0,
+        "vars": {
+          "agent": "Police",
+          "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+          "content": "Police: Our briefing starts at 3 pm."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 2
+      },
+      {
+        "cost": 0,
+        "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))",
+        "gradingResult": null,
+        "id": "6a5dc148-9890-4f2c-888e-3982460179d2",
+        "latencyMs": 133004,
+        "namedScores": {},
+        "prompt": {
+          "raw": "<Conversation Log>\nPolice: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.\n</Conversation Log>\n\n<New Conversation>\nPolice: We should arrive 10 minutes early.\n</New Conversation>\n\nIn <New Conversation>, is the content said by Police already present in <Conversation Log>?\nReply with a single word: Yes or No.\n",
+          "label": "generate_chat_check_repeat"
+        },
+        "promptId": "1cd76fd39297f4f211adc269dc585441063669b3e0420f9d9615198570ac714e",
+        "promptIdx": 0,
+        "provider": {
+          "id": "openai:gpt-4o-mini",
+          "label": ""
+        },
+        "response": {
+          "error": "API call error: Error: Request failed after 4 retries: TypeError: fetch failed (Cause: ConnectTimeoutError: Connect Timeout Error (attempted address: api.openai.com:443, timeout: 10000ms))"
+        },
+        "score": 0,
+        "success": false,
+        "testCase": {
+          "description": "Non-repetition - expect \"No\"",
+          "vars": {
+            "agent": "Police",
+            "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+            "content": "Police: We should arrive 10 minutes early."
+          },
+          "assert": [],
+          "options": {},
+          "metadata": {}
+        },
+        "testIdx": 1,
+        "vars": {
+          "agent": "Police",
+          "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+          "content": "Police: We should arrive 10 minutes early."
+        },
+        "metadata": {
+          "_promptfooFileMetadata": {}
+        },
+        "failureReason": 2
+      }
+    ],
+    "stats": {
+      "successes": 0,
+      "failures": 0,
+      "errors": 2,
+      "tokenUsage": {
+        "prompt": 0,
+        "completion": 0,
+        "cached": 0,
+        "total": 0,
+        "numRequests": 2,
+        "completionDetails": {
+          "reasoning": 0,
+          "acceptedPrediction": 0,
+          "rejectedPrediction": 0
+        },
+        "assertions": {
+          "total": 0,
+          "prompt": 0,
+          "completion": 0,
+          "cached": 0,
+          "numRequests": 0,
+          "completionDetails": {
+            "reasoning": 0,
+            "acceptedPrediction": 0,
+            "rejectedPrediction": 0
+          }
+        }
+      }
+    }
+  },
+  "config": {
+    "tags": {},
+    "description": "Detect whether a new line repeats existing chat content",
+    "prompts": [
+      {
+        "label": "generate_chat_check_repeat",
+        "raw": "<Conversation Log>\n{{conversation}}\n</Conversation Log>\n\n<New Conversation>\n{{content}}\n</New Conversation>\n\nIn <New Conversation>, is the content said by {{agent}} already present in <Conversation Log>?\nReply with a single word: Yes or No.\n"
+      }
+    ],
+    "providers": [
+      {
+        "id": "openai:gpt-4o-mini",
+        "config": {
+          "temperature": 0
+        }
+      }
+    ],
+    "tests": [
+      {
+        "description": "Obvious repetition - expect \"Yes\"",
+        "vars": {
+          "agent": "Police",
+          "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+          "content": "Police: Our briefing starts at 3 pm."
+        }
+      },
+      {
+        "description": "Non-repetition - expect \"No\"",
+        "vars": {
+          "agent": "Police",
+          "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+          "content": "Police: We should arrive 10 minutes early."
+        }
+      }
+    ],
+    "scenarios": [],
+    "env": {},
+    "sharing": false,
+    "defaultTest": {
+      "vars": {
+        "agent": "Police",
+        "conversation": "Police: Our briefing starts at 3 pm.\nOrchestra: Okay, confirmed for 3 pm.",
+        "content": "Police: Our briefing starts at 3 pm."
+      },
+      "assert": [],
+      "options": {},
+      "metadata": {}
+    },
+    "outputPath": [
+      "results/promptfoo/generate_chat_check_repeat.json"
+    ],
+    "extensions": [],
+    "metadata": {},
+    "evaluateOptions": {}
+  },
+  "shareableUrl": null,
+  "metadata": {
+    "promptfooVersion": "0.118.17",
+    "nodeVersion": "v22.14.0",
+    "platform": "darwin",
+    "arch": "arm64",
+    "exportedAt": "2025-11-12T06:19:12.688Z",
+    "evaluationCreatedAt": "2025-11-12T06:15:08.726Z"
+  }
+}
