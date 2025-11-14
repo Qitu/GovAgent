@@ -3,6 +3,8 @@ from types import SimpleNamespace
 
 import pytest
 
+pytestmark = [pytest.mark.integration, pytest.mark.security]
+
 from generative_agents.app import create_app
 
 

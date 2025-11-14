@@ -1,5 +1,5 @@
 from generative_agents.modules.maze import Tile
-from generative_agents.modules.memory.event import Event
+from modules.memory.event import Event
 
 
 def test_tile_event_add_remove_update_and_addresses():
