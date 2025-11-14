@@ -1,5 +1,5 @@
 
-name: CI
+name: CI&CD
 
 # Set the event to pull request event and push event of the [main] branch
 on:
