@@ -25,15 +25,10 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install -r requirements.txt
-          guardrails hub install hub://guardrails/regex_match
-
-      - name: Configure Guardrails API key
-        run: guardrails configure --profile ci --api-key ${{ secrets.GUARDRAILS_API_KEY }} --no-telemetry --no-remote
 
       - name: Run integration tests with coverage
         env:
           PYTHONPATH: ${{ github.workspace }}
-          GUARDRAILS_PROFILE: ci
         run: |
           pytest tests/integration -q --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-integration.xml
 

@@ -1,4 +1,3 @@
-
 name: CI&CD
 
 # Set the event to pull request event and push event of the [main] branch
@@ -33,9 +32,36 @@ jobs:
       #     pip install ruff
       #     ruff check .
 
-  CD:
+  Guardrails:
     runs-on: ubuntu-latest
     needs: CI
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          guardrails hub install hub://guardrails/regex_match
+
+      - name: Configure Guardrails API key
+        run: guardrails configure --profile ci --api-key ${{ secrets.GUARDRAILS_API_KEY }} --no-telemetry --no-remote
+
+      - name: Run Guardrails prompt tests
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+          GUARDRAILS_PROFILE: ci
+        run: pytest tests/integration/test_guardrails_prompt.py -q
+
+  CD:
+    runs-on: ubuntu-latest
+    needs: Guardrails
     steps:
       - name: Deploy to dev server (Baota)
         uses: appleboy/ssh-action@master
