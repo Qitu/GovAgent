@@ -47,25 +47,12 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-          guardrails configure --token "$GUARDRAILS_API_KEY"
 
-      - name: Apply Guardrails config overrides
+      - name: Configure Guardrails API key
+        env:
+          GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
         run: |
-          CONFIG_PATH="$HOME/.guardrails/config.toml"
-          python - <<'PY'
-from pathlib import Path
-cfg = Path("~/.guardrails/config.toml").expanduser()
-text = cfg.read_text() if cfg.exists() else ""
-if "enable_metrics" in text:
-    text = text.replace("enable_metrics = true", "enable_metrics = false")
-else:
-    text += "\nenable_metrics = false\n"
-if "use_remote_inferencing" in text:
-    text = text.replace("use_remote_inferencing = true", "use_remote_inferencing = false")
-else:
-    text += "use_remote_inferencing = false\n"
-Path("~/.guardrails/config.toml").expanduser().write_text(text)
-PY
+          guardrails configure --token "$GUARDRAILS_API_KEY"
 
       - name: Run Guardrails prompt tests
         env:
