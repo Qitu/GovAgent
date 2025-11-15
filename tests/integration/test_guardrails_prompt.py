@@ -2,6 +2,7 @@ import re
 import pytest
 
 from guardrails import Guard
+from guardrails.errors import ValidationError
 from guardrails.validators import (
     register_validator,
     Validator,
@@ -22,17 +23,26 @@ class RegexAllowlist(Validator):
         super().__init__(name="regex_allowlist")
         self.pattern = re.compile(pattern, re.DOTALL)
 
-    def validate(self, value, metadata=None):
+    def _normalize(self, value):
         if value is None:
-            return ValidationResult(validation_passed=True, result=value)
-        if not isinstance(value, str):
-            value = str(value)
-        if self.pattern.fullmatch(value):
-            return ValidationResult(validation_passed=True, result=value)
-        return ValidationResult(
-            validation_passed=False,
-            result=None,
-            errors=[FailResult(f"Value '{value}' failed regex {self.pattern.pattern}")],
+            return ""
+        if isinstance(value, str):
+            return value
+        return str(value)
+
+    def _validate(self, value, metadata):
+        metadata = metadata or {}
+        normalized = self._normalize(value)
+        if self.pattern.fullmatch(normalized):
+            return ValidationResult(
+                outcome="pass",
+                metadata=metadata,
+                validated_chunk=normalized,
+            )
+        return FailResult(
+            error_message=f"Value '{normalized}' failed regex {self.pattern.pattern}",
+            metadata=metadata,
+            validated_chunk=normalized,
         )
 
 
@@ -84,5 +94,5 @@ def test_prompt_schedule_revise_guardrails_block(schedule_with_action, response)
     scratch, plan, schedule, action = schedule_with_action
     guard = Guard().use(RegexAllowlist(r"^[^{}<>]*$"))
 
-    result = guard.parse(response)
-    assert not result.validation_passed
+    with pytest.raises(ValidationError):
+        guard.parse(response)

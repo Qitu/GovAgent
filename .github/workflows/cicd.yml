@@ -46,17 +46,19 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python -m pip install --upgrade pip setuptools wheel
           pip install -r requirements.txt
           guardrails hub install hub://guardrails/regex_match
 
       - name: Configure Guardrails API key
-        run: guardrails configure --profile ci --api-key ${{ secrets.GUARDRAILS_API_KEY }} --no-telemetry --no-remote
+        env:
+          GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
+        run: |
+          guardrails configure --set api_key=$GUARDRAILS_API_KEY --set use_remote_inferencing=false --set enable_metrics=false
 
       - name: Run Guardrails prompt tests
         env:
           PYTHONPATH: ${{ github.workspace }}
-          GUARDRAILS_PROFILE: ci
         run: pytest tests/integration/test_guardrails_prompt.py -q
 
   CD:
