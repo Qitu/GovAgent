@@ -46,7 +46,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install --upgrade pip
+          pip install "setuptools<81" wheel
           pip install -r requirements.txt
           guardrails hub install hub://guardrails/regex_match
 
@@ -54,7 +55,7 @@ jobs:
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
         run: |
-          guardrails configure --set api_key=$GUARDRAILS_API_KEY --set use_remote_inferencing=false --set enable_metrics=false
+          guardrails configure --token "$GUARDRAILS_API_KEY" --disable-remote-inferencing --disable-metrics
 
       - name: Run Guardrails prompt tests
         env:
