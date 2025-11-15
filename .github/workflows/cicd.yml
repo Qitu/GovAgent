@@ -53,7 +53,7 @@ jobs:
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
         run: |
-          guardrails configure --token "$GUARDRAILS_API_KEY" --disable-remote-inferencing --disable-metrics
+          guardrails configure --token "$GUARDRAILS_API_KEY" --enable-metrics=false --enable-remote-inferencing=false
 
       - name: Run Guardrails prompt tests
         env:
