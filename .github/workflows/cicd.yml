@@ -65,16 +65,27 @@ jobs:
       - name: Run Guardrails prompt tests
         env:
           PYTHONPATH: ${{ github.workspace }}
+          PYTHONUNBUFFERED: "1"
         run: |
           set -eo pipefail
-          pytest -q -s tests/integration/test_guardrails_prompt.py 2>&1 | tee guardrails.log
+          pytest --color=no -q -s tests/integration/test_guardrails_prompt.py 2>&1 | tee guardrails.log
 
       - name: Report Guardrails summary
         run: |
-          pass_count=$(grep -c "Guardrails PASS: benign" guardrails.log || echo 0)
-          block_count=$(grep -c "Guardrails PASS: unsafe" guardrails.log || echo 0)
+          pass_count=$(grep -a -c "Guardrails PASS: benign" guardrails.log 2>/dev/null || echo 0)
+          block_count=$(grep -a -c "Guardrails PASS: unsafe" guardrails.log 2>/dev/null || echo 0)
           total_cases=$((pass_count + block_count))
-          details=$(grep "Guardrails PASS:" guardrails.log || echo "(no Guardrails console output captured)")
+
+          if grep -a "Guardrails PASS:" guardrails.log > /tmp/guardrails_details.txt; then
+            details=$(
+              cat /tmp/guardrails_details.txt \
+                | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' \
+                | sed 's/^[[:space:]]*//' \
+                | tr -d '\r'
+            )
+          else
+            details="(no Guardrails console output captured)"
+          fi
 
           printf '### Prompt Guardrails\n\n' | tee "$GITHUB_STEP_SUMMARY"
           printf '- Pre-screen user input.\n' | tee -a "$GITHUB_STEP_SUMMARY"
@@ -84,12 +95,12 @@ jobs:
           printf '#### Guardrails metrics\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Metric | Value |\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| --- | --- |\n' | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '| Passed benign inputs | %s |\n' "$pass_count" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Passed benign inputs | %s |\n' "$pass X_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Blocked unsafe inputs | %s |\n' "$block_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Total cases asserted | %s |\n\n' "$total_cases" | tee -a "$GITHUB_STEP_SUMMARY"
 
           printf '#### Detailed results\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '%s\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '```text\n%s\n```\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
 
   CD:
     runs-on: ubuntu-latest
