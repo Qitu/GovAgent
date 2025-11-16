@@ -1,6 +1,15 @@
 import re
 import pytest
 
+pytestmark = [
+    pytest.mark.filterwarnings(
+        "ignore:.*invalid escape sequence.*:DeprecationWarning"
+    ),
+    pytest.mark.filterwarnings(
+        "ignore:The 'validate_default' attribute with value True .*:UserWarning"
+    ),
+]
+
 from guardrails import Guard
 from guardrails.errors import ValidationError
 from guardrails.validators import (
@@ -81,6 +90,7 @@ def test_prompt_schedule_revise_guardrails_pass(schedule_with_action):
     assert guard.parse(response).validation_passed
     parsed = hook["callback"](response)
     assert parsed
+    print("Guardrails PASS: benign schedule update accepted without issues")
 
 
 @pytest.mark.parametrize(
@@ -96,3 +106,4 @@ def test_prompt_schedule_revise_guardrails_block(schedule_with_action, response)
 
     with pytest.raises(ValidationError):
         guard.parse(response)
+    print("Guardrails PASS: unsafe schedule blocked as expected")
