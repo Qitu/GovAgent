@@ -1,14 +1,6 @@
 import re
 import pytest
 
-pytestmark = [
-    pytest.mark.filterwarnings(
-        "ignore:.*invalid escape sequence.*:DeprecationWarning"
-    ),
-    pytest.mark.filterwarnings(
-        "ignore:The 'validate_default' attribute with value True .*:UserWarning"
-    ),
-]
 
 from guardrails import Guard
 from guardrails.errors import ValidationError
