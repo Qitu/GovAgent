@@ -31,6 +31,23 @@ jobs:
       #   run: |
       #     pip install ruff
       #     ruff check .
+
+  Guardrails:
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
       - name: Configure Guardrails settings
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
@@ -64,14 +81,14 @@ jobs:
           printf '- Block known toxic terms.\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '- Redirect or refuse unsafe prompts.\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
 
-          printf '#### Guardrails metrics\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '#### Guardrails metrics\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Metric | Value |\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| --- | --- |\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Passed benign inputs | %s |\n' "$pass_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Blocked unsafe inputs | %s |\n' "$block_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Total cases asserted | %s |\n\n' "$total_cases" | tee -a "$GITHUB_STEP_SUMMARY"
 
-          printf '#### Detailed results\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '#### Detailed results\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
 
   CD:
