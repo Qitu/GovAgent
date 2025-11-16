@@ -67,6 +67,16 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: pytest tests/integration/test_guardrails_prompt.py -q
 
+      - name: Report Guardrails summary
+        run: |
+          {
+            echo "### Prompt Guardrails"
+            echo
+            echo "- Pre-screen user input."
+            echo "- Block known toxic terms."
+            echo "- Redirect or refuse unsafe prompts."
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+
   CD:
     runs-on: ubuntu-latest
     needs: Guardrails
