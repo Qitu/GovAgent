@@ -82,7 +82,7 @@ def test_prompt_schedule_revise_guardrails_pass(schedule_with_action):
     assert guard.parse(response).validation_passed
     parsed = hook["callback"](response)
     assert parsed
-    print("Guardrails PASS: benign schedule update accepted without issues")
+    print(f"Guardrails PASS [Pre-screen user input]: accepted benign schedule update -> {response!r}")
 
 
 @pytest.mark.parametrize(
@@ -98,4 +98,4 @@ def test_prompt_schedule_revise_guardrails_block(schedule_with_action, response)
 
     with pytest.raises(ValidationError):
         guard.parse(response)
-    print("Guardrails PASS: unsafe schedule blocked as expected")
+    print(f"Guardrails PASS [Block known toxic terms / Redirect unsafe prompts]: rejected unsafe input -> {response!r}")

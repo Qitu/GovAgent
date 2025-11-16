@@ -65,27 +65,17 @@ jobs:
       - name: Run Guardrails prompt tests
         env:
           PYTHONPATH: ${{ github.workspace }}
-          PYTHONUNBUFFERED: "1"
         run: |
           set -eo pipefail
-          pytest --color=no -q -s tests/integration/test_guardrails_prompt.py 2>&1 | tee guardrails.log
+          pytest -q -s tests/integration/test_guardrails_prompt.py 2>&1 | tee guardrails.log
 
       - name: Report Guardrails summary
         run: |
-          pass_count=$(grep -a -c "Guardrails PASS: benign" guardrails.log 2>/dev/null || echo 0)
-          block_count=$(grep -a -c "Guardrails PASS: unsafe" guardrails.log 2>/dev/null || echo 0)
-          total_cases=$((pass_count + block_count))
-
-          if grep -a "Guardrails PASS:" guardrails.log > /tmp/guardrails_details.txt; then
-            details=$(
-              cat /tmp/guardrails_details.txt \
-                | sed -E 's/\x1B\[[0-9;]*[A-Za-z]//g' \
-                | sed 's/^[[:space:]]*//' \
-                | tr -d '\r'
-            )
-          else
-            details="(no Guardrails console output captured)"
-          fi
+          pre_screen_count=$(grep -c "Guardrails PASS \[Pre-screen user input\]" guardrails.log || echo 0)
+          block_count=$(grep -c "Guardrails PASS \[Block known toxic terms / Redirect unsafe prompts\]" guardrails.log || echo 0)
+          total_cases=$((pre_screen_count + block_count))
+          details=$(grep "Guardrails PASS [" guardrails.log || echo "(no Guardrails console output captured)")
+          block_cases=$(grep "Guardrails PASS \[Block known toxic terms / Redirect unsafe prompts\]" guardrails.log || true)
 
           printf '### Prompt Guardrails\n\n' | tee "$GITHUB_STEP_SUMMARY"
           printf '- Pre-screen user input.\n' | tee -a "$GITHUB_STEP_SUMMARY"
@@ -95,12 +85,15 @@ jobs:
           printf '#### Guardrails metrics\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Metric | Value |\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| --- | --- |\n' | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '| Passed benign inputs | %s |\n' "$pass X_count" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Pre-screened benign inputs | %s |\n' "$pre_screen_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Blocked unsafe inputs | %s |\n' "$block_count" | tee -a "$GITHUB_STEP_SUMMARY"
           printf '| Total cases asserted | %s |\n\n' "$total_cases" | tee -a "$GITHUB_STEP_SUMMARY"
 
           printf '#### Detailed results\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
-          printf '```text\n%s\n```\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          printf '\n#### Blocked prompt details\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$block_cases" | tee -a "$GITHUB_STEP_SUMMARY"
 
   CD:
     runs-on: ubuntu-latest
