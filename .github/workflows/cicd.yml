@@ -67,7 +67,7 @@ jobs:
           PYTHONPATH: ${{ github.workspace }}
         run: |
           set -eo pipefail
-          pytest tests/integration/test_guardrails_prompt.py -q 2>&1 | tee guardrails.log
+          pytest -q -s tests/integration/test_guardrails_prompt.py 2>&1 | tee guardrails.log
 
       - name: Report Guardrails summary
         run: |
