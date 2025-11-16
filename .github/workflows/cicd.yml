@@ -46,33 +46,13 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Configure Guardrails settings
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
         run: |
-          python - <<'PY'
-from pathlib import Path
-import os
-
-config_dir = Path.home() / ".guardrails"
-config_dir.mkdir(parents=True, exist_ok=True)
-config_path = config_dir / "config.toml"
-api_key = os.environ.get("GUARDRAILS_API_KEY", "")
-config_path.write_text(
-    "\n".join(
-        [
-            "[settings]",
-            f'token = "{api_key}"',
-            "enable_metrics = false",
-            "use_remote_inferencing = false",
-            "",
-        ]
-    )
-)
-PY
+          guardrails configure --enable-metrics --enable-remote-inferencing --token $GUARDRAILS_API_KEY
 
       - name: Run Guardrails prompt tests
         env:
