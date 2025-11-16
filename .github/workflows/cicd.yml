@@ -31,23 +31,6 @@ jobs:
       #   run: |
       #     pip install ruff
       #     ruff check .
-
-  Guardrails:
-    runs-on: ubuntu-latest
-    needs: CI
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Configure Guardrails settings
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
@@ -71,18 +54,25 @@ jobs:
 
       - name: Report Guardrails summary
         run: |
-          {
-            echo "### Prompt Guardrails"
-            echo
-            echo "- Pre-screen user input."
-            echo "- Block known toxic terms."
-            echo "- Redirect or refuse unsafe prompts."
-            echo
-            echo "#### Test output (tail)"
-            echo '```'
-            tail -n 40 guardrails.log || echo "(guardrails.log missing)"
-            echo '```'
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+          pass_count=$(grep -c "Guardrails PASS: benign" guardrails.log || echo 0)
+          block_count=$(grep -c "Guardrails PASS: unsafe" guardrails.log || echo 0)
+          total_cases=$((pass_count + block_count))
+          details=$(grep "Guardrails PASS:" guardrails.log || echo "(no Guardrails console output captured)")
+
+          printf '### Prompt Guardrails\n\n' | tee "$GITHUB_STEP_SUMMARY"
+          printf '- Pre-screen user input.\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '- Block known toxic terms.\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '- Redirect or refuse unsafe prompts.\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
+
+          printf '#### Guardrails metrics\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Metric | Value |\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| --- | --- |\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Passed benign inputs | %s |\n' "$pass_count" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Blocked unsafe inputs | %s |\n' "$block_count" | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '| Total cases asserted | %s |\n\n' "$total_cases" | tee -a "$GITHUB_STEP_SUMMARY"
+
+          printf '#### Detailed results\n' | tee -a "$GITHUB_STEP_SUMMARY"
+          printf '%s\n' "$details" | tee -a "$GITHUB_STEP_SUMMARY"
 
   CD:
     runs-on: ubuntu-latest
