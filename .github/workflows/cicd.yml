@@ -52,7 +52,15 @@ jobs:
         env:
           GUARDRAILS_API_KEY: ${{ secrets.GUARDRAILS_API_KEY }}
         run: |
-          guardrails configure --enable-metrics --enable-remote-inferencing --token $GUARDRAILS_API_KEY
+          uuid_value="$(uuidgen 2>/dev/null || echo gr-$(date +%s))"
+          token_value="${GUARDRAILS_API_KEY:-}"
+          {
+            echo "id=${uuid_value}"
+            echo "token=${token_value}"
+            echo "enable_metrics=false"
+            echo "use_remote_inferencing=false"
+            echo
+          } > "$HOME/.guardrailsrc"
 
       - name: Run Guardrails prompt tests
         env:
