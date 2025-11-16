@@ -69,13 +69,11 @@ jobs:
 
       - name: Report Guardrails summary
         run: |
-          {
-            echo "### Prompt Guardrails"
-            echo
-            echo "- Pre-screen user input."
-            echo "- Block known toxic terms."
-            echo "- Redirect or refuse unsafe prompts."
-          } | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "### Prompt Guardrails" | tee "$GITHUB_STEP_SUMMARY"
+          echo "" | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "- Pre-screen user input." | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "- Block known toxic terms." | tee -a "$GITHUB_STEP_SUMMARY"
+          echo "- Redirect or refuse unsafe prompts." | tee -a "$GITHUB_STEP_SUMMARY"
 
   CD:
     runs-on: ubuntu-latest
