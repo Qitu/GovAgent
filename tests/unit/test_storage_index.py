@@ -53,10 +53,10 @@ class FakeIndex:
         return self
     def query(self, text):
         class R:
-            def __init__(self, t):
-                self.response = t
+            def __init__(self, text_value):
+                self.response = text_value
             def __str__(self):
-                return t
+                return str(self.response)
         return R(text)
 
 
