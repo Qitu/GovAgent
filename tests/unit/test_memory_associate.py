@@ -18,8 +18,10 @@ class DummyIndex:
     def __init__(self):
         self.nodes = {}
         self.saved = False
+        self.cleanup_called = False
     def cleanup(self):
         # Remove expired nodes
+        self.cleanup_called = True
         removed = []
         now = datetime.now()
         for nid, node in list(self.nodes.items()):
@@ -81,6 +83,8 @@ def test_associate_add_and_retrieve_focus(monkeypatch):
     focus = ["important future plan", "daily"]
     out = assoc.retrieve_focus(focus, retrieve_max=3, reduce_all=True)
     assert len(out) <= 5
+    assert dummy_index.cleanup_called
+    assert dummy_index.saved
     # access time should be updated to current
     for c in out:
         assert isinstance(c.access, datetime)

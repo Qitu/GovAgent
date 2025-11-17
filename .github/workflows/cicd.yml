@@ -118,7 +118,7 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
         run: |
-          pytest tests/unit -q --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-unit.xml
+          pytest tests/unit -q --maxfail=1 --durations=10 --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-unit.xml
 
       - name: Upload unit test coverage to Codecov
         if: always()
