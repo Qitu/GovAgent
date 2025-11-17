@@ -96,6 +96,29 @@ def test_retrieve_and_query_paths(monkeypatch):
     li.add_node("hello", metadata={"create": "20240101-00:00:00", "expire": "20250101-00:00:00"})
     li.add_node("world", metadata={"create": "20240101-00:00:00", "expire": "20250101-00:00:00"})
 
+    class DummyVectorRetriever:
+        def __init__(self, index, similarity_top_k=5, filters=None, node_ids=None):
+            self.index = index
+            self.similarity_top_k = similarity_top_k
+            self.filters = filters
+            self.node_ids = node_ids
+        def retrieve(self, text):
+            nodes = list(self.index.docstore.docs.values())
+            return [
+                types.SimpleNamespace(
+                    node=node,
+                    id_=node.id_,
+                    score=i + 1,
+                    metadata=node.metadata,
+                )
+                for i, node in enumerate(nodes)
+            ]
+
+    monkeypatch.setattr(
+        "generative_agents.modules.storage.index.VectorIndexRetriever",
+        DummyVectorRetriever,
+    )
+
     # retrieve with default retriever
     nodes = li.retrieve("q")
     assert len(nodes) >= 1
