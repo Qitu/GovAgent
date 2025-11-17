@@ -95,9 +95,142 @@ jobs:
           printf '\n#### Blocked prompt details\n\n' | tee -a "$GITHUB_STEP_SUMMARY"
           printf '%s\n' "$block_cases" | tee -a "$GITHUB_STEP_SUMMARY"
 
+  UnitTests:
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: Run unit tests with coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest tests/unit -q --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-unit.xml
+
+      - name: Upload unit test coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage-unit.xml
+          flags: unit
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Upload unit coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-unit
+          path: coverage-unit.xml
+          if-no-files-found: ignore
+
+  IntegrationTests:
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: Run integration tests with coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest tests/integration -q --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-integration.xml
+
+      - name: Upload integration test coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage-integration.xml
+          flags: integration
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Upload integration coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-integration
+          path: coverage-integration.xml
+          if-no-files-found: ignore
+
+  SecurityTests:
+    runs-on: ubuntu-latest
+    needs: CI
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -r requirements.txt
+
+      - name: Run security tests with coverage
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          pytest tests/security -q --cov=generative_agents --cov-report=term-missing --cov-report=xml:coverage-security.xml
+
+      - name: Upload security test coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: coverage-security.xml
+          flags: security
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+
+      - name: Upload security coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-security
+          path: coverage-security.xml
+          if-no-files-found: ignore
+
   CD:
     runs-on: ubuntu-latest
-    needs: Guardrails
+    needs:
+      - Guardrails
+      - UnitTests
+      - IntegrationTests
+      - SecurityTests
     steps:
       - name: Deploy to dev server (Baota)
         uses: appleboy/ssh-action@master
