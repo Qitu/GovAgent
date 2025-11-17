@@ -22,7 +22,7 @@ class FakeStorageContext:
     def __init__(self, persist_calls):
         self.persist_calls = persist_calls
     def persist(self, path):
-        self.persist_calls.append(path)
+        self.persist_calls.append(str(path))
 
 
 class FakeIndex:
